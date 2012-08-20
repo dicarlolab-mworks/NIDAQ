@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <NIDAQmxBase.h>
 
@@ -21,10 +22,18 @@ int main(int argc, const char * argv[])
     uInt32 serialNumber;
     int32 error = DAQmxBaseGetDevSerialNum(device, &serialNumber);
     
-    if (error == 0) {
+    if (!DAQmxFailed(error)) {
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber;
     } else {
-        std::cout << "error = " << error;
+        std::cout << "Error code = " << error;
+        
+        uInt32 errorMessageSize = DAQmxBaseGetExtendedErrorInfo(NULL, 0);
+        std::vector<char> errorMessage(errorMessageSize, 0);
+        char *errorMessageBuffer = &(errorMessage.front());
+        
+        if (!DAQmxFailed(DAQmxBaseGetExtendedErrorInfo(errorMessageBuffer, errorMessageSize))) {
+            std::cout << std::endl << "Error message: " << errorMessageBuffer;
+        }
     }
     std::cout << std::endl;
     
