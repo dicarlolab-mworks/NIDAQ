@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		E196C53115E2AD3200059BF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C53015E2AD3200059BF2 /* main.cpp */; };
+		E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
+		E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		E196C52C15E2AD3200059BF2 /* nidaqtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nidaqtest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E196C53015E2AD3200059BF2 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		E196C53915E2B19200059BF2 /* nidaqmxbase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbase.framework; path = /Library/Frameworks/nidaqmxbase.framework; sourceTree = "<absolute>"; };
+		E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbaselv.framework; path = /Library/Frameworks/nidaqmxbaselv.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +36,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */,
+				E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,6 +48,7 @@
 			isa = PBXGroup;
 			children = (
 				E196C52F15E2AD3200059BF2 /* nidaqtest */,
+				E196C53B15E2B1FE00059BF2 /* Frameworks */,
 				E196C52D15E2AD3200059BF2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,6 +67,15 @@
 				E196C53015E2AD3200059BF2 /* main.cpp */,
 			);
 			path = nidaqtest;
+			sourceTree = "<group>";
+		};
+		E196C53B15E2B1FE00059BF2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E196C53915E2B19200059BF2 /* nidaqmxbase.framework */,
+				E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -89,7 +105,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0440;
-				ORGANIZATIONNAME = "Christopher Stawarz";
+				ORGANIZATIONNAME = MIT;
 			};
 			buildConfigurationList = E196C52615E2AD3200059BF2 /* Build configuration list for PBXProject "nidaqtest" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -128,6 +144,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -141,6 +158,9 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"\"/Applications/National Instruments/NI-DAQmx Base/includes\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx10.7;
 			};
@@ -155,12 +175,16 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"\"/Applications/National Instruments/NI-DAQmx Base/includes\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx10.7;
 			};
