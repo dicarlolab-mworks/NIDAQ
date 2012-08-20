@@ -7,34 +7,25 @@
 //
 
 #include <iostream>
-#include <string>
-#include <vector>
 
-#include <NIDAQmxBase.h>
+#include "NIDAQError.h"
+#include "NIDAQDevice.h"
 
 
 int main(int argc, const char * argv[])
 {
-    const char *device = "Dev1";
+    NIDAQDevice device("Dev1");
     
-    std::cout << "Fetching serial number of device " << device << std::endl;
-
-    uInt32 serialNumber;
-    int32 error = DAQmxBaseGetDevSerialNum(device, &serialNumber);
+    std::cout << "Fetching serial number of device " << device.getName() << std::endl;
     
-    if (!DAQmxFailed(error)) {
+    try {
+        uInt32 serialNumber = device.getSerialNumber();
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber;
-    } else {
-        std::cout << "Error code = " << error;
-        
-        uInt32 errorMessageSize = DAQmxBaseGetExtendedErrorInfo(NULL, 0);
-        std::vector<char> errorMessage(errorMessageSize, 0);
-        char *errorMessageBuffer = &(errorMessage.front());
-        
-        if (!DAQmxFailed(DAQmxBaseGetExtendedErrorInfo(errorMessageBuffer, errorMessageSize))) {
-            std::cout << std::endl << "Error message: " << errorMessageBuffer;
-        }
+    } catch (NIDAQError &e) {
+        std::cout << "Error code = " << e.getErrorCode() << std::endl;
+        std::cout << "Error message: " << e.what();
     }
+    
     std::cout << std::endl;
     
     return 0;

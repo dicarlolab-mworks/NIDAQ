@@ -10,6 +10,8 @@
 		E196C53115E2AD3200059BF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C53015E2AD3200059BF2 /* main.cpp */; };
 		E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
+		E196C54515E2BF7000059BF2 /* NIDAQDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */; };
+		E196C54915E2C13200059BF2 /* NIDAQError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54715E2C13200059BF2 /* NIDAQError.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,6 +31,10 @@
 		E196C53015E2AD3200059BF2 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E196C53915E2B19200059BF2 /* nidaqmxbase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbase.framework; path = /Library/Frameworks/nidaqmxbase.framework; sourceTree = "<absolute>"; };
 		E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbaselv.framework; path = /Library/Frameworks/nidaqmxbaselv.framework; sourceTree = "<absolute>"; };
+		E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDevice.cpp; sourceTree = "<group>"; };
+		E196C54415E2BF7000059BF2 /* NIDAQDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDevice.h; sourceTree = "<group>"; };
+		E196C54715E2C13200059BF2 /* NIDAQError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQError.cpp; sourceTree = "<group>"; };
+		E196C54815E2C13200059BF2 /* NIDAQError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQError.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +70,10 @@
 		E196C52F15E2AD3200059BF2 /* nidaqtest */ = {
 			isa = PBXGroup;
 			children = (
+				E196C54815E2C13200059BF2 /* NIDAQError.h */,
+				E196C54715E2C13200059BF2 /* NIDAQError.cpp */,
+				E196C54415E2BF7000059BF2 /* NIDAQDevice.h */,
+				E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */,
 				E196C53015E2AD3200059BF2 /* main.cpp */,
 			);
 			path = nidaqtest;
@@ -130,6 +140,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E196C53115E2AD3200059BF2 /* main.cpp in Sources */,
+				E196C54515E2BF7000059BF2 /* NIDAQDevice.cpp in Sources */,
+				E196C54915E2C13200059BF2 /* NIDAQError.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,6 +172,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"/Applications/National Instruments/NI-DAQmx Base/includes\"",
+					"\"/Library/Application Support/MWorks/Developer/include\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx10.7;
@@ -184,6 +197,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"/Applications/National Instruments/NI-DAQmx Base/includes\"",
+					"\"/Library/Application Support/MWorks/Developer/include\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx10.7;
@@ -223,6 +237,7 @@
 				E196C53815E2AD3200059BF2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
