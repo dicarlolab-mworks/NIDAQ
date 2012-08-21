@@ -38,6 +38,7 @@
 		E196C54815E2C13200059BF2 /* NIDAQError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQError.h; sourceTree = "<group>"; };
 		E1B3C55F15E3DFFA000B0F8E /* NIDAQTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQTask.cpp; sourceTree = "<group>"; };
 		E1B3C56015E3DFFA000B0F8E /* NIDAQTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQTask.h; sourceTree = "<group>"; };
+		E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQmxBaseAPI.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +74,7 @@
 		E196C52F15E2AD3200059BF2 /* nidaqtest */ = {
 			isa = PBXGroup;
 			children = (
+				E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */,
 				E196C54815E2C13200059BF2 /* NIDAQError.h */,
 				E196C54715E2C13200059BF2 /* NIDAQError.cpp */,
 				E196C54415E2BF7000059BF2 /* NIDAQDevice.h */,

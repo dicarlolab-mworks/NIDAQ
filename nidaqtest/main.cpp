@@ -23,14 +23,14 @@ int main(int argc, const char * argv[])
         NIDAQDevice device("Dev1");
         
         std::cout << "Fetching serial number of device " << device.getName() << std::endl;
-        uInt32 serialNumber = device.getSerialNumber();
+        unsigned long serialNumber = device.getSerialNumber();
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
         
         std::cout << "Creating task" << std::endl;
         NIDAQTask task(device, "AOTask");
         
-        const uInt64 samplesPerChan = 512;
-        std::vector<float64> data(2*samplesPerChan, 0.0);
+        const unsigned long long samplesPerChan = 512;
+        std::vector<double> data(2*samplesPerChan, 0.0);
         for (int i = 0; i < samplesPerChan; i++) {
             data[i] = 9.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
             data[i+samplesPerChan] = 0.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
@@ -41,8 +41,8 @@ int main(int argc, const char * argv[])
         std::cout << "Creating second analog output channel" << std::endl;
         task.createAnalogOutputVoltageChannel("Dev1/ao1", -1.0, 1.0);
         
-        task.configureSampleClockTiming("", 10000.0, DAQmx_Val_Rising, DAQmx_Val_ContSamps, samplesPerChan);
-        int32 sampsPerChanWritten = task.writeAnalog(samplesPerChan, 10.0, DAQmx_Val_GroupByChannel, data);
+        task.configureSampleClockTiming("", 10000.0, true, true, samplesPerChan);
+        int sampsPerChanWritten = task.writeAnalog(samplesPerChan, 10.0, false, data);
         std::cout << "Wrote " << sampsPerChanWritten << " samples per channel to buffer" << std::endl;
         
         task.start();
@@ -62,3 +62,29 @@ int main(int argc, const char * argv[])
     
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

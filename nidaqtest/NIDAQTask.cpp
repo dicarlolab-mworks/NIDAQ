@@ -8,15 +8,16 @@
 
 #include "NIDAQTask.h"
 
+#include "NIDAQmxBaseAPI.h"
 #include "NIDAQDevice.h"
 #include "NIDAQError.h"
 
 
 NIDAQTask::~NIDAQTask() {
     if (running) {
-        NIDAQError::logOnFailure(  DAQmxBaseStopTask(handle)  );
+        NIDAQError::logOnFailure(  DAQmxBaseStopTask(TaskHandle(handle))  );
     }
-    NIDAQError::logOnFailure(  DAQmxBaseClearTask(handle)  );
+    NIDAQError::logOnFailure(  DAQmxBaseClearTask(TaskHandle(handle))  );
 }
 
 
@@ -24,53 +25,55 @@ NIDAQTask::NIDAQTask(const NIDAQDevice &device, const std::string &name) :
     deviceName(device.getName()),
     running(false)
 {
-    NIDAQError::throwOnFailure(  DAQmxBaseCreateTask(name.c_str(), &handle)  );
+    TaskHandle h;
+    NIDAQError::throwOnFailure(  DAQmxBaseCreateTask(name.c_str(), &h)  );
+    handle = h;
 }
 
 
-void NIDAQTask::createAnalogOutputVoltageChannel(const std::string &physicalChannel, float64 minVal, float64 maxVal) {
-    int32 error = DAQmxBaseCreateAOVoltageChan(handle,
-                                               physicalChannel.c_str(),
-                                               NULL,
-                                               minVal,
-                                               maxVal,
-                                               DAQmx_Val_Volts,
-                                               NULL);
+void NIDAQTask::createAnalogOutputVoltageChannel(const std::string &physicalChannel, double minVal, double maxVal) {
+    int error = DAQmxBaseCreateAOVoltageChan(TaskHandle(handle),
+                                             physicalChannel.c_str(),
+                                             NULL,
+                                             minVal,
+                                             maxVal,
+                                             DAQmx_Val_Volts,
+                                             NULL);
     NIDAQError::throwOnFailure(error);
 }
 
 
 void NIDAQTask::configureSampleClockTiming(const std::string &source,
-                                           float64 rate,
-                                           int32 activeEdge,
-                                           int32 sampleMode,
-                                           uInt64 sampsPerChanToAcquire)
+                                           double rate,
+                                           bool acquireOnRisingEdge,
+                                           bool continous,
+                                           unsigned long long sampsPerChanToAcquire)
 {
-    int32 error = DAQmxBaseCfgSampClkTiming(handle,
-                                            source.c_str(),
-                                            rate,
-                                            activeEdge,
-                                            sampleMode,
-                                            sampsPerChanToAcquire);
+    int error = DAQmxBaseCfgSampClkTiming(TaskHandle(handle),
+                                          source.c_str(),
+                                          rate,
+                                          (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
+                                          (continous ? DAQmx_Val_ContSamps : DAQmx_Val_FiniteSamps),
+                                          sampsPerChanToAcquire);
     NIDAQError::throwOnFailure(error);
 }
 
 
-int32 NIDAQTask::writeAnalog(int32 numSampsPerChan,
-                             float64 timeout,
-                             bool32 dataLayout,
-                             const std::vector<float64> &writeArray)
+int NIDAQTask::writeAnalog(int numSampsPerChan,
+                           double timeout,
+                           bool interleaved,
+                           const std::vector<double> &writeArray)
 {
     int32 sampsPerChanWritten;
     
-    int32 error = DAQmxBaseWriteAnalogF64(handle,
-                                          numSampsPerChan,
-                                          FALSE,
-                                          timeout,
-                                          dataLayout,
-                                          &(const_cast< std::vector<float64>& >(writeArray).front()),
-                                          &sampsPerChanWritten,
-                                          NULL);
+    int error = DAQmxBaseWriteAnalogF64(TaskHandle(handle),
+                                        numSampsPerChan,
+                                        FALSE,
+                                        timeout,
+                                        (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
+                                        &(const_cast< std::vector<double>& >(writeArray).front()),
+                                        &sampsPerChanWritten,
+                                        NULL);
     NIDAQError::throwOnFailure(error);
     
     return sampsPerChanWritten;
@@ -79,7 +82,7 @@ int32 NIDAQTask::writeAnalog(int32 numSampsPerChan,
 
 void NIDAQTask::start() {
     if (!running) {
-        NIDAQError::throwOnFailure(  DAQmxBaseStartTask(handle)  );
+        NIDAQError::throwOnFailure(  DAQmxBaseStartTask(TaskHandle(handle))  );
         running = true;
     }
 }
@@ -87,7 +90,7 @@ void NIDAQTask::start() {
 
 void NIDAQTask::stop() {
     if (running) {
-        NIDAQError::throwOnFailure(  DAQmxBaseStopTask(handle)  );
+        NIDAQError::throwOnFailure(  DAQmxBaseStopTask(TaskHandle(handle))  );
         running = false;
     }
 }

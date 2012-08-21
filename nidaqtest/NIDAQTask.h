@@ -14,8 +14,6 @@
 
 #include <boost/noncopyable.hpp>
 
-#include <NIDAQmxBase.h>
-
 
 class NIDAQDevice;  // Forward declaration
 
@@ -27,24 +25,24 @@ public:
     
     NIDAQTask(const NIDAQDevice &device, const std::string &name);
     
-    void createAnalogOutputVoltageChannel(const std::string &physicalChannel, float64 minVal, float64 maxVal);
+    void createAnalogOutputVoltageChannel(const std::string &physicalChannel, double minVal, double maxVal);
     
     void configureSampleClockTiming(const std::string &source,
-                                    float64 rate,
-                                    int32 activeEdge,
-                                    int32 sampleMode,
-                                    uInt64 sampsPerChanToAcquire);
+                                    double rate,
+                                    bool acquireOnRisingEdge,
+                                    bool continous,
+                                    unsigned long long sampsPerChanToAcquire);
     
-    int32 writeAnalog(int32 numSampsPerChan,
-                      float64 timeout,
-                      bool32 dataLayout,
-                      const std::vector<float64> &writeArray);
+    int writeAnalog(int numSampsPerChan,
+                    double timeout,
+                    bool interleaved,
+                    const std::vector<double> &writeArray);
     
     void start();
     void stop();
     
 private:
-    TaskHandle handle;
+    void *handle;
     const std::string deviceName;
     bool running;
     
@@ -52,3 +50,29 @@ private:
 
 
 #endif /* !defined(__nidaqtest__NIDAQTask__) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

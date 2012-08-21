@@ -13,8 +13,10 @@
 
 #include <boost/format.hpp>
 
+#include "NIDAQmxBaseAPI.h"
 
-NIDAQError::NIDAQError(int32 code, const std::string &message) :
+
+NIDAQError::NIDAQError(int code, const std::string &message) :
     std::runtime_error(formatErrorMessage(code, message)),
     code(code),
     message(message)
@@ -22,7 +24,7 @@ NIDAQError::NIDAQError(int32 code, const std::string &message) :
 
 
 std::string NIDAQError::getExtendedErrorInfo() {
-    uInt32 messageSize = DAQmxBaseGetExtendedErrorInfo(NULL, 0);
+    unsigned long messageSize = DAQmxBaseGetExtendedErrorInfo(NULL, 0);
     std::vector<char> messageData(messageSize, 0);
     char *messageBuffer = &(messageData.front());
     
@@ -36,11 +38,11 @@ std::string NIDAQError::getExtendedErrorInfo() {
 }
 
 
-std::string NIDAQError::formatErrorMessage(int32 code, const std::string &message) {
+std::string NIDAQError::formatErrorMessage(int code, const std::string &message) {
     return (boost::format("NIDAQmxBase error %d: %s") % code % message).str();
 }
 
 
-void NIDAQError::logErrorMessage(int32 code, const std::string &message) {
+void NIDAQError::logErrorMessage(int code, const std::string &message) {
     std::cerr << formatErrorMessage(code, message) << std::endl;
 }
