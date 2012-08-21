@@ -13,6 +13,6 @@
 
 uInt32 NIDAQDevice::getSerialNumber() const {
     uInt32 serialNumber;
-    NIDAQError::throwOnFailure(DAQmxBaseGetDevSerialNum(name.c_str(), &serialNumber));
+    NIDAQError::throwOnFailure(  DAQmxBaseGetDevSerialNum(name.c_str(), &serialNumber)  );
     return serialNumber;
 }

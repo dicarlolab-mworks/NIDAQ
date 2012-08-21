@@ -34,11 +34,7 @@ public:
         }
     }
     
-    NIDAQError(int32 code, const std::string &message) :
-        std::runtime_error(formatErrorMessage(code, message)),
-        code(code),
-        message(message)
-    { }
+    NIDAQError(int32 code, const std::string &message);
     
     int32 getCode() const {
         return code;

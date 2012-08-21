@@ -12,6 +12,7 @@
 		E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
 		E196C54515E2BF7000059BF2 /* NIDAQDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */; };
 		E196C54915E2C13200059BF2 /* NIDAQError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54715E2C13200059BF2 /* NIDAQError.cpp */; };
+		E1B3C56115E3DFFA000B0F8E /* NIDAQTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C55F15E3DFFA000B0F8E /* NIDAQTask.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +36,8 @@
 		E196C54415E2BF7000059BF2 /* NIDAQDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDevice.h; sourceTree = "<group>"; };
 		E196C54715E2C13200059BF2 /* NIDAQError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQError.cpp; sourceTree = "<group>"; };
 		E196C54815E2C13200059BF2 /* NIDAQError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQError.h; sourceTree = "<group>"; };
+		E1B3C55F15E3DFFA000B0F8E /* NIDAQTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQTask.cpp; sourceTree = "<group>"; };
+		E1B3C56015E3DFFA000B0F8E /* NIDAQTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQTask.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +77,8 @@
 				E196C54715E2C13200059BF2 /* NIDAQError.cpp */,
 				E196C54415E2BF7000059BF2 /* NIDAQDevice.h */,
 				E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */,
+				E1B3C56015E3DFFA000B0F8E /* NIDAQTask.h */,
+				E1B3C55F15E3DFFA000B0F8E /* NIDAQTask.cpp */,
 				E196C53015E2AD3200059BF2 /* main.cpp */,
 			);
 			path = nidaqtest;
@@ -142,6 +147,7 @@
 				E196C53115E2AD3200059BF2 /* main.cpp in Sources */,
 				E196C54515E2BF7000059BF2 /* NIDAQDevice.cpp in Sources */,
 				E196C54915E2C13200059BF2 /* NIDAQError.cpp in Sources */,
+				E1B3C56115E3DFFA000B0F8E /* NIDAQTask.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

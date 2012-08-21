@@ -14,6 +14,13 @@
 #include <boost/format.hpp>
 
 
+NIDAQError::NIDAQError(int32 code, const std::string &message) :
+    std::runtime_error(formatErrorMessage(code, message)),
+    code(code),
+    message(message)
+{ }
+
+
 std::string NIDAQError::getExtendedErrorInfo() {
     uInt32 messageSize = DAQmxBaseGetExtendedErrorInfo(NULL, 0);
     std::vector<char> messageData(messageSize, 0);
