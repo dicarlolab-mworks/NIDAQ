@@ -25,7 +25,7 @@ public:
         return name;
     }
     
-    unsigned long getSerialNumber() const;
+    unsigned int getSerialNumber() const;
     
 private:
     const std::string name;

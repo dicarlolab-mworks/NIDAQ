@@ -14,18 +14,15 @@
 
 #include <boost/noncopyable.hpp>
 
-
-class NIDAQDevice;  // Forward declaration
+#include "NIDAQDevice.h"
 
 
 class NIDAQTask : boost::noncopyable {
     
 public:
-    virtual ~NIDAQTask();
+    ~NIDAQTask();
     
     NIDAQTask(const NIDAQDevice &device, const std::string &name);
-    
-    void createAnalogOutputVoltageChannel(const std::string &physicalChannel, double minVal, double maxVal);
     
     void configureSampleClockTiming(const std::string &source,
                                     double rate,
@@ -33,13 +30,13 @@ public:
                                     bool continous,
                                     unsigned long long sampsPerChanToAcquire);
     
-    int writeAnalog(int numSampsPerChan,
-                    double timeout,
-                    bool interleaved,
-                    const std::vector<double> &writeArray);
-    
     void start();
     void stop();
+    
+protected:
+    void* getHandle() const {
+        return handle;
+    }
     
 private:
     void *handle;

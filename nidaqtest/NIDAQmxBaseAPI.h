@@ -38,6 +38,9 @@ namespace nidaqmxbase_type_assertions {
     // Use int instead of long
     ASSERT_SAME_SIZE(long, int);
     
+    // Use unsigned int instead of unsigned long
+    ASSERT_SAME_SIZE(unsigned long, unsigned int);
+    
     // Use void* instead of TaskHandle
     BOOST_STATIC_ASSERT(boost::is_pointer<TaskHandle>::value);
     ASSERT_SAME_SIZE(TaskHandle, void*);

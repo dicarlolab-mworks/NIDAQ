@@ -13,7 +13,7 @@
 
 #include "NIDAQError.h"
 #include "NIDAQDevice.h"
-#include "NIDAQTask.h"
+#include "NIDAQAnalogOutputTask.h"
 
 
 int main(int argc, const char * argv[])
@@ -23,11 +23,11 @@ int main(int argc, const char * argv[])
         NIDAQDevice device("Dev1");
         
         std::cout << "Fetching serial number of device " << device.getName() << std::endl;
-        unsigned long serialNumber = device.getSerialNumber();
+        unsigned int serialNumber = device.getSerialNumber();
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
         
         std::cout << "Creating task" << std::endl;
-        NIDAQTask task(device, "AOTask");
+        NIDAQAnalogOutputTask task(device, "AOTask");
         
         const unsigned long long samplesPerChan = 512;
         std::vector<double> data(2*samplesPerChan, 0.0);
@@ -37,12 +37,12 @@ int main(int argc, const char * argv[])
         }
         
         std::cout << "Creating analog output channel" << std::endl;
-        task.createAnalogOutputVoltageChannel("Dev1/ao0", -10.0, 10.0);
+        task.createVoltageChannel("Dev1/ao0", -10.0, 10.0);
         std::cout << "Creating second analog output channel" << std::endl;
-        task.createAnalogOutputVoltageChannel("Dev1/ao1", -1.0, 1.0);
+        task.createVoltageChannel("Dev1/ao1", -1.0, 1.0);
         
         task.configureSampleClockTiming("", 10000.0, true, true, samplesPerChan);
-        int sampsPerChanWritten = task.writeAnalog(samplesPerChan, 10.0, false, data);
+        int sampsPerChanWritten = task.write(samplesPerChan, 10.0, false, data);
         std::cout << "Wrote " << sampsPerChanWritten << " samples per channel to buffer" << std::endl;
         
         task.start();

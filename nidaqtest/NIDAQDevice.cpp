@@ -12,8 +12,8 @@
 #include "NIDAQError.h"
 
 
-unsigned long NIDAQDevice::getSerialNumber() const {
-    unsigned long serialNumber;
+unsigned int NIDAQDevice::getSerialNumber() const {
+    uInt32 serialNumber;
     NIDAQError::throwOnFailure(  DAQmxBaseGetDevSerialNum(name.c_str(), &serialNumber)  );
     return serialNumber;
 }

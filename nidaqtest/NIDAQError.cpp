@@ -24,7 +24,7 @@ NIDAQError::NIDAQError(int code, const std::string &message) :
 
 
 std::string NIDAQError::getExtendedErrorInfo() {
-    unsigned long messageSize = DAQmxBaseGetExtendedErrorInfo(NULL, 0);
+    unsigned int messageSize = DAQmxBaseGetExtendedErrorInfo(NULL, 0);
     std::vector<char> messageData(messageSize, 0);
     char *messageBuffer = &(messageData.front());
     
