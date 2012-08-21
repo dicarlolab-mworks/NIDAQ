@@ -20,11 +20,60 @@ NIDAQTask::~NIDAQTask() {
 }
 
 
-NIDAQTask::NIDAQTask(const std::string &name, const NIDAQDevice &device) :
+NIDAQTask::NIDAQTask(const NIDAQDevice &device, const std::string &name) :
     deviceName(device.getName()),
     running(false)
 {
     NIDAQError::throwOnFailure(  DAQmxBaseCreateTask(name.c_str(), &handle)  );
+}
+
+
+void NIDAQTask::createAnalogOutputVoltageChannel(const std::string &physicalChannel, float64 minVal, float64 maxVal) {
+    int32 error = DAQmxBaseCreateAOVoltageChan(handle,
+                                               physicalChannel.c_str(),
+                                               NULL,
+                                               minVal,
+                                               maxVal,
+                                               DAQmx_Val_Volts,
+                                               NULL);
+    NIDAQError::throwOnFailure(error);
+}
+
+
+void NIDAQTask::configureSampleClockTiming(const std::string &source,
+                                           float64 rate,
+                                           int32 activeEdge,
+                                           int32 sampleMode,
+                                           uInt64 sampsPerChanToAcquire)
+{
+    int32 error = DAQmxBaseCfgSampClkTiming(handle,
+                                            source.c_str(),
+                                            rate,
+                                            activeEdge,
+                                            sampleMode,
+                                            sampsPerChanToAcquire);
+    NIDAQError::throwOnFailure(error);
+}
+
+
+int32 NIDAQTask::writeAnalog(int32 numSampsPerChan,
+                             float64 timeout,
+                             bool32 dataLayout,
+                             const std::vector<float64> &writeArray)
+{
+    int32 sampsPerChanWritten;
+    
+    int32 error = DAQmxBaseWriteAnalogF64(handle,
+                                          numSampsPerChan,
+                                          FALSE,
+                                          timeout,
+                                          dataLayout,
+                                          &(const_cast< std::vector<float64>& >(writeArray).front()),
+                                          &sampsPerChanWritten,
+                                          NULL);
+    NIDAQError::throwOnFailure(error);
+    
+    return sampsPerChanWritten;
 }
 
 
@@ -42,3 +91,29 @@ void NIDAQTask::stop() {
         running = false;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
