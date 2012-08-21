@@ -18,27 +18,72 @@
 class NIDAQError : public std::runtime_error {
     
 public:
-    static std::string getErrorMessage(int32 errorCode);
+    static bool failed(int32 errorCode) {
+        return DAQmxFailed(errorCode);
+    }
     
     static void throwOnFailure(int32 errorCode) {
-        if (DAQmxFailed(errorCode)) {
-            throw NIDAQError(errorCode);
+        if (failed(errorCode)) {
+            throw NIDAQError(errorCode, getExtendedErrorInfo());
         }
     }
     
-    NIDAQError(int32 errorCode) :
-        std::runtime_error(getErrorMessage(errorCode)),
-        errorCode(errorCode)
+    static void logOnFailure(int32 errorCode) {
+        if (failed(errorCode)) {
+            logErrorMessage(errorCode, getExtendedErrorInfo());
+        }
+    }
+    
+    NIDAQError(int32 code, const std::string &message) :
+        std::runtime_error(formatErrorMessage(code, message)),
+        code(code),
+        message(message)
     { }
     
-    int32 getErrorCode() const {
-        return errorCode;
+    int32 getCode() const {
+        return code;
+    }
+    
+    const std::string& getMessage() const {
+        return message;
     }
     
 private:
-    const int32 errorCode;
+    static std::string getExtendedErrorInfo();
+    static std::string formatErrorMessage(int32 code, const std::string &message);
+    static void logErrorMessage(int32 code, const std::string &message);
+    
+    const int32 code;
+    const std::string message;
     
 };
 
 
 #endif /* !defined(__nidaqtest__NIDAQError__) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -22,8 +22,10 @@ int main(int argc, const char * argv[])
         uInt32 serialNumber = device.getSerialNumber();
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber;
     } catch (NIDAQError &e) {
-        std::cout << "Error code = " << e.getErrorCode() << std::endl;
-        std::cout << "Error message: " << e.what();
+        std::cout << "Caught NIDAQError" << std::endl;
+        std::cout << "  what:    " << e.what() << std::endl;
+        std::cout << "  code:    " << e.getCode() << std::endl;
+        std::cout << "  message: " << e.getMessage();
     }
     
     std::cout << std::endl;
