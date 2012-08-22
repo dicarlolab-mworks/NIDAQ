@@ -27,7 +27,7 @@ int main(int argc, const char * argv[])
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
         
         std::cout << "Creating task" << std::endl;
-        NIDAQAnalogOutputTask task(device, "AOTask");
+        NIDAQAnalogOutputTask task(device);
         
         const uint64_t samplesPerChan = 512;
         std::vector<double> data(2*samplesPerChan, 0.0);
@@ -37,12 +37,12 @@ int main(int argc, const char * argv[])
         }
         
         std::cout << "Creating analog output channel" << std::endl;
-        task.createVoltageChannel("Dev1/ao0", -10.0, 10.0);
+        task.addVoltageChannel(0, -10.0, 10.0);
         std::cout << "Creating second analog output channel" << std::endl;
-        task.createVoltageChannel("Dev1/ao1", -1.0, 1.0);
+        task.addVoltageChannel(1, -1.0, 1.0);
         
-        task.configureSampleClockTiming("", 10000.0, true, true, samplesPerChan);
-        int32_t sampsPerChanWritten = task.write(samplesPerChan, 10.0, false, data);
+        task.setSampleClockTiming(10000.0);
+        int32_t sampsPerChanWritten = task.write(10.0, data);
         std::cout << "Wrote " << sampsPerChanWritten << " samples per channel to buffer" << std::endl;
         
         task.start();
@@ -57,6 +57,11 @@ int main(int argc, const char * argv[])
         std::cout << "  what:    " << e.what() << std::endl;
         std::cout << "  code:    " << e.getCode() << std::endl;
         std::cout << "  message: " << e.getMessage() << std::endl;
+        
+    } catch (std::exception &e) {
+        
+        std::cout << "Caught std::exception" << std::endl;
+        std::cout << "  what: " << e.what() << std::endl;
         
     }
     

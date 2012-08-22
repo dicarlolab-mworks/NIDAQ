@@ -15,13 +15,11 @@
 class NIDAQAnalogOutputTask : public NIDAQTask {
     
 public:
-    NIDAQAnalogOutputTask(const NIDAQDevice &device, const std::string &name) :
-        NIDAQTask(device, name)
-    { }
+    NIDAQAnalogOutputTask(const NIDAQDevice &device);
     
-    void createVoltageChannel(const std::string &physicalChannel, double minVal, double maxVal);
+    void addVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
     
-    int32_t write(int32_t numSampsPerChan, double timeout, bool interleaved, const std::vector<double> &writeArray);
+    int32_t write(double timeout, const std::vector<double> &samples, bool interleaved = false);
     
 };
 

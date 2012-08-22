@@ -12,6 +12,16 @@
 #include "NIDAQError.h"
 
 
+NIDAQTask::NIDAQTask(const NIDAQDevice &device, const std::string &name) :
+    deviceName(device.getName()),
+    numChannels(0),
+    running(false)
+{
+    std::string taskName = deviceName + "/" + name;
+    NIDAQError::throwOnFailure(  DAQmxBaseCreateTask(taskName.c_str(), &handle)  );
+}
+
+
 NIDAQTask::~NIDAQTask() {
     if (running) {
         NIDAQError::logOnFailure(  DAQmxBaseStopTask(getHandle())  );
@@ -20,26 +30,18 @@ NIDAQTask::~NIDAQTask() {
 }
 
 
-NIDAQTask::NIDAQTask(const NIDAQDevice &device, const std::string &name) :
-    deviceName(device.getName()),
-    running(false)
+void NIDAQTask::setSampleClockTiming(double samplingRate,
+                                     const std::string &clockSourceTerminal,
+                                     uint64_t samplesPerChannelToAcquire,
+                                     bool acquireOnRisingEdge)
 {
-    NIDAQError::throwOnFailure(  DAQmxBaseCreateTask(name.c_str(), &handle)  );
-}
-
-
-void NIDAQTask::configureSampleClockTiming(const std::string &source,
-                                           double rate,
-                                           bool acquireOnRisingEdge,
-                                           bool continous,
-                                           uint64_t sampsPerChanToAcquire)
-{
+    bool continous = (samplesPerChannelToAcquire == 0);
     int32_t error = DAQmxBaseCfgSampClkTiming(getHandle(),
-                                              source.c_str(),
-                                              rate,
+                                              clockSourceTerminal.c_str(),
+                                              samplingRate,
                                               (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
                                               (continous ? DAQmx_Val_ContSamps : DAQmx_Val_FiniteSamps),
-                                              sampsPerChanToAcquire);
+                                              samplesPerChannelToAcquire);
     NIDAQError::throwOnFailure(error);
 }
 
