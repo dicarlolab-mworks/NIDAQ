@@ -16,6 +16,35 @@
 #include "NIDAQAnalogOutputTask.h"
 
 
+static void generateSineWaves(const NIDAQDevice &device) {
+    std::cout << "Creating analog output task" << std::endl;
+    NIDAQAnalogOutputTask task(device);
+    
+    std::cout << "Creating first analog output channel" << std::endl;
+    task.addVoltageChannel(0, -10.0, 10.0);
+    std::cout << "Creating second analog output channel" << std::endl;
+    task.addVoltageChannel(1, -1.0, 1.0);
+    
+    std::cout << "Configuring sample clock timing" << std::endl;
+    task.setSampleClockTiming(10000.0);
+    
+    const uint64_t samplesPerChan = 512;
+    std::vector<double> data(2*samplesPerChan, 0.0);
+    for (int i = 0; i < samplesPerChan; i++) {
+        data[i] = 9.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
+        data[i+samplesPerChan] = 0.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
+    }
+    
+    std::cout << "Writing samples" << std::endl;
+    int32_t sampsPerChanWritten = task.write(10.0, data);
+    std::cout << "Wrote " << sampsPerChanWritten << " samples per channel to buffer" << std::endl;
+    
+    task.start();
+    usleep(10000000);
+    task.stop();
+}
+
+
 int main(int argc, const char * argv[])
 {
     try {
@@ -26,28 +55,7 @@ int main(int argc, const char * argv[])
         uint32_t serialNumber = device.getSerialNumber();
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
         
-        std::cout << "Creating task" << std::endl;
-        NIDAQAnalogOutputTask task(device);
-        
-        const uint64_t samplesPerChan = 512;
-        std::vector<double> data(2*samplesPerChan, 0.0);
-        for (int i = 0; i < samplesPerChan; i++) {
-            data[i] = 9.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
-            data[i+samplesPerChan] = 0.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
-        }
-        
-        std::cout << "Creating analog output channel" << std::endl;
-        task.addVoltageChannel(0, -10.0, 10.0);
-        std::cout << "Creating second analog output channel" << std::endl;
-        task.addVoltageChannel(1, -1.0, 1.0);
-        
-        task.setSampleClockTiming(10000.0);
-        int32_t sampsPerChanWritten = task.write(10.0, data);
-        std::cout << "Wrote " << sampsPerChanWritten << " samples per channel to buffer" << std::endl;
-        
-        task.start();
-        usleep(10000000);
-        task.stop();
+        generateSineWaves(device);
         
         std::cout << "Done!" << std::endl;
         
