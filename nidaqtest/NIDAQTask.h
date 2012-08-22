@@ -28,8 +28,14 @@ public:
                               uint64_t samplesPerChannelToAcquire = 0,
                               bool acquireOnRisingEdge = true);
     
+    void setAllowRegeneration(bool allowRegen);
+    
     void start();
     void stop();
+    
+    bool isRunning() const {
+        return running;
+    }
     
 protected:
     typedef unsigned long * TaskHandle;

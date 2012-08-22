@@ -45,6 +45,12 @@ void NIDAQTask::setSampleClockTiming(double samplingRate,
 }
 
 
+void NIDAQTask::setAllowRegeneration(bool allowRegen) {
+    int32_t value = (allowRegen ? DAQmx_Val_AllowRegen : DAQmx_Val_DoNotAllowRegen);
+    NIDAQError::throwIfFailed(  DAQmxBaseSetWriteAttribute(getHandle(), DAQmx_Write_RegenMode, value)  );
+}
+
+
 void NIDAQTask::start() {
     if (!running) {
         NIDAQError::throwIfFailed(  DAQmxBaseStartTask(getHandle())  );

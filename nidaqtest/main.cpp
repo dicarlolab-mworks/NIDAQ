@@ -72,6 +72,54 @@ static void acquireNScans(const NIDAQDevice &device) {
 }
 
 
+static void analogRepeater(const NIDAQDevice &device) {
+    const double sampleRate = 10000.0;
+    const double minVal = -10.0;
+    const double maxVal = 10.0;
+    const double runTime = 10.0;
+    const double timeout = 10.0;
+    
+    std::vector<double> samples(1000, 0.0);
+    
+    // Analog input task
+    std::cout << "Creating analog input task" << std::endl;
+    NIDAQAnalogInputTask aiTask(device);
+    aiTask.addVoltageChannel(0, minVal, maxVal);
+    aiTask.setSampleClockTiming(10000.0);
+    
+    // Analog output task
+    std::cout << "Creating analog output task" << std::endl;
+    NIDAQAnalogOutputTask aoTask(device);
+    aoTask.addVoltageChannel(0, minVal, maxVal);
+    aoTask.setSampleClockTiming(10000.0);
+    aoTask.setAllowRegeneration(false);
+    
+    aiTask.start();
+    
+    const size_t numIterations = size_t(sampleRate * runTime) / samples.size();
+    for (size_t i = 0; i < numIterations; i++) {
+        // Read input
+        int32_t sampsPerChanRead = aiTask.read(timeout, samples);
+        if (sampsPerChanRead != samples.size()) {
+            std::cout << "Read only " << sampsPerChanRead << " of " << samples.size() << " samples per channel!" << std::endl;
+        }
+        
+        // Write output
+        int32_t sampsPerChanWritten = aoTask.write(timeout, samples);
+        if (sampsPerChanWritten != samples.size()) {
+            std::cout << "Wrote only " << sampsPerChanWritten << " of " << samples.size() << " samples per channel!" << std::endl;
+        }
+        
+        if (!aoTask.isRunning()) {
+            aoTask.start();
+        }
+    }
+    
+    aiTask.stop();
+    aoTask.stop();
+}
+
+
 int main(int argc, const char * argv[])
 {
     try {
@@ -83,7 +131,8 @@ int main(int argc, const char * argv[])
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
         
         //generateSineWaves(device);
-        acquireNScans(device);
+        //acquireNScans(device);
+        analogRepeater(device);
         
         std::cout << "Done!" << std::endl;
         
