@@ -22,13 +22,13 @@ public:
         return (errorCode != 0);
     }
     
-    static void throwOnFailure(int32_t errorCode) {
+    static void throwIfFailed(int32_t errorCode) {
         if (failed(errorCode)) {
             throw NIDAQError(errorCode, getExtendedErrorInfo());
         }
     }
     
-    static void logOnFailure(int32_t errorCode) {
+    static void logIfFailed(int32_t errorCode) {
         if (failed(errorCode)) {
             logErrorMessage(errorCode, getExtendedErrorInfo());
         }

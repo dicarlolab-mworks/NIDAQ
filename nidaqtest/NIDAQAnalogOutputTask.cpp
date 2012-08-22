@@ -32,9 +32,9 @@ void NIDAQAnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
                                                  maxVal,
                                                  DAQmx_Val_Volts,
                                                  NULL);
-    NIDAQError::throwOnFailure(error);
+    NIDAQError::throwIfFailed(error);
     
-    addChannel();
+    addChannel(physicalChannel);
 }
 
 
@@ -53,7 +53,7 @@ int32_t NIDAQAnalogOutputTask::write(double timeout,
                                             &(const_cast< std::vector<double>& >(samples).front()),
                                             &sampsPerChanWritten,
                                             NULL);
-    NIDAQError::throwOnFailure(error);
+    NIDAQError::throwIfFailed(error);
     
     return sampsPerChanWritten;
 }

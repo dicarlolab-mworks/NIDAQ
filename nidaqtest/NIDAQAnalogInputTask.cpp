@@ -53,9 +53,9 @@ void NIDAQAnalogInputTask::addVoltageChannel(unsigned int channelNumber,
                                                  maxVal,
                                                  DAQmx_Val_Volts,
                                                  NULL);
-    NIDAQError::throwOnFailure(error);
+    NIDAQError::throwIfFailed(error);
     
-    addChannel();
+    addChannel(physicalChannel);
 }
 
 
@@ -74,7 +74,7 @@ int32_t NIDAQAnalogInputTask::read(double timeout,
                                            samples.size(),
                                            &sampsPerChanRead,
                                            NULL);
-    NIDAQError::throwOnFailure(error);
+    NIDAQError::throwIfFailed(error);
     
     return sampsPerChanRead;
 }

@@ -14,19 +14,18 @@
 
 NIDAQTask::NIDAQTask(const NIDAQDevice &device, const std::string &name) :
     deviceName(device.getName()),
-    numChannels(0),
     running(false)
 {
     std::string taskName = deviceName + "/" + name;
-    NIDAQError::throwOnFailure(  DAQmxBaseCreateTask(taskName.c_str(), &handle)  );
+    NIDAQError::throwIfFailed(  DAQmxBaseCreateTask(taskName.c_str(), &handle)  );
 }
 
 
 NIDAQTask::~NIDAQTask() {
     if (running) {
-        NIDAQError::logOnFailure(  DAQmxBaseStopTask(getHandle())  );
+        NIDAQError::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
     }
-    NIDAQError::logOnFailure(  DAQmxBaseClearTask(getHandle())  );
+    NIDAQError::logIfFailed(  DAQmxBaseClearTask(getHandle())  );
 }
 
 
@@ -42,13 +41,13 @@ void NIDAQTask::setSampleClockTiming(double samplingRate,
                                               (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
                                               (continous ? DAQmx_Val_ContSamps : DAQmx_Val_FiniteSamps),
                                               samplesPerChannelToAcquire);
-    NIDAQError::throwOnFailure(error);
+    NIDAQError::throwIfFailed(error);
 }
 
 
 void NIDAQTask::start() {
     if (!running) {
-        NIDAQError::throwOnFailure(  DAQmxBaseStartTask(getHandle())  );
+        NIDAQError::throwIfFailed(  DAQmxBaseStartTask(getHandle())  );
         running = true;
     }
 }
@@ -56,7 +55,7 @@ void NIDAQTask::start() {
 
 void NIDAQTask::stop() {
     if (running) {
-        NIDAQError::throwOnFailure(  DAQmxBaseStopTask(getHandle())  );
+        NIDAQError::throwIfFailed(  DAQmxBaseStopTask(getHandle())  );
         running = false;
     }
 }

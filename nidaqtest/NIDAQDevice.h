@@ -11,12 +11,10 @@
 
 #include <string>
 
-#include <boost/noncopyable.hpp>
-
 #include "NIDAQTypes.h"
 
 
-class NIDAQDevice : boost::noncopyable {
+class NIDAQDevice {
     
 public:
     NIDAQDevice(const std::string &name) :
