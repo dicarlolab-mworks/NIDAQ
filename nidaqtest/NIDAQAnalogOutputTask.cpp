@@ -43,7 +43,7 @@ int32_t NIDAQAnalogOutputTask::write(double timeout,
                                      bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(samples);
-    int32 sampsPerChanWritten;
+    nidaqmxbase::int32_t sampsPerChanWritten;
     
     int32_t error = DAQmxBaseWriteAnalogF64(getHandle(),
                                             numSampsPerChan,

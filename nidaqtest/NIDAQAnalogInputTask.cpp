@@ -64,7 +64,7 @@ int32_t NIDAQAnalogInputTask::read(double timeout,
                                    bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(samples);
-    int32 sampsPerChanRead;
+    nidaqmxbase::int32_t sampsPerChanRead;
     
     int32_t error = DAQmxBaseReadAnalogF64(getHandle(),
                                            numSampsPerChan,

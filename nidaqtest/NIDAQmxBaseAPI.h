@@ -28,4 +28,10 @@ namespace nidaqmxbase_type_assertions {
 }
 
 
+namespace nidaqmxbase {
+    typedef int32 int32_t;
+    typedef uInt32 uint32_t;
+}
+
+
 #endif /* !defined(nidaqtest_NIDAQmxBaseAPI_h) */

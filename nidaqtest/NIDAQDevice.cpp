@@ -13,7 +13,7 @@
 
 
 uint32_t NIDAQDevice::getSerialNumber() const {
-    uInt32 serialNumber;
+    nidaqmxbase::uint32_t serialNumber;
     NIDAQError::throwOnFailure(  DAQmxBaseGetDevSerialNum(name.c_str(), &serialNumber)  );
     return serialNumber;
 }
