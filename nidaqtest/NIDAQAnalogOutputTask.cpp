@@ -42,12 +42,7 @@ int32_t NIDAQAnalogOutputTask::write(double timeout,
                                      const std::vector<double> &samples,
                                      bool interleaved)
 {
-    if ((getNumChannels() == 0) || (samples.size() % getNumChannels() != 0))
-    {
-        throw std::invalid_argument("Invalid number of samples");
-    }
-    
-    int32_t numSampsPerChan = samples.size() / getNumChannels();
+    int32_t numSampsPerChan = getNumSamplesPerChannel(samples);
     int32 sampsPerChanWritten;
     
     int32_t error = DAQmxBaseWriteAnalogF64(getHandle(),

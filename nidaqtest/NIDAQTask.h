@@ -9,6 +9,7 @@
 #ifndef __nidaqtest__NIDAQTask__
 #define __nidaqtest__NIDAQTask__
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -49,6 +50,15 @@ protected:
     
     void addChannel() {
         numChannels++;
+    }
+    
+    template <typename T>
+    int32_t getNumSamplesPerChannel(const std::vector<T> &samples) const {
+        if ((getNumChannels() == 0) || (samples.size() % getNumChannels() != 0))
+        {
+            throw std::invalid_argument("Invalid number of samples");
+        }
+        return samples.size() / getNumChannels();
     }
     
 private:
