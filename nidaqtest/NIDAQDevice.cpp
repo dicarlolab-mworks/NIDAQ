@@ -12,7 +12,7 @@
 #include "NIDAQError.h"
 
 
-unsigned int NIDAQDevice::getSerialNumber() const {
+uint32_t NIDAQDevice::getSerialNumber() const {
     uInt32 serialNumber;
     NIDAQError::throwOnFailure(  DAQmxBaseGetDevSerialNum(name.c_str(), &serialNumber)  );
     return serialNumber;

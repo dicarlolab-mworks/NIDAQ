@@ -29,6 +29,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E183169015E51F940028F623 /* NIDAQTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQTypes.h; sourceTree = "<group>"; };
 		E196C52C15E2AD3200059BF2 /* nidaqtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nidaqtest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E196C53015E2AD3200059BF2 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E196C53915E2B19200059BF2 /* nidaqmxbase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbase.framework; path = /Library/Frameworks/nidaqmxbase.framework; sourceTree = "<absolute>"; };
@@ -77,6 +78,7 @@
 		E196C52F15E2AD3200059BF2 /* nidaqtest */ = {
 			isa = PBXGroup;
 			children = (
+				E183169015E51F940028F623 /* NIDAQTypes.h */,
 				E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */,
 				E196C54815E2C13200059BF2 /* NIDAQError.h */,
 				E196C54715E2C13200059BF2 /* NIDAQError.cpp */,

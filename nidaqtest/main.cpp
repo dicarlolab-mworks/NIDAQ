@@ -23,13 +23,13 @@ int main(int argc, const char * argv[])
         NIDAQDevice device("Dev1");
         
         std::cout << "Fetching serial number of device " << device.getName() << std::endl;
-        unsigned int serialNumber = device.getSerialNumber();
+        uint32_t serialNumber = device.getSerialNumber();
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
         
         std::cout << "Creating task" << std::endl;
         NIDAQAnalogOutputTask task(device, "AOTask");
         
-        const unsigned long long samplesPerChan = 512;
+        const uint64_t samplesPerChan = 512;
         std::vector<double> data(2*samplesPerChan, 0.0);
         for (int i = 0; i < samplesPerChan; i++) {
             data[i] = 9.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
@@ -42,7 +42,7 @@ int main(int argc, const char * argv[])
         task.createVoltageChannel("Dev1/ao1", -1.0, 1.0);
         
         task.configureSampleClockTiming("", 10000.0, true, true, samplesPerChan);
-        int sampsPerChanWritten = task.write(samplesPerChan, 10.0, false, data);
+        int32_t sampsPerChanWritten = task.write(samplesPerChan, 10.0, false, data);
         std::cout << "Wrote " << sampsPerChanWritten << " samples per channel to buffer" << std::endl;
         
         task.start();

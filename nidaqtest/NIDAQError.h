@@ -12,29 +12,31 @@
 #include <stdexcept>
 #include <string>
 
+#include "NIDAQTypes.h"
+
 
 class NIDAQError : public std::runtime_error {
     
 public:
-    static bool failed(int errorCode) {
+    static bool failed(int32_t errorCode) {
         return (errorCode != 0);
     }
     
-    static void throwOnFailure(int errorCode) {
+    static void throwOnFailure(int32_t errorCode) {
         if (failed(errorCode)) {
             throw NIDAQError(errorCode, getExtendedErrorInfo());
         }
     }
     
-    static void logOnFailure(int errorCode) {
+    static void logOnFailure(int32_t errorCode) {
         if (failed(errorCode)) {
             logErrorMessage(errorCode, getExtendedErrorInfo());
         }
     }
     
-    NIDAQError(int code, const std::string &message);
+    NIDAQError(int32_t code, const std::string &message);
     
-    int getCode() const {
+    int32_t getCode() const {
         return code;
     }
     
@@ -44,10 +46,10 @@ public:
     
 private:
     static std::string getExtendedErrorInfo();
-    static std::string formatErrorMessage(int code, const std::string &message);
-    static void logErrorMessage(int code, const std::string &message);
+    static std::string formatErrorMessage(int32_t code, const std::string &message);
+    static void logErrorMessage(int32_t code, const std::string &message);
     
-    const int code;
+    const int32_t code;
     const std::string message;
     
 };

@@ -28,18 +28,20 @@ public:
                                     double rate,
                                     bool acquireOnRisingEdge,
                                     bool continous,
-                                    unsigned long long sampsPerChanToAcquire);
+                                    uint64_t sampsPerChanToAcquire);
     
     void start();
     void stop();
     
 protected:
-    void* getHandle() const {
+    typedef unsigned long * TaskHandle;
+    
+    TaskHandle getHandle() const {
         return handle;
     }
     
 private:
-    void *handle;
+    TaskHandle handle;
     const std::string deviceName;
     bool running;
     

@@ -14,9 +14,9 @@
 
 NIDAQTask::~NIDAQTask() {
     if (running) {
-        NIDAQError::logOnFailure(  DAQmxBaseStopTask(TaskHandle(getHandle()))  );
+        NIDAQError::logOnFailure(  DAQmxBaseStopTask(getHandle())  );
     }
-    NIDAQError::logOnFailure(  DAQmxBaseClearTask(TaskHandle(getHandle()))  );
+    NIDAQError::logOnFailure(  DAQmxBaseClearTask(getHandle())  );
 }
 
 
@@ -24,9 +24,7 @@ NIDAQTask::NIDAQTask(const NIDAQDevice &device, const std::string &name) :
     deviceName(device.getName()),
     running(false)
 {
-    TaskHandle h;
-    NIDAQError::throwOnFailure(  DAQmxBaseCreateTask(name.c_str(), &h)  );
-    handle = h;
+    NIDAQError::throwOnFailure(  DAQmxBaseCreateTask(name.c_str(), &handle)  );
 }
 
 
@@ -34,21 +32,21 @@ void NIDAQTask::configureSampleClockTiming(const std::string &source,
                                            double rate,
                                            bool acquireOnRisingEdge,
                                            bool continous,
-                                           unsigned long long sampsPerChanToAcquire)
+                                           uint64_t sampsPerChanToAcquire)
 {
-    int error = DAQmxBaseCfgSampClkTiming(TaskHandle(getHandle()),
-                                          source.c_str(),
-                                          rate,
-                                          (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
-                                          (continous ? DAQmx_Val_ContSamps : DAQmx_Val_FiniteSamps),
-                                          sampsPerChanToAcquire);
+    int32_t error = DAQmxBaseCfgSampClkTiming(getHandle(),
+                                              source.c_str(),
+                                              rate,
+                                              (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
+                                              (continous ? DAQmx_Val_ContSamps : DAQmx_Val_FiniteSamps),
+                                              sampsPerChanToAcquire);
     NIDAQError::throwOnFailure(error);
 }
 
 
 void NIDAQTask::start() {
     if (!running) {
-        NIDAQError::throwOnFailure(  DAQmxBaseStartTask(TaskHandle(getHandle()))  );
+        NIDAQError::throwOnFailure(  DAQmxBaseStartTask(getHandle())  );
         running = true;
     }
 }
@@ -56,7 +54,7 @@ void NIDAQTask::start() {
 
 void NIDAQTask::stop() {
     if (running) {
-        NIDAQError::throwOnFailure(  DAQmxBaseStopTask(TaskHandle(getHandle()))  );
+        NIDAQError::throwOnFailure(  DAQmxBaseStopTask(getHandle())  );
         running = false;
     }
 }

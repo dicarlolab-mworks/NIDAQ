@@ -16,32 +16,32 @@ void NIDAQAnalogOutputTask::createVoltageChannel(const std::string &physicalChan
                                                  double minVal,
                                                  double maxVal)
 {
-    int error = DAQmxBaseCreateAOVoltageChan(TaskHandle(getHandle()),
-                                             physicalChannel.c_str(),
-                                             NULL,
-                                             minVal,
-                                             maxVal,
-                                             DAQmx_Val_Volts,
-                                             NULL);
+    int32_t error = DAQmxBaseCreateAOVoltageChan(getHandle(),
+                                                 physicalChannel.c_str(),
+                                                 NULL,
+                                                 minVal,
+                                                 maxVal,
+                                                 DAQmx_Val_Volts,
+                                                 NULL);
     NIDAQError::throwOnFailure(error);
 }
 
 
-int NIDAQAnalogOutputTask::write(int numSampsPerChan,
-                                 double timeout,
-                                 bool interleaved,
-                                 const std::vector<double> &writeArray)
+int32_t NIDAQAnalogOutputTask::write(int32_t numSampsPerChan,
+                                     double timeout,
+                                     bool interleaved,
+                                     const std::vector<double> &writeArray)
 {
     int32 sampsPerChanWritten;
     
-    int error = DAQmxBaseWriteAnalogF64(TaskHandle(getHandle()),
-                                        numSampsPerChan,
-                                        FALSE,
-                                        timeout,
-                                        (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
-                                        &(const_cast< std::vector<double>& >(writeArray).front()),
-                                        &sampsPerChanWritten,
-                                        NULL);
+    int32_t error = DAQmxBaseWriteAnalogF64(getHandle(),
+                                            numSampsPerChan,
+                                            FALSE,
+                                            timeout,
+                                            (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
+                                            &(const_cast< std::vector<double>& >(writeArray).front()),
+                                            &sampsPerChanWritten,
+                                            NULL);
     NIDAQError::throwOnFailure(error);
     
     return sampsPerChanWritten;

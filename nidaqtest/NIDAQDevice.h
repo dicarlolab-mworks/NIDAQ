@@ -13,6 +13,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "NIDAQTypes.h"
+
 
 class NIDAQDevice : boost::noncopyable {
     
@@ -25,7 +27,7 @@ public:
         return name;
     }
     
-    unsigned int getSerialNumber() const;
+    uint32_t getSerialNumber() const;
     
 private:
     const std::string name;

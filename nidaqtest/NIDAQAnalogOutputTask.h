@@ -21,7 +21,7 @@ public:
     
     void createVoltageChannel(const std::string &physicalChannel, double minVal, double maxVal);
     
-    int write(int numSampsPerChan, double timeout, bool interleaved, const std::vector<double> &writeArray);
+    int32_t write(int32_t numSampsPerChan, double timeout, bool interleaved, const std::vector<double> &writeArray);
     
 };
 
