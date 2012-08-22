@@ -13,6 +13,7 @@
 
 #include "NIDAQError.h"
 #include "NIDAQDevice.h"
+#include "NIDAQAnalogInputTask.h"
 #include "NIDAQAnalogOutputTask.h"
 
 
@@ -37,11 +38,37 @@ static void generateSineWaves(const NIDAQDevice &device) {
     
     std::cout << "Writing samples" << std::endl;
     int32_t sampsPerChanWritten = task.write(10.0, data);
-    std::cout << "Wrote " << sampsPerChanWritten << " samples per channel to buffer" << std::endl;
+    std::cout << "Wrote " << sampsPerChanWritten << " of " << samplesPerChan << " samples per channel" << std::endl;
     
     task.start();
     usleep(10000000);
     task.stop();
+}
+
+
+static void acquireNScans(const NIDAQDevice &device) {
+    std::cout << "Creating analog input task" << std::endl;
+    NIDAQAnalogInputTask task(device);
+
+    std::cout << "Creating analog input channel" << std::endl;
+    task.addVoltageChannel(0, -10.0, 10.0);
+    
+    std::vector<double> data(1000, 0.0);
+    
+    std::cout << "Configuring sample clock timing" << std::endl;
+    task.setSampleClockTiming(1000.0, "OnboardClock", data.size());
+    
+    task.start();
+    
+    std::cout << "Reading samples" << std::endl;
+    int32_t sampsPerChanRead = task.read(10.0, data);
+    std::cout << "Read " << sampsPerChanRead << " of " << data.size() << " samples per channel" << std::endl;
+    
+    task.stop();
+    
+    for (int i = 0; i < 100; i++) {
+        std::cout << "data[" << i << "] = " << data[i] << std::endl;
+    }
 }
 
 
@@ -55,7 +82,8 @@ int main(int argc, const char * argv[])
         uint32_t serialNumber = device.getSerialNumber();
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
         
-        generateSineWaves(device);
+        //generateSineWaves(device);
+        acquireNScans(device);
         
         std::cout << "Done!" << std::endl;
         
