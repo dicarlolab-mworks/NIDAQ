@@ -34,6 +34,8 @@ public:
         }
     }
     
+    virtual ~NIDAQError() throw() { }
+    
     NIDAQError(int32_t code, const std::string &message);
     
     int32_t getCode() const {

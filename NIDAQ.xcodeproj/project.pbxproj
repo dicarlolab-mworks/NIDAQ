@@ -30,6 +30,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E105A21215E67FEB007F9F38 /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
+		E105A21315E67FEB007F9F38 /* WARNING.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WARNING.txt; sourceTree = "<group>"; };
 		E183169015E51F940028F623 /* NIDAQTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQTypes.h; sourceTree = "<group>"; };
 		E183169415E540770028F623 /* NIDAQAnalogInputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputTask.cpp; sourceTree = "<group>"; };
 		E183169515E540770028F623 /* NIDAQAnalogInputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputTask.h; sourceTree = "<group>"; };
@@ -61,6 +63,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E105A21115E67F73007F9F38 /* External Config */ = {
+			isa = PBXGroup;
+			children = (
+				E105A21215E67FEB007F9F38 /* Development.xcconfig */,
+				E105A21315E67FEB007F9F38 /* WARNING.txt */,
+			);
+			name = "External Config";
+			path = "/Library/Application Support/MWorks/Developer/Xcode";
+			sourceTree = "<absolute>";
+		};
 		E183169215E52F790028F623 /* NIDAQ-API */ = {
 			isa = PBXGroup;
 			children = (
@@ -91,6 +103,7 @@
 		E196C52115E2AD3200059BF2 = {
 			isa = PBXGroup;
 			children = (
+				E105A21115E67F73007F9F38 /* External Config */,
 				E183169215E52F790028F623 /* NIDAQ-API */,
 				E196C52F15E2AD3200059BF2 /* nidaqtest */,
 				E196C53B15E2B1FE00059BF2 /* Frameworks */,
@@ -188,32 +201,15 @@
 /* Begin XCBuildConfiguration section */
 		E196C53415E2AD3200059BF2 /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E105A21215E67FEB007F9F38 /* Development.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"/Applications/National Instruments/NI-DAQmx Base/includes\"",
-					"\"/Library/Application Support/MWorks/Developer/include\"",
+					"$(MW_INCLUDE_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				SDKROOT = macosx10.7;
 			};
 			name = Development;
 		};
