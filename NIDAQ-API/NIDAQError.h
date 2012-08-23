@@ -34,7 +34,7 @@ public:
         }
     }
     
-    virtual ~NIDAQError() throw() { }
+    ~NIDAQError() throw() /*override*/ { }
     
     NIDAQError(int32_t code, const std::string &message);
     

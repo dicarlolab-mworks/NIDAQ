@@ -13,7 +13,7 @@ using namespace mw;
 
 
 class NIDAQPlugin : public Plugin {
-    virtual void registerComponents(shared_ptr<ComponentRegistry> registry) {
+    void registerComponents(shared_ptr<ComponentRegistry> registry) MW_OVERRIDE {
         //registry->registerFactory<StandardComponentFactory, NIDAQIODevice>();
     }
 };
