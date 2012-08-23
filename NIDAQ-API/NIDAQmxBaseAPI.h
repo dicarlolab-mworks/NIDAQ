@@ -1,13 +1,13 @@
 //
 //  NIDAQmxBaseAPI.h
-//  nidaqtest
+//  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/21/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef nidaqtest_NIDAQmxBaseAPI_h
-#define nidaqtest_NIDAQmxBaseAPI_h
+#ifndef NIDAQ_NIDAQmxBaseAPI_h
+#define NIDAQ_NIDAQmxBaseAPI_h
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
@@ -31,4 +31,4 @@ namespace nidaqmxbase {
 }
 
 
-#endif /* !defined(nidaqtest_NIDAQmxBaseAPI_h) */
+#endif /* !defined(NIDAQ_NIDAQmxBaseAPI_h) */

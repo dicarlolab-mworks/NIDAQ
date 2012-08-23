@@ -1,13 +1,13 @@
 //
 //  NIDAQAnalogInputTask.h
-//  nidaqtest
+//  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/22/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __nidaqtest__NIDAQAnalogInputTask__
-#define __nidaqtest__NIDAQAnalogInputTask__
+#ifndef __NIDAQ__NIDAQAnalogInputTask__
+#define __NIDAQ__NIDAQAnalogInputTask__
 
 #include "NIDAQTask.h"
 
@@ -37,4 +37,4 @@ private:
 };
 
 
-#endif /* !defined(__nidaqtest__NIDAQAnalogInputTask__) */
+#endif /* !defined(__NIDAQ__NIDAQAnalogInputTask__) */

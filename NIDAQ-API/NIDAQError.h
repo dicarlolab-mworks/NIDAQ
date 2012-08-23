@@ -1,13 +1,13 @@
 //
 //  NIDAQError.h
-//  nidaqtest
+//  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/20/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __nidaqtest__NIDAQError__
-#define __nidaqtest__NIDAQError__
+#ifndef __NIDAQ__NIDAQError__
+#define __NIDAQ__NIDAQError__
 
 #include <stdexcept>
 #include <string>
@@ -55,7 +55,7 @@ private:
 };
 
 
-#endif /* !defined(__nidaqtest__NIDAQError__) */
+#endif /* !defined(__NIDAQ__NIDAQError__) */
 
 
 

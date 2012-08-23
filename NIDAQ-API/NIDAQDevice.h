@@ -1,13 +1,13 @@
 //
 //  NIDAQDevice.h
-//  nidaqtest
+//  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/20/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __nidaqtest__NIDAQDevice__
-#define __nidaqtest__NIDAQDevice__
+#ifndef __NIDAQ__NIDAQDevice__
+#define __NIDAQ__NIDAQDevice__
 
 #include <string>
 
@@ -33,4 +33,4 @@ private:
 };
 
 
-#endif /* !defined(__nidaqtest__NIDAQDevice__) */
+#endif /* !defined(__NIDAQ__NIDAQDevice__) */

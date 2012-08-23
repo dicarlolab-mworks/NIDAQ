@@ -1,13 +1,13 @@
 //
 //  NIDAQTask.h
-//  nidaqtest
+//  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/21/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __nidaqtest__NIDAQTask__
-#define __nidaqtest__NIDAQTask__
+#ifndef __NIDAQ__NIDAQTask__
+#define __NIDAQ__NIDAQTask__
 
 #include <stdexcept>
 #include <string>
@@ -72,7 +72,7 @@ private:
 };
 
 
-#endif /* !defined(__nidaqtest__NIDAQTask__) */
+#endif /* !defined(__NIDAQ__NIDAQTask__) */
 
 
 

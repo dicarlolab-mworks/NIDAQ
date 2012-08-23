@@ -1,13 +1,13 @@
 //
 //  NIDAQAnalogOutputTask.h
-//  nidaqtest
+//  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/21/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __nidaqtest__NIDAQAnalogOutputTask__
-#define __nidaqtest__NIDAQAnalogOutputTask__
+#ifndef __NIDAQ__NIDAQAnalogOutputTask__
+#define __NIDAQ__NIDAQAnalogOutputTask__
 
 #include "NIDAQTask.h"
 
@@ -24,4 +24,4 @@ public:
 };
 
 
-#endif /* !defined(__nidaqtest__NIDAQAnalogOutputTask__) */
+#endif /* !defined(__NIDAQ__NIDAQAnalogOutputTask__) */

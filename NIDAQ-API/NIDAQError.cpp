@@ -1,6 +1,6 @@
 //
 //  NIDAQError.cpp
-//  nidaqtest
+//  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/20/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
