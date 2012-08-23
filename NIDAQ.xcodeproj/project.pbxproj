@@ -61,7 +61,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E183169215E52F790028F623 /* NIDAQ API */ = {
+		E183169215E52F790028F623 /* NIDAQ-API */ = {
 			isa = PBXGroup;
 			children = (
 				E183169015E51F940028F623 /* NIDAQTypes.h */,
@@ -72,7 +72,7 @@
 				E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */,
 				E183169315E52FB40028F623 /* Tasks */,
 			);
-			name = "NIDAQ API";
+			path = "NIDAQ-API";
 			sourceTree = "<group>";
 		};
 		E183169315E52FB40028F623 /* Tasks */ = {
@@ -85,12 +85,13 @@
 				E1B3C56515E42252000B0F8E /* NIDAQAnalogOutputTask.h */,
 				E1B3C56415E42252000B0F8E /* NIDAQAnalogOutputTask.cpp */,
 			);
-			name = Tasks;
+			path = Tasks;
 			sourceTree = "<group>";
 		};
 		E196C52115E2AD3200059BF2 = {
 			isa = PBXGroup;
 			children = (
+				E183169215E52F790028F623 /* NIDAQ-API */,
 				E196C52F15E2AD3200059BF2 /* nidaqtest */,
 				E196C53B15E2B1FE00059BF2 /* Frameworks */,
 				E196C52D15E2AD3200059BF2 /* Products */,
@@ -108,7 +109,6 @@
 		E196C52F15E2AD3200059BF2 /* nidaqtest */ = {
 			isa = PBXGroup;
 			children = (
-				E183169215E52F790028F623 /* NIDAQ API */,
 				E196C53015E2AD3200059BF2 /* main.cpp */,
 			);
 			path = nidaqtest;
