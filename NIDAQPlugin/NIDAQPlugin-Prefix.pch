@@ -3,7 +3,9 @@
 //
 
 #ifdef __cplusplus
+    #include <MWorksCore/Exceptions.h>
     #include <MWorksCore/IODevice.h>
     #include <MWorksCore/Plugin.h>
     #include <MWorksCore/StandardComponentFactory.h>
+    #include <MWorksCore/Utilities.h>
 #endif

@@ -27,13 +27,23 @@ public:
     
     static void throwIfFailed(int32_t errorCode) {
         if (failed(errorCode)) {
+#ifndef BUILDING_MWORKS_NIDAQ_PLUGIN
             throw Error(errorCode, getExtendedErrorInfo());
+#else
+            throw mw::SimpleException(mw::M_IODEVICE_MESSAGE_DOMAIN,
+                                      formatErrorMessage(errorCode, getExtendedErrorInfo()));
+#endif
         }
     }
     
     static void logIfFailed(int32_t errorCode) {
         if (failed(errorCode)) {
+#ifndef BUILDING_MWORKS_NIDAQ_PLUGIN
             logErrorMessage(errorCode, getExtendedErrorInfo());
+#else
+            mw::merror(mw::M_IODEVICE_MESSAGE_DOMAIN,
+                       formatErrorMessage(errorCode, getExtendedErrorInfo()));
+#endif
         }
     }
     

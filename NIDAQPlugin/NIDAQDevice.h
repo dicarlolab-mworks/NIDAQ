@@ -9,8 +9,6 @@
 #ifndef __NIDAQ__NIDAQDevice__
 #define __NIDAQ__NIDAQDevice__
 
-#include <MWorksCore/IODevice.h>
-
 #include "Device.h"
 
 

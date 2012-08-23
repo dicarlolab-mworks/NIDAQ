@@ -27,7 +27,14 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
 NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     IODevice(parameters),
     device(parameters[NAME].str())
-{ }
+{
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Looking for NIDAQ device \"%s\"...", device.getName().c_str());
+    uint32_t serialNumber = device.getSerialNumber();
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN,
+            "Connected to NIDAQ device \"%s\" (serial number = %X)",
+            device.getName().c_str(),
+            serialNumber);
+}
 
 
 END_NAMESPACE_MW

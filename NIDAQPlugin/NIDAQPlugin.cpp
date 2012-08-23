@@ -6,9 +6,6 @@
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#include <MWorksCore/Plugin.h>
-#include <MWorksCore/StandardComponentFactory.h>
-
 #include "NIDAQDevice.h"
 
 
