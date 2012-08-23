@@ -186,7 +186,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		E196C53415E2AD3200059BF2 /* Debug */ = {
+		E196C53415E2AD3200059BF2 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -215,46 +215,14 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx10.7;
 			};
-			name = Debug;
+			name = Development;
 		};
-		E196C53515E2AD3200059BF2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"\"/Applications/National Instruments/NI-DAQmx Base/includes\"",
-					"\"/Library/Application Support/MWorks/Developer/include\"",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				SDKROOT = macosx10.7;
-			};
-			name = Release;
-		};
-		E196C53715E2AD3200059BF2 /* Debug */ = {
+		E196C53715E2AD3200059BF2 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
-			name = Debug;
-		};
-		E196C53815E2AD3200059BF2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
+			name = Development;
 		};
 /* End XCBuildConfiguration section */
 
@@ -262,20 +230,18 @@
 		E196C52615E2AD3200059BF2 /* Build configuration list for PBXProject "NIDAQ" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E196C53415E2AD3200059BF2 /* Debug */,
-				E196C53515E2AD3200059BF2 /* Release */,
+				E196C53415E2AD3200059BF2 /* Development */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Development;
 		};
 		E196C53615E2AD3200059BF2 /* Build configuration list for PBXNativeTarget "nidaqtest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E196C53715E2AD3200059BF2 /* Debug */,
-				E196C53815E2AD3200059BF2 /* Release */,
+				E196C53715E2AD3200059BF2 /* Development */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Development;
 		};
 /* End XCConfigurationList section */
 	};
