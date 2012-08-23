@@ -95,6 +95,7 @@
 		E1690E8C15E69851007DFCEF /* NIDAQPlugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQPlugin.cpp; sourceTree = "<group>"; };
 		E1690E9715E6ADD4007DFCEF /* NIDAQDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDevice.cpp; sourceTree = "<group>"; };
 		E1690E9815E6ADD4007DFCEF /* NIDAQDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDevice.h; sourceTree = "<group>"; };
+		E1690EAD15E6B71D007DFCEF /* NIDAQPlugin-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NIDAQPlugin-Prefix.pch"; sourceTree = "<group>"; };
 		E183169015E51F940028F623 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		E183169415E540770028F623 /* AnalogInputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnalogInputTask.cpp; sourceTree = "<group>"; };
 		E183169515E540770028F623 /* AnalogInputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalogInputTask.h; sourceTree = "<group>"; };
@@ -162,6 +163,7 @@
 			children = (
 				E105A21D15E6835A007F9F38 /* NIDAQPlugin-Info.plist */,
 				E105A21E15E6835A007F9F38 /* InfoPlist.strings */,
+				E1690EAD15E6B71D007DFCEF /* NIDAQPlugin-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -366,6 +368,8 @@
 		E105A22315E6835A007F9F38 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NIDAQPlugin/NIDAQPlugin-Prefix.pch";
 				INFOPLIST_FILE = "NIDAQPlugin/NIDAQPlugin-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
@@ -432,6 +436,7 @@
 				E1690E8515E69665007DFCEF /* Development */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
 		};
 		E196C52615E2AD3200059BF2 /* Build configuration list for PBXProject "NIDAQ" */ = {
 			isa = XCConfigurationList;
