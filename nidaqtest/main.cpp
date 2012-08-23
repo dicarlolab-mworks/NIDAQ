@@ -37,7 +37,7 @@ static void generateSineWaves(const NIDAQDevice &device) {
     }
     
     std::cout << "Writing samples" << std::endl;
-    int32_t sampsPerChanWritten = task.write(10.0, data);
+    int32_t sampsPerChanWritten = task.write(data, 10.0);
     std::cout << "Wrote " << sampsPerChanWritten << " of " << samplesPerChan << " samples per channel" << std::endl;
     
     task.start();
@@ -61,7 +61,7 @@ static void acquireNScans(const NIDAQDevice &device) {
     task.start();
     
     std::cout << "Reading samples" << std::endl;
-    int32_t sampsPerChanRead = task.read(10.0, data);
+    int32_t sampsPerChanRead = task.read(data, 10.0);
     std::cout << "Read " << sampsPerChanRead << " of " << data.size() << " samples per channel" << std::endl;
     
     task.stop();
@@ -99,13 +99,13 @@ static void analogRepeater(const NIDAQDevice &device) {
     const size_t numIterations = size_t(sampleRate * runTime) / samples.size();
     for (size_t i = 0; i < numIterations; i++) {
         // Read input
-        int32_t sampsPerChanRead = aiTask.read(timeout, samples);
+        int32_t sampsPerChanRead = aiTask.read(samples, timeout);
         if (sampsPerChanRead != samples.size()) {
             std::cout << "Read only " << sampsPerChanRead << " of " << samples.size() << " samples per channel!" << std::endl;
         }
         
         // Write output
-        int32_t sampsPerChanWritten = aoTask.write(timeout, samples);
+        int32_t sampsPerChanWritten = aoTask.write(samples, timeout);
         if (sampsPerChanWritten != samples.size()) {
             std::cout << "Wrote only " << sampsPerChanWritten << " of " << samples.size() << " samples per channel!" << std::endl;
         }

@@ -29,7 +29,10 @@ public:
                            double maxVal,
                            TerminalConfig termConfig = TerminalConfigDefault);
     
-    int32_t read(double timeout, std::vector<double> &samples, bool interleaved = false);
+    int32_t read(std::vector<double> &samples, double timeout, bool interleaved = false);
+    
+private:
+    static int32_t getTerminalConfigValue(TerminalConfig termConfig);
     
 };
 

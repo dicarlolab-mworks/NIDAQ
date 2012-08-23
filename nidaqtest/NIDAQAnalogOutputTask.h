@@ -19,7 +19,7 @@ public:
     
     void addVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
     
-    int32_t write(double timeout, const std::vector<double> &samples, bool interleaved = false);
+    int32_t write(const std::vector<double> &samples, double timeout, bool interleaved = false);
     
 };
 

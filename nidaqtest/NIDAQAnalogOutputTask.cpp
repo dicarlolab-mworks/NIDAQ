@@ -38,8 +38,8 @@ void NIDAQAnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
-int32_t NIDAQAnalogOutputTask::write(double timeout,
-                                     const std::vector<double> &samples,
+int32_t NIDAQAnalogOutputTask::write(const std::vector<double> &samples,
+                                     double timeout,
                                      bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(samples);

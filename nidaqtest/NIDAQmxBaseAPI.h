@@ -19,11 +19,8 @@
 
 
 namespace nidaqmxbase_type_assertions {
-    // Verify that float32 and float64 are in fact float and double, respectively
     ASSERT_SAME_TYPE(float32, float);
     ASSERT_SAME_TYPE(float64, double);
-    
-    // Verify that TaskHandle is really unsigned long *
     ASSERT_SAME_TYPE(TaskHandle, unsigned long *);
 }
 

@@ -25,30 +25,11 @@ void NIDAQAnalogInputTask::addVoltageChannel(unsigned int channelNumber,
                                              TerminalConfig termConfig)
 {
     std::string physicalChannel = (boost::format("%s/ai%u") % getDeviceName() % channelNumber).str();
-    int32_t terminalConfig;
-    
-    switch (termConfig) {
-        case TerminalConfigRSE:
-            terminalConfig = DAQmx_Val_RSE;
-            break;
-
-        case TerminalConfigNRSE:
-            terminalConfig = DAQmx_Val_NRSE;
-            break;
-            
-        case TerminalConfigDifferential:
-            terminalConfig = DAQmx_Val_Diff;
-            break;
-            
-        default:
-            terminalConfig = DAQmx_Val_Cfg_Default;
-            break;
-    }
     
     int32_t error = DAQmxBaseCreateAIVoltageChan(getHandle(),
                                                  physicalChannel.c_str(),
                                                  NULL,
-                                                 terminalConfig,
+                                                 getTerminalConfigValue(termConfig),
                                                  minVal,
                                                  maxVal,
                                                  DAQmx_Val_Volts,
@@ -59,8 +40,8 @@ void NIDAQAnalogInputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
-int32_t NIDAQAnalogInputTask::read(double timeout,
-                                   std::vector<double> &samples,
+int32_t NIDAQAnalogInputTask::read(std::vector<double> &samples,
+                                   double timeout,
                                    bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(samples);
@@ -77,6 +58,23 @@ int32_t NIDAQAnalogInputTask::read(double timeout,
     NIDAQError::throwIfFailed(error);
     
     return sampsPerChanRead;
+}
+
+
+int32_t NIDAQAnalogInputTask::getTerminalConfigValue(TerminalConfig termConfig) {
+    switch (termConfig) {
+        case TerminalConfigRSE:
+            return DAQmx_Val_RSE;
+            
+        case TerminalConfigNRSE:
+            return DAQmx_Val_NRSE;
+            
+        case TerminalConfigDifferential:
+            return DAQmx_Val_Diff;
+            
+        default:
+            return DAQmx_Val_Cfg_Default;
+    }
 }
 
 
