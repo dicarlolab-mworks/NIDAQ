@@ -152,7 +152,7 @@
 				LastUpgradeCheck = 0440;
 				ORGANIZATIONNAME = MIT;
 			};
-			buildConfigurationList = E196C52615E2AD3200059BF2 /* Build configuration list for PBXProject "nidaqtest" */;
+			buildConfigurationList = E196C52615E2AD3200059BF2 /* Build configuration list for PBXProject "NIDAQ" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -259,7 +259,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E196C52615E2AD3200059BF2 /* Build configuration list for PBXProject "nidaqtest" */ = {
+		E196C52615E2AD3200059BF2 /* Build configuration list for PBXProject "NIDAQ" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E196C53415E2AD3200059BF2 /* Debug */,

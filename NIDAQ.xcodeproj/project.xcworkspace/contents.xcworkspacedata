@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:nidaqtest.xcodeproj">
+      location = "self:NIDAQ.xcodeproj">
    </FileRef>
 </Workspace>
