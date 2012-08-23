@@ -1,12 +1,12 @@
 //
-//  NIDAQError.cpp
+//  Error.cpp
 //  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/20/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#include "NIDAQError.h"
+#include "Error.h"
 
 #include <iostream>
 #include <vector>
@@ -16,14 +16,17 @@
 #include "NIDAQmxBaseAPI.h"
 
 
-NIDAQError::NIDAQError(int32_t code, const std::string &message) :
+BEGIN_NAMESPACE_NIDAQ
+
+
+Error::Error(int32_t code, const std::string &message) :
     std::runtime_error(formatErrorMessage(code, message)),
     code(code),
     message(message)
 { }
 
 
-std::string NIDAQError::getExtendedErrorInfo() {
+std::string Error::getExtendedErrorInfo() {
     int32_t messageSize = DAQmxBaseGetExtendedErrorInfo(NULL, 0);
     std::vector<char> messageData(messageSize, 0);
     char *messageBuffer = &(messageData.front());
@@ -38,11 +41,41 @@ std::string NIDAQError::getExtendedErrorInfo() {
 }
 
 
-std::string NIDAQError::formatErrorMessage(int32_t code, const std::string &message) {
+std::string Error::formatErrorMessage(int32_t code, const std::string &message) {
     return (boost::format("NIDAQmxBase error %d: %s") % code % message).str();
 }
 
 
-void NIDAQError::logErrorMessage(int32_t code, const std::string &message) {
+void Error::logErrorMessage(int32_t code, const std::string &message) {
     std::cerr << formatErrorMessage(code, message) << std::endl;
 }
+
+
+END_NAMESPACE_NIDAQ
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

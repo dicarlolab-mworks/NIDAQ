@@ -1,23 +1,26 @@
 //
-//  NIDAQDevice.h
+//  Device.h
 //  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/20/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __NIDAQ__NIDAQDevice__
-#define __NIDAQ__NIDAQDevice__
+#ifndef __NIDAQ__Device__
+#define __NIDAQ__Device__
 
 #include <string>
 
-#include "NIDAQTypes.h"
+#include "Types.h"
 
 
-class NIDAQDevice {
+BEGIN_NAMESPACE_NIDAQ
+
+
+class Device {
     
 public:
-    NIDAQDevice(const std::string &name) :
+    Device(const std::string &name) :
         name(name)
     { }
     
@@ -33,4 +36,7 @@ private:
 };
 
 
-#endif /* !defined(__NIDAQ__NIDAQDevice__) */
+END_NAMESPACE_NIDAQ
+
+
+#endif /* !defined(__NIDAQ__Device__) */

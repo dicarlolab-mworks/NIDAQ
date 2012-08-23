@@ -11,15 +11,15 @@
 #include <unistd.h>
 #include <vector>
 
-#include "NIDAQError.h"
-#include "NIDAQDevice.h"
-#include "NIDAQAnalogInputTask.h"
-#include "NIDAQAnalogOutputTask.h"
+#include "Error.h"
+#include "Device.h"
+#include "AnalogInputTask.h"
+#include "AnalogOutputTask.h"
 
 
-static void generateSineWaves(const NIDAQDevice &device) {
+static void generateSineWaves(const nidaq::Device &device) {
     std::cout << "Creating analog output task" << std::endl;
-    NIDAQAnalogOutputTask task(device);
+    nidaq::AnalogOutputTask task(device);
     
     std::cout << "Creating first analog output channel" << std::endl;
     task.addVoltageChannel(0, -10.0, 10.0);
@@ -46,9 +46,9 @@ static void generateSineWaves(const NIDAQDevice &device) {
 }
 
 
-static void acquireNScans(const NIDAQDevice &device) {
+static void acquireNScans(const nidaq::Device &device) {
     std::cout << "Creating analog input task" << std::endl;
-    NIDAQAnalogInputTask task(device);
+    nidaq::AnalogInputTask task(device);
 
     std::cout << "Creating analog input channel" << std::endl;
     task.addVoltageChannel(0, -10.0, 10.0);
@@ -72,7 +72,7 @@ static void acquireNScans(const NIDAQDevice &device) {
 }
 
 
-static void analogRepeater(const NIDAQDevice &device) {
+static void analogRepeater(const nidaq::Device &device) {
     const double sampleRate = 10000.0;
     const double minVal = -10.0;
     const double maxVal = 10.0;
@@ -83,13 +83,13 @@ static void analogRepeater(const NIDAQDevice &device) {
     
     // Analog input task
     std::cout << "Creating analog input task" << std::endl;
-    NIDAQAnalogInputTask aiTask(device);
+    nidaq::AnalogInputTask aiTask(device);
     aiTask.addVoltageChannel(0, minVal, maxVal);
     aiTask.setSampleClockTiming(10000.0);
     
     // Analog output task
     std::cout << "Creating analog output task" << std::endl;
-    NIDAQAnalogOutputTask aoTask(device);
+    nidaq::AnalogOutputTask aoTask(device);
     aoTask.addVoltageChannel(0, minVal, maxVal);
     aoTask.setSampleClockTiming(10000.0);
     aoTask.setAllowRegeneration(false);
@@ -124,7 +124,7 @@ int main(int argc, const char * argv[])
 {
     try {
         
-        NIDAQDevice device("Dev1");
+        nidaq::Device device("Dev1");
         
         std::cout << "Fetching serial number of device " << device.getName() << std::endl;
         uint32_t serialNumber = device.getSerialNumber();
@@ -136,9 +136,9 @@ int main(int argc, const char * argv[])
         
         std::cout << "Done!" << std::endl;
         
-    } catch (NIDAQError &e) {
+    } catch (nidaq::Error &e) {
         
-        std::cout << "Caught NIDAQError" << std::endl;
+        std::cout << "Caught nidaq:Error" << std::endl;
         std::cout << "  what:    " << e.what() << std::endl;
         std::cout << "  code:    " << e.getCode() << std::endl;
         std::cout << "  message: " << e.getMessage() << std::endl;

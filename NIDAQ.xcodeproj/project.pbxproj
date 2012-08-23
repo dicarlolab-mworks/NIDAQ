@@ -37,21 +37,21 @@
 		E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E105A22415E68597007F9F38 /* MWorksCore.framework */; };
 		E105A22615E685BB007F9F38 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E105A22715E685BE007F9F38 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
-		E105A22A15E68674007F9F38 /* NIDAQError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54715E2C13200059BF2 /* NIDAQError.cpp */; };
-		E105A22B15E68674007F9F38 /* NIDAQDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */; };
-		E105A22C15E68674007F9F38 /* NIDAQTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C55F15E3DFFA000B0F8E /* NIDAQTask.cpp */; };
-		E105A22D15E68674007F9F38 /* NIDAQAnalogInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E183169415E540770028F623 /* NIDAQAnalogInputTask.cpp */; };
-		E105A22E15E68674007F9F38 /* NIDAQAnalogOutputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C56415E42252000B0F8E /* NIDAQAnalogOutputTask.cpp */; };
+		E105A22A15E68674007F9F38 /* Error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54715E2C13200059BF2 /* Error.cpp */; };
+		E105A22B15E68674007F9F38 /* Device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* Device.cpp */; };
+		E105A22C15E68674007F9F38 /* Task.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C55F15E3DFFA000B0F8E /* Task.cpp */; };
+		E105A22D15E68674007F9F38 /* AnalogInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E183169415E540770028F623 /* AnalogInputTask.cpp */; };
+		E105A22E15E68674007F9F38 /* AnalogOutputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C56415E42252000B0F8E /* AnalogOutputTask.cpp */; };
 		E1690E8915E69688007DFCEF /* NIDAQPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = E105A21815E6835A007F9F38 /* NIDAQPlugin.bundle */; };
 		E1690E8E15E69851007DFCEF /* NIDAQPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1690E8C15E69851007DFCEF /* NIDAQPlugin.cpp */; };
-		E183169615E540770028F623 /* NIDAQAnalogInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E183169415E540770028F623 /* NIDAQAnalogInputTask.cpp */; };
+		E183169615E540770028F623 /* AnalogInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E183169415E540770028F623 /* AnalogInputTask.cpp */; };
 		E196C53115E2AD3200059BF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C53015E2AD3200059BF2 /* main.cpp */; };
 		E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
-		E196C54515E2BF7000059BF2 /* NIDAQDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */; };
-		E196C54915E2C13200059BF2 /* NIDAQError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54715E2C13200059BF2 /* NIDAQError.cpp */; };
-		E1B3C56115E3DFFA000B0F8E /* NIDAQTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C55F15E3DFFA000B0F8E /* NIDAQTask.cpp */; };
-		E1B3C56615E42252000B0F8E /* NIDAQAnalogOutputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C56415E42252000B0F8E /* NIDAQAnalogOutputTask.cpp */; };
+		E196C54515E2BF7000059BF2 /* Device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* Device.cpp */; };
+		E196C54915E2C13200059BF2 /* Error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54715E2C13200059BF2 /* Error.cpp */; };
+		E1B3C56115E3DFFA000B0F8E /* Task.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C55F15E3DFFA000B0F8E /* Task.cpp */; };
+		E1B3C56615E42252000B0F8E /* AnalogOutputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C56415E42252000B0F8E /* AnalogOutputTask.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,22 +92,22 @@
 		E105A21F15E6835A007F9F38 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E105A22415E68597007F9F38 /* MWorksCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MWorksCore.framework; path = /Library/Frameworks/MWorksCore.framework; sourceTree = "<absolute>"; };
 		E1690E8C15E69851007DFCEF /* NIDAQPlugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQPlugin.cpp; sourceTree = "<group>"; };
-		E183169015E51F940028F623 /* NIDAQTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQTypes.h; sourceTree = "<group>"; };
-		E183169415E540770028F623 /* NIDAQAnalogInputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputTask.cpp; sourceTree = "<group>"; };
-		E183169515E540770028F623 /* NIDAQAnalogInputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputTask.h; sourceTree = "<group>"; };
+		E183169015E51F940028F623 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		E183169415E540770028F623 /* AnalogInputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnalogInputTask.cpp; sourceTree = "<group>"; };
+		E183169515E540770028F623 /* AnalogInputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalogInputTask.h; sourceTree = "<group>"; };
 		E196C52C15E2AD3200059BF2 /* nidaqtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nidaqtest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E196C53015E2AD3200059BF2 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E196C53915E2B19200059BF2 /* nidaqmxbase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbase.framework; path = /Library/Frameworks/nidaqmxbase.framework; sourceTree = "<absolute>"; };
 		E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbaselv.framework; path = /Library/Frameworks/nidaqmxbaselv.framework; sourceTree = "<absolute>"; };
-		E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDevice.cpp; sourceTree = "<group>"; };
-		E196C54415E2BF7000059BF2 /* NIDAQDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDevice.h; sourceTree = "<group>"; };
-		E196C54715E2C13200059BF2 /* NIDAQError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQError.cpp; sourceTree = "<group>"; };
-		E196C54815E2C13200059BF2 /* NIDAQError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQError.h; sourceTree = "<group>"; };
-		E1B3C55F15E3DFFA000B0F8E /* NIDAQTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQTask.cpp; sourceTree = "<group>"; };
-		E1B3C56015E3DFFA000B0F8E /* NIDAQTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQTask.h; sourceTree = "<group>"; };
+		E196C54315E2BF7000059BF2 /* Device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Device.cpp; sourceTree = "<group>"; };
+		E196C54415E2BF7000059BF2 /* Device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
+		E196C54715E2C13200059BF2 /* Error.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Error.cpp; sourceTree = "<group>"; };
+		E196C54815E2C13200059BF2 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
+		E1B3C55F15E3DFFA000B0F8E /* Task.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Task.cpp; sourceTree = "<group>"; };
+		E1B3C56015E3DFFA000B0F8E /* Task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Task.h; sourceTree = "<group>"; };
 		E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQmxBaseAPI.h; sourceTree = "<group>"; };
-		E1B3C56415E42252000B0F8E /* NIDAQAnalogOutputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogOutputTask.cpp; sourceTree = "<group>"; };
-		E1B3C56515E42252000B0F8E /* NIDAQAnalogOutputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogOutputTask.h; sourceTree = "<group>"; };
+		E1B3C56415E42252000B0F8E /* AnalogOutputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnalogOutputTask.cpp; sourceTree = "<group>"; };
+		E1B3C56515E42252000B0F8E /* AnalogOutputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalogOutputTask.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,12 +164,12 @@
 		E183169215E52F790028F623 /* NIDAQ-API */ = {
 			isa = PBXGroup;
 			children = (
-				E183169015E51F940028F623 /* NIDAQTypes.h */,
 				E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */,
-				E196C54815E2C13200059BF2 /* NIDAQError.h */,
-				E196C54715E2C13200059BF2 /* NIDAQError.cpp */,
-				E196C54415E2BF7000059BF2 /* NIDAQDevice.h */,
-				E196C54315E2BF7000059BF2 /* NIDAQDevice.cpp */,
+				E183169015E51F940028F623 /* Types.h */,
+				E196C54815E2C13200059BF2 /* Error.h */,
+				E196C54715E2C13200059BF2 /* Error.cpp */,
+				E196C54415E2BF7000059BF2 /* Device.h */,
+				E196C54315E2BF7000059BF2 /* Device.cpp */,
 				E183169315E52FB40028F623 /* Tasks */,
 			);
 			path = "NIDAQ-API";
@@ -178,12 +178,12 @@
 		E183169315E52FB40028F623 /* Tasks */ = {
 			isa = PBXGroup;
 			children = (
-				E1B3C56015E3DFFA000B0F8E /* NIDAQTask.h */,
-				E1B3C55F15E3DFFA000B0F8E /* NIDAQTask.cpp */,
-				E183169515E540770028F623 /* NIDAQAnalogInputTask.h */,
-				E183169415E540770028F623 /* NIDAQAnalogInputTask.cpp */,
-				E1B3C56515E42252000B0F8E /* NIDAQAnalogOutputTask.h */,
-				E1B3C56415E42252000B0F8E /* NIDAQAnalogOutputTask.cpp */,
+				E1B3C56015E3DFFA000B0F8E /* Task.h */,
+				E1B3C55F15E3DFFA000B0F8E /* Task.cpp */,
+				E183169515E540770028F623 /* AnalogInputTask.h */,
+				E183169415E540770028F623 /* AnalogInputTask.cpp */,
+				E1B3C56515E42252000B0F8E /* AnalogOutputTask.h */,
+				E1B3C56415E42252000B0F8E /* AnalogOutputTask.cpp */,
 			);
 			path = Tasks;
 			sourceTree = "<group>";
@@ -308,11 +308,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E105A22A15E68674007F9F38 /* NIDAQError.cpp in Sources */,
-				E105A22B15E68674007F9F38 /* NIDAQDevice.cpp in Sources */,
-				E105A22C15E68674007F9F38 /* NIDAQTask.cpp in Sources */,
-				E105A22D15E68674007F9F38 /* NIDAQAnalogInputTask.cpp in Sources */,
-				E105A22E15E68674007F9F38 /* NIDAQAnalogOutputTask.cpp in Sources */,
+				E105A22A15E68674007F9F38 /* Error.cpp in Sources */,
+				E105A22B15E68674007F9F38 /* Device.cpp in Sources */,
+				E105A22C15E68674007F9F38 /* Task.cpp in Sources */,
+				E105A22D15E68674007F9F38 /* AnalogInputTask.cpp in Sources */,
+				E105A22E15E68674007F9F38 /* AnalogOutputTask.cpp in Sources */,
 				E1690E8E15E69851007DFCEF /* NIDAQPlugin.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -322,11 +322,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E196C53115E2AD3200059BF2 /* main.cpp in Sources */,
-				E196C54515E2BF7000059BF2 /* NIDAQDevice.cpp in Sources */,
-				E196C54915E2C13200059BF2 /* NIDAQError.cpp in Sources */,
-				E1B3C56115E3DFFA000B0F8E /* NIDAQTask.cpp in Sources */,
-				E1B3C56615E42252000B0F8E /* NIDAQAnalogOutputTask.cpp in Sources */,
-				E183169615E540770028F623 /* NIDAQAnalogInputTask.cpp in Sources */,
+				E196C54515E2BF7000059BF2 /* Device.cpp in Sources */,
+				E196C54915E2C13200059BF2 /* Error.cpp in Sources */,
+				E1B3C56115E3DFFA000B0F8E /* Task.cpp in Sources */,
+				E1B3C56615E42252000B0F8E /* AnalogOutputTask.cpp in Sources */,
+				E183169615E540770028F623 /* AnalogInputTask.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

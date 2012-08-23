@@ -1,25 +1,28 @@
 //
-//  NIDAQAnalogInputTask.cpp
+//  AnalogInputTask.cpp
 //  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/22/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#include "NIDAQAnalogInputTask.h"
+#include "AnalogInputTask.h"
 
 #include <boost/format.hpp>
 
 #include "NIDAQmxBaseAPI.h"
-#include "NIDAQError.h"
+#include "Error.h"
 
 
-NIDAQAnalogInputTask::NIDAQAnalogInputTask(const NIDAQDevice &device) :
-    NIDAQTask(device, "AnalogInputTask")
+BEGIN_NAMESPACE_NIDAQ
+
+
+AnalogInputTask::AnalogInputTask(const Device &device) :
+    Task(device, "AnalogInputTask")
 { }
 
 
-void NIDAQAnalogInputTask::addVoltageChannel(unsigned int channelNumber,
+void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
                                              double minVal,
                                              double maxVal,
                                              TerminalConfig termConfig)
@@ -34,13 +37,13 @@ void NIDAQAnalogInputTask::addVoltageChannel(unsigned int channelNumber,
                                                  maxVal,
                                                  DAQmx_Val_Volts,
                                                  NULL);
-    NIDAQError::throwIfFailed(error);
+    Error::throwIfFailed(error);
     
     addChannel(physicalChannel);
 }
 
 
-int32_t NIDAQAnalogInputTask::read(std::vector<double> &samples,
+int32_t AnalogInputTask::read(std::vector<double> &samples,
                                    double timeout,
                                    bool interleaved)
 {
@@ -55,13 +58,13 @@ int32_t NIDAQAnalogInputTask::read(std::vector<double> &samples,
                                            samples.size(),
                                            &sampsPerChanRead,
                                            NULL);
-    NIDAQError::throwIfFailed(error);
+    Error::throwIfFailed(error);
     
     return sampsPerChanRead;
 }
 
 
-int32_t NIDAQAnalogInputTask::getTerminalConfigValue(TerminalConfig termConfig) {
+int32_t AnalogInputTask::getTerminalConfigValue(TerminalConfig termConfig) {
     switch (termConfig) {
         case TerminalConfigRSE:
             return DAQmx_Val_RSE;
@@ -76,6 +79,9 @@ int32_t NIDAQAnalogInputTask::getTerminalConfigValue(TerminalConfig termConfig) 
             return DAQmx_Val_Cfg_Default;
     }
 }
+
+
+END_NAMESPACE_NIDAQ
 
 
 

@@ -1,13 +1,13 @@
 //
-//  NIDAQTask.h
+//  Task.h
 //  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/21/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __NIDAQ__NIDAQTask__
-#define __NIDAQ__NIDAQTask__
+#ifndef __NIDAQ__Task__
+#define __NIDAQ__Task__
 
 #include <stdexcept>
 #include <string>
@@ -15,13 +15,16 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "NIDAQDevice.h"
+#include "Device.h"
 
 
-class NIDAQTask : boost::noncopyable {
+BEGIN_NAMESPACE_NIDAQ
+
+
+class Task : boost::noncopyable {
     
 public:
-    ~NIDAQTask();
+    ~Task();
     
     void setSampleClockTiming(double samplingRate,
                               const std::string &clockSourceTerminal = "",
@@ -40,7 +43,7 @@ public:
 protected:
     typedef unsigned long * TaskHandle;
     
-    NIDAQTask(const NIDAQDevice &device, const std::string &name);
+    Task(const Device &device, const std::string &name);
     
     TaskHandle getHandle() const {
         return handle;
@@ -72,7 +75,10 @@ private:
 };
 
 
-#endif /* !defined(__NIDAQ__NIDAQTask__) */
+END_NAMESPACE_NIDAQ
+
+
+#endif /* !defined(__NIDAQ__Task__) */
 
 
 

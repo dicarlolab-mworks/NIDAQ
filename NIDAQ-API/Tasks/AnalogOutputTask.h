@@ -1,21 +1,24 @@
 //
-//  NIDAQAnalogOutputTask.h
+//  AnalogOutputTask.h
 //  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/21/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __NIDAQ__NIDAQAnalogOutputTask__
-#define __NIDAQ__NIDAQAnalogOutputTask__
+#ifndef __NIDAQ__AnalogOutputTask__
+#define __NIDAQ__AnalogOutputTask__
 
-#include "NIDAQTask.h"
+#include "Task.h"
 
 
-class NIDAQAnalogOutputTask : public NIDAQTask {
+BEGIN_NAMESPACE_NIDAQ
+
+
+class AnalogOutputTask : public Task {
     
 public:
-    NIDAQAnalogOutputTask(const NIDAQDevice &device);
+    AnalogOutputTask(const Device &device);
     
     void addVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
     
@@ -24,4 +27,7 @@ public:
 };
 
 
-#endif /* !defined(__NIDAQ__NIDAQAnalogOutputTask__) */
+END_NAMESPACE_NIDAQ
+
+
+#endif /* !defined(__NIDAQ__AnalogOutputTask__) */

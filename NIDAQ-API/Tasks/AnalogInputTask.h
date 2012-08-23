@@ -1,18 +1,21 @@
 //
-//  NIDAQAnalogInputTask.h
+//  AnalogInputTask.h
 //  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/22/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __NIDAQ__NIDAQAnalogInputTask__
-#define __NIDAQ__NIDAQAnalogInputTask__
+#ifndef __NIDAQ__AnalogInputTask__
+#define __NIDAQ__AnalogInputTask__
 
-#include "NIDAQTask.h"
+#include "Task.h"
 
 
-class NIDAQAnalogInputTask : public NIDAQTask {
+BEGIN_NAMESPACE_NIDAQ
+
+
+class AnalogInputTask : public Task {
     
 public:
     typedef enum {
@@ -22,7 +25,7 @@ public:
         TerminalConfigDifferential
     } TerminalConfig;
     
-    NIDAQAnalogInputTask(const NIDAQDevice &device);
+    AnalogInputTask(const Device &device);
     
     void addVoltageChannel(unsigned int channelNumber,
                            double minVal,
@@ -37,4 +40,7 @@ private:
 };
 
 
-#endif /* !defined(__NIDAQ__NIDAQAnalogInputTask__) */
+END_NAMESPACE_NIDAQ
+
+
+#endif /* !defined(__NIDAQ__AnalogInputTask__) */

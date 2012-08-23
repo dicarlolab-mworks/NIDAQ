@@ -1,35 +1,38 @@
 //
-//  NIDAQTask.cpp
+//  Task.cpp
 //  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/21/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#include "NIDAQTask.h"
+#include "Task.h"
 
 #include "NIDAQmxBaseAPI.h"
-#include "NIDAQError.h"
+#include "Error.h"
 
 
-NIDAQTask::NIDAQTask(const NIDAQDevice &device, const std::string &name) :
+BEGIN_NAMESPACE_NIDAQ
+
+
+Task::Task(const Device &device, const std::string &name) :
     deviceName(device.getName()),
     running(false)
 {
     std::string taskName = deviceName + "/" + name;
-    NIDAQError::throwIfFailed(  DAQmxBaseCreateTask(taskName.c_str(), &handle)  );
+    Error::throwIfFailed(  DAQmxBaseCreateTask(taskName.c_str(), &handle)  );
 }
 
 
-NIDAQTask::~NIDAQTask() {
+Task::~Task() {
     if (running) {
-        NIDAQError::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
+        Error::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
     }
-    NIDAQError::logIfFailed(  DAQmxBaseClearTask(getHandle())  );
+    Error::logIfFailed(  DAQmxBaseClearTask(getHandle())  );
 }
 
 
-void NIDAQTask::setSampleClockTiming(double samplingRate,
+void Task::setSampleClockTiming(double samplingRate,
                                      const std::string &clockSourceTerminal,
                                      uint64_t samplesPerChannelToAcquire,
                                      bool acquireOnRisingEdge)
@@ -41,30 +44,33 @@ void NIDAQTask::setSampleClockTiming(double samplingRate,
                                               (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
                                               (continous ? DAQmx_Val_ContSamps : DAQmx_Val_FiniteSamps),
                                               samplesPerChannelToAcquire);
-    NIDAQError::throwIfFailed(error);
+    Error::throwIfFailed(error);
 }
 
 
-void NIDAQTask::setAllowRegeneration(bool allowRegen) {
+void Task::setAllowRegeneration(bool allowRegen) {
     int32_t value = (allowRegen ? DAQmx_Val_AllowRegen : DAQmx_Val_DoNotAllowRegen);
-    NIDAQError::throwIfFailed(  DAQmxBaseSetWriteAttribute(getHandle(), DAQmx_Write_RegenMode, value)  );
+    Error::throwIfFailed(  DAQmxBaseSetWriteAttribute(getHandle(), DAQmx_Write_RegenMode, value)  );
 }
 
 
-void NIDAQTask::start() {
+void Task::start() {
     if (!running) {
-        NIDAQError::throwIfFailed(  DAQmxBaseStartTask(getHandle())  );
+        Error::throwIfFailed(  DAQmxBaseStartTask(getHandle())  );
         running = true;
     }
 }
 
 
-void NIDAQTask::stop() {
+void Task::stop() {
     if (running) {
-        NIDAQError::throwIfFailed(  DAQmxBaseStopTask(getHandle())  );
+        Error::throwIfFailed(  DAQmxBaseStopTask(getHandle())  );
         running = false;
     }
 }
+
+
+END_NAMESPACE_NIDAQ
 
 
 

@@ -1,21 +1,24 @@
 //
-//  NIDAQError.h
+//  Error.h
 //  NIDAQ
 //
 //  Created by Christopher Stawarz on 8/20/12.
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
-#ifndef __NIDAQ__NIDAQError__
-#define __NIDAQ__NIDAQError__
+#ifndef __NIDAQ__Error__
+#define __NIDAQ__Error__
 
 #include <stdexcept>
 #include <string>
 
-#include "NIDAQTypes.h"
+#include "Types.h"
 
 
-class NIDAQError : public std::runtime_error {
+BEGIN_NAMESPACE_NIDAQ
+
+
+class Error : public std::runtime_error {
     
 public:
     static bool failed(int32_t errorCode) {
@@ -24,7 +27,7 @@ public:
     
     static void throwIfFailed(int32_t errorCode) {
         if (failed(errorCode)) {
-            throw NIDAQError(errorCode, getExtendedErrorInfo());
+            throw Error(errorCode, getExtendedErrorInfo());
         }
     }
     
@@ -34,9 +37,9 @@ public:
         }
     }
     
-    ~NIDAQError() throw() /*override*/ { }
+    ~Error() throw() /*override*/ { }
     
-    NIDAQError(int32_t code, const std::string &message);
+    Error(int32_t code, const std::string &message);
     
     int32_t getCode() const {
         return code;
@@ -57,7 +60,10 @@ private:
 };
 
 
-#endif /* !defined(__NIDAQ__NIDAQError__) */
+END_NAMESPACE_NIDAQ
+
+
+#endif /* !defined(__NIDAQ__Error__) */
 
 
 
