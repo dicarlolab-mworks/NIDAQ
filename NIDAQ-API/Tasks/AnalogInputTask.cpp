@@ -23,9 +23,9 @@ AnalogInputTask::AnalogInputTask(const Device &device) :
 
 
 void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
-                                             double minVal,
-                                             double maxVal,
-                                             TerminalConfig termConfig)
+                                        double minVal,
+                                        double maxVal,
+                                        TerminalConfig termConfig)
 {
     std::string physicalChannel = (boost::format("%s/ai%u") % getDeviceName() % channelNumber).str();
     
@@ -44,8 +44,8 @@ void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
 
 
 int32_t AnalogInputTask::read(std::vector<double> &samples,
-                                   double timeout,
-                                   bool interleaved)
+                              double timeout,
+                              bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(samples);
     nidaqmxbase::int32_t sampsPerChanRead;

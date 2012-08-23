@@ -33,9 +33,9 @@ Task::~Task() {
 
 
 void Task::setSampleClockTiming(double samplingRate,
-                                     const std::string &clockSourceTerminal,
-                                     uint64_t samplesPerChannelToAcquire,
-                                     bool acquireOnRisingEdge)
+                                const std::string &clockSourceTerminal,
+                                uint64_t samplesPerChannelToAcquire,
+                                bool acquireOnRisingEdge)
 {
     bool continous = (samplesPerChannelToAcquire == 0);
     int32_t error = DAQmxBaseCfgSampClkTiming(getHandle(),

@@ -23,8 +23,8 @@ AnalogOutputTask::AnalogOutputTask(const Device &device) :
 
 
 void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
-                                              double minVal,
-                                              double maxVal)
+                                         double minVal,
+                                         double maxVal)
 {
     std::string physicalChannel = (boost::format("%s/ao%u") % getDeviceName() % channelNumber).str();
     
@@ -42,8 +42,8 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
 
 
 int32_t AnalogOutputTask::write(const std::vector<double> &samples,
-                                     double timeout,
-                                     bool interleaved)
+                                double timeout,
+                                bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(samples);
     nidaqmxbase::int32_t sampsPerChanWritten;

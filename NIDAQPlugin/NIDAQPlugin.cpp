@@ -9,7 +9,8 @@
 #include <MWorksCore/Plugin.h>
 #include <MWorksCore/StandardComponentFactory.h>
 
-using namespace mw;
+
+BEGIN_NAMESPACE_MW
 
 
 class NIDAQPlugin : public Plugin {
@@ -22,3 +23,6 @@ class NIDAQPlugin : public Plugin {
 extern "C" Plugin* getPlugin() {
     return new NIDAQPlugin();
 }
+
+
+END_NAMESPACE_MW
