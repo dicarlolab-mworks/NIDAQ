@@ -9,8 +9,6 @@
 #ifndef __NIDAQ__NIDAQDevice__
 #define __NIDAQ__NIDAQDevice__
 
-#include "Device.h"
-
 
 BEGIN_NAMESPACE_MW
 
@@ -23,9 +21,6 @@ public:
     static void describeComponent(ComponentInfo &info);
     
     explicit NIDAQDevice(const ParameterValueMap &parameters);
-    
-private:
-    nidaq::Device device;
     
 };
 
