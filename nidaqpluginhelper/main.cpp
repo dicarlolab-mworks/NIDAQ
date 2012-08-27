@@ -14,6 +14,9 @@
 
 int main(int argc, const char * argv[])
 {
+    mw::StandardServerCoreBuilder coreBuilder;
+    mw::CoreBuilderForeman::constructCoreStandardOrder(&coreBuilder);
+    
     try {
         
         nidaq::Device device("Dev1");

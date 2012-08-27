@@ -47,6 +47,7 @@
 		E179EE6C15E7D8F100CC1BED /* AnalogInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E183169415E540770028F623 /* AnalogInputTask.cpp */; };
 		E179EE6D15E7D8F100CC1BED /* AnalogOutputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C56415E42252000B0F8E /* AnalogOutputTask.cpp */; };
 		E179EE7815E7DAFA00CC1BED /* nidaqpluginhelper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E179EE5715E7D71400CC1BED /* nidaqpluginhelper */; };
+		E179EE8115E7E29100CC1BED /* MWorksCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E105A22415E68597007F9F38 /* MWorksCore.framework */; };
 		E183169615E540770028F623 /* AnalogInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E183169415E540770028F623 /* AnalogInputTask.cpp */; };
 		E196C53115E2AD3200059BF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C53015E2AD3200059BF2 /* main.cpp */; };
 		E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
@@ -133,6 +134,7 @@
 		E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQmxBaseAPI.h; sourceTree = "<group>"; };
 		E1B3C56415E42252000B0F8E /* AnalogOutputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnalogOutputTask.cpp; sourceTree = "<group>"; };
 		E1B3C56515E42252000B0F8E /* AnalogOutputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalogOutputTask.h; sourceTree = "<group>"; };
+		E1CA0DD615EBC89B00EB6B60 /* nidaqpluginhelper-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "nidaqpluginhelper-Prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E179EE8115E7E29100CC1BED /* MWorksCore.framework in Frameworks */,
 				E179EE6715E7D8CC00CC1BED /* nidaqmxbase.framework in Frameworks */,
 				E179EE6815E7D8CE00CC1BED /* nidaqmxbaselv.framework in Frameworks */,
 			);
@@ -200,6 +203,7 @@
 			isa = PBXGroup;
 			children = (
 				E179EE5A15E7D71400CC1BED /* main.cpp */,
+				E1CA0DD415EBC87B00EB6B60 /* Supporting Files */,
 			);
 			path = nidaqpluginhelper;
 			sourceTree = "<group>";
@@ -270,6 +274,14 @@
 				E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E1CA0DD415EBC87B00EB6B60 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E1CA0DD615EBC89B00EB6B60 /* nidaqpluginhelper-Prefix.pch */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -464,6 +476,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "nidaqpluginhelper/nidaqpluginhelper-Prefix.pch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Development;
