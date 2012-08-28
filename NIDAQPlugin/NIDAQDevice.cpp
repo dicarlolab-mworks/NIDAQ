@@ -8,6 +8,7 @@
 
 #include "NIDAQDevice.h"
 
+#include <cstring>
 #include <spawn.h>
 #include <sys/wait.h>
 
@@ -30,22 +31,36 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
 NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     IODevice(parameters)
 {
-    pid_t pid;
+    spawnHelper();
+}
+
+
+NIDAQDevice::~NIDAQDevice() {
+    reapHelper();
+}
+
+
+void NIDAQDevice::spawnHelper() {
     const char * const argv[2] = { PLUGIN_HELPER_EXECUTABLE, 0 };
-    int status = posix_spawn(&pid,
+    
+    int status = posix_spawn(&helperPID,
                              PLUGIN_HELPERS_DIR "/" PLUGIN_HELPER_EXECUTABLE,
                              NULL,
                              NULL,
                              const_cast<char * const *>(argv),
                              NULL);
     
-    if (0 == status) {
-        mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Successfully launched helper process");
-        int stat;
-        waitpid(pid, &stat, 0);
-    } else {
-        merror(M_IODEVICE_MESSAGE_DOMAIN, "Helper process failed to launch (status = %d)", status);
+    if (status != 0) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
+                              "Unable to launch " PLUGIN_HELPER_EXECUTABLE,
+                              std::strerror(status));
     }
+}
+
+
+void NIDAQDevice::reapHelper() {
+    int stat;
+    waitpid(helperPID, &stat, 0);
 }
 
 

@@ -21,6 +21,13 @@ public:
     static void describeComponent(ComponentInfo &info);
     
     explicit NIDAQDevice(const ParameterValueMap &parameters);
+    ~NIDAQDevice();
+    
+private:
+    void spawnHelper();
+    void reapHelper();
+    
+    pid_t helperPID;
     
 };
 
