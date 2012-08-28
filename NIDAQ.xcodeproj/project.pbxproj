@@ -113,6 +113,7 @@
 		E1690E9715E6ADD4007DFCEF /* NIDAQDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDevice.cpp; sourceTree = "<group>"; };
 		E1690E9815E6ADD4007DFCEF /* NIDAQDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDevice.h; sourceTree = "<group>"; };
 		E1690EAD15E6B71D007DFCEF /* NIDAQPlugin-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NIDAQPlugin-Prefix.pch"; sourceTree = "<group>"; };
+		E169B0B215ED50E700408B75 /* IPCRequestResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IPCRequestResponse.h; sourceTree = "<group>"; };
 		E179EE5715E7D71400CC1BED /* nidaqpluginhelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nidaqpluginhelper; sourceTree = BUILT_PRODUCTS_DIR; };
 		E179EE5A15E7D71400CC1BED /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E183169015E51F940028F623 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
@@ -209,6 +210,7 @@
 		E179EE5915E7D71400CC1BED /* nidaqpluginhelper */ = {
 			isa = PBXGroup;
 			children = (
+				E169B0B215ED50E700408B75 /* IPCRequestResponse.h */,
 				E179EE5A15E7D71400CC1BED /* main.cpp */,
 				E1CA0DD415EBC87B00EB6B60 /* Supporting Files */,
 			);
