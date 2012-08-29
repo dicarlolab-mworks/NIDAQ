@@ -40,14 +40,22 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     createControlChannel();
     spawnHelper();
     
+    HelperControlMessage &m = controlChannel->getMessage();
     boost::posix_time::time_duration timeout = boost::posix_time::seconds(10);
-    controlChannel->getMessage().code = HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER;
+    
+    m.code = HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER;
     
     if (!(controlChannel->sendRequest(timeout) && controlChannel->receiveResponse(timeout))) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Timeout when contacting helper");
     }
     
-    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Device serial number = %X", controlChannel->getMessage().deviceSerialNumber);
+    if (m.code == HelperControlMessage::RESPONSE_OK) {
+        mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Device serial number = %X", controlChannel->getMessage().deviceSerialNumber);
+    } else if (m.code == HelperControlMessage::RESPONSE_ERROR) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "%s", m.errorMessage.data());
+    } else {
+        mwarning(M_IODEVICE_MESSAGE_DOMAIN, "Unknown message code (%d) from %s", m.code, PLUGIN_HELPER_EXECUTABLE);
+    }
 }
 
 

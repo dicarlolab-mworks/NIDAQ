@@ -40,16 +40,29 @@ int main(int argc, const char * argv[])
     boost::posix_time::time_duration timeout = boost::posix_time::seconds(5);
     
     if (!(controlChannel->receiveRequest(timeout))) {
+        
         std::cout << "Timeout while waiting for request" << std::endl;
+        
     } else if (controlChannel->getMessage().code != HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER) {
+        
         std::cout << "Unexpected request code: " << controlChannel->getMessage().code << std::endl;
+        
     } else {
-        controlChannel->getMessage().code = HelperControlMessage::RESPONSE_OK;
-        controlChannel->getMessage().deviceSerialNumber = device.getSerialNumber();
+        
+        HelperControlMessage &m = controlChannel->getMessage();
+        
+        try {
+            m.code = HelperControlMessage::RESPONSE_OK;
+            m.deviceSerialNumber = device.getSerialNumber();
+        } catch (std::exception &e) {
+            m.code = HelperControlMessage::RESPONSE_ERROR;
+            m.errorMessage = e.what();
+        }
         
         if (!(controlChannel->sendResponse(timeout))) {
             std::cout << "Timeout while sending response" << std::endl;
         }
+            
     }
     
     return 0;
