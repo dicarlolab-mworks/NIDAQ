@@ -46,6 +46,7 @@
 		E196C53115E2AD3200059BF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C53015E2AD3200059BF2 /* main.cpp */; };
 		E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
+		E1A7226C15EE606B006671AD /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1A7226B15EE606B006671AD /* libcrypto.dylib */; };
 		E1CA0DDE15EBCB0700EB6B60 /* Device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* Device.cpp */; };
 		E1CA0DDF15EBCB0800EB6B60 /* Error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54715E2C13200059BF2 /* Error.cpp */; };
 		E1CA0DE015EBCB0E00EB6B60 /* Task.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B3C55F15E3DFFA000B0F8E /* Task.cpp */; };
@@ -127,6 +128,8 @@
 		E196C54415E2BF7000059BF2 /* Device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
 		E196C54715E2C13200059BF2 /* Error.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Error.cpp; sourceTree = "<group>"; };
 		E196C54815E2C13200059BF2 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
+		E1A7226915EE4BD6006671AD /* HelperControlMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelperControlMessage.h; sourceTree = "<group>"; };
+		E1A7226B15EE606B006671AD /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
 		E1B3C55F15E3DFFA000B0F8E /* Task.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Task.cpp; sourceTree = "<group>"; };
 		E1B3C56015E3DFFA000B0F8E /* Task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Task.h; sourceTree = "<group>"; };
 		E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQmxBaseAPI.h; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */,
+				E1A7226C15EE606B006671AD /* libcrypto.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				E169B0B215ED50E700408B75 /* IPCRequestResponse.h */,
+				E1A7226915EE4BD6006671AD /* HelperControlMessage.h */,
 				E179EE5A15E7D71400CC1BED /* main.cpp */,
 				E1CA0DD415EBC87B00EB6B60 /* Supporting Files */,
 			);
@@ -252,7 +257,7 @@
 				E196C52F15E2AD3200059BF2 /* nidaqtest */,
 				E179EE5915E7D71400CC1BED /* nidaqpluginhelper */,
 				E105A21B15E6835A007F9F38 /* NIDAQPlugin */,
-				E196C53B15E2B1FE00059BF2 /* Frameworks */,
+				E196C53B15E2B1FE00059BF2 /* Frameworks & Libraries */,
 				E196C52D15E2AD3200059BF2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -276,14 +281,15 @@
 			path = nidaqtest;
 			sourceTree = "<group>";
 		};
-		E196C53B15E2B1FE00059BF2 /* Frameworks */ = {
+		E196C53B15E2B1FE00059BF2 /* Frameworks & Libraries */ = {
 			isa = PBXGroup;
 			children = (
 				E105A22415E68597007F9F38 /* MWorksCore.framework */,
 				E196C53915E2B19200059BF2 /* nidaqmxbase.framework */,
 				E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */,
+				E1A7226B15EE606B006671AD /* libcrypto.dylib */,
 			);
-			name = Frameworks;
+			name = "Frameworks & Libraries";
 			sourceTree = "<group>";
 		};
 		E1CA0DD415EBC87B00EB6B60 /* Supporting Files */ = {

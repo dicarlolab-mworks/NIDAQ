@@ -9,6 +9,8 @@
 #ifndef __NIDAQ__NIDAQDevice__
 #define __NIDAQ__NIDAQDevice__
 
+#include <boost/interprocess/shared_memory_object.hpp>
+
 
 BEGIN_NAMESPACE_MW
 
@@ -24,8 +26,14 @@ public:
     ~NIDAQDevice();
     
 private:
+    void createSharedMemory();
+    void destroySharedMemory();
+    
     void spawnHelper();
     void reapHelper();
+    
+    std::string sharedMemoryName;
+    boost::interprocess::shared_memory_object sharedMemory;
     
     pid_t helperPID;
     
@@ -36,3 +44,30 @@ END_NAMESPACE_MW
 
 
 #endif /* !defined(__NIDAQ__NIDAQDevice__) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

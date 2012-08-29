@@ -8,10 +8,10 @@
 
 #include <iostream>
 
-#include "Error.h"
-#include "Device.h"
+#include <boost/interprocess/shared_memory_object.hpp>
 
 #include "IPCRequestResponse.h"
+#include "HelperControlMessage.h"
 
 
 int main(int argc, const char * argv[])
@@ -21,27 +21,43 @@ int main(int argc, const char * argv[])
     
     IPCRequestResponse<int> ipc;
     
-    try {
-        
-        nidaq::Device device("Dev1");
-        
-        std::cout << "Fetching serial number of device " << device.getName() << std::endl;
-        uint32_t serialNumber = device.getSerialNumber();
-        std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
-        
-    } catch (nidaq::Error &e) {
-        
-        std::cout << "Caught nidaq::Error" << std::endl;
-        std::cout << "  what:    " << e.what() << std::endl;
-        std::cout << "  code:    " << e.getCode() << std::endl;
-        std::cout << "  message: " << e.getMessage() << std::endl;
-        
-    } catch (std::exception &e) {
-        
-        std::cout << "Caught std::exception" << std::endl;
-        std::cout << "  what: " << e.what() << std::endl;
-        
-    }
+    HelperControlMessage msg;
+    msg.createDeviceRequest.name = "Dev1";
+    
+    const char *sharedMemoryName = argv[1];
+    std::cout << "sharedMemoryName = \"" << sharedMemoryName << "\"" << std::endl;
+    
+    boost::interprocess::shared_memory_object sharedMemory(boost::interprocess::open_only,
+                                                           sharedMemoryName,
+                                                           boost::interprocess::read_write);
+    std::cout << "Successfully opened shared memory" << std::endl;
     
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
