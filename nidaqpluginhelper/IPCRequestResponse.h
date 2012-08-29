@@ -31,20 +31,74 @@
 class IPCRequestResponseBase : boost::noncopyable {
     
 public:
-    typedef boost::interprocess::interprocess_mutex interprocess_mutex;
-    typedef boost::interprocess::interprocess_condition interprocess_condition;
-    typedef boost::uint16_t flag;
+    typedef boost::posix_time::time_duration time_duration;
     
     IPCRequestResponseBase() :
         requestAvailable(false),
         responseAvailable(false)
     { }
     
+    bool sendRequest(const time_duration &timeout) {
+        return send(requestAvailable, wantRequest, timeout);
+    }
+    
+    bool receiveRequest(const time_duration &timeout) {
+        return receive(requestAvailable, wantRequest, timeout);
+    }
+    
+    bool sendResponse(const time_duration &timeout) {
+        return send(responseAvailable, wantResponse, timeout);
+    }
+    
+    bool receiveResponse(const time_duration &timeout) {
+        return receive(responseAvailable, wantResponse, timeout);
+    }
+    
+private:
+    typedef boost::interprocess::interprocess_mutex interprocess_mutex;
+    typedef boost::interprocess::interprocess_condition interprocess_condition;
+    typedef boost::uint16_t flag;
+    
+    typedef boost::interprocess::scoped_lock<interprocess_mutex> scoped_lock;
+    typedef boost::posix_time::ptime ptime;
+    
+    static ptime getExpirationTime(const time_duration &timeout) {
+        return boost::date_time::microsec_clock<ptime>::universal_time() + timeout;
+    }
+    
+    bool send(flag &messageAvailable, interprocess_condition &wantMessage, const time_duration &timeout) {
+        scoped_lock lock(mutex, getExpirationTime(timeout));
+        if (!lock) {
+            return false;
+        }
+        
+        messageAvailable = true;
+        wantMessage.notify_one();
+        return true;
+    }
+    
+    bool receive(flag &messageAvailable, interprocess_condition &wantMessage, const time_duration &timeout) {
+        ptime expirationTime = getExpirationTime(timeout);
+        
+        scoped_lock lock(mutex, expirationTime);
+        if (!lock) {
+            return false;
+        }
+        
+        while (!messageAvailable) {
+            if (!(wantMessage.timed_wait(lock, expirationTime))) {
+                return false;
+            }
+        }
+        
+        messageAvailable = false;
+        return true;
+    }
+    
     interprocess_mutex mutex;
     interprocess_condition wantRequest, wantResponse;
     flag requestAvailable, responseAvailable;
     
-private:
     ASSERT_SIZE_AND_ALIGNMENT(interprocess_mutex, 4, 4);
     ASSERT_SIZE_AND_ALIGNMENT(interprocess_condition, 12, 4);
     ASSERT_SIZE_AND_ALIGNMENT(flag, 2, 2);
@@ -53,46 +107,14 @@ private:
 
 
 template <typename MessageType>
-class IPCRequestResponse : private IPCRequestResponseBase {
+class IPCRequestResponse : public IPCRequestResponseBase {
     
 public:
     MessageType& getMessage() {
         return message;
     }
     
-    void sendRequest() {
-        send(requestAvailable, wantRequest);
-    }
-    
-    void receiveRequest() {
-        receive(requestAvailable, wantRequest);
-    }
-    
-    void sendResponse() {
-        send(responseAvailable, wantResponse);
-    }
-    
-    void receiveResponse() {
-        receive(responseAvailable, wantResponse);
-    }
-    
 private:
-    typedef boost::interprocess::scoped_lock<interprocess_mutex> scoped_lock;
-    
-    void send(flag &messageAvailable, interprocess_condition &wantMessage) {
-        scoped_lock lock(mutex);
-        messageAvailable = true;
-        wantMessage.notify_one();
-    }
-    
-    void receive(flag &messageAvailable, interprocess_condition &wantMessage) {
-        scoped_lock lock(mutex);
-        while (!messageAvailable) {
-            wantMessage.wait(lock);
-        }
-        messageAvailable = false;
-    }
-    
     MessageType message;
     
     ASSERT_SIZE_AND_ALIGNMENT(IPCRequestResponseBase, 32, 8);

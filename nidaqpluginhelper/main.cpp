@@ -11,11 +11,15 @@
 #include "Error.h"
 #include "Device.h"
 
+#include "IPCRequestResponse.h"
+
 
 int main(int argc, const char * argv[])
 {
     mw::StandardServerCoreBuilder coreBuilder;
     mw::CoreBuilderForeman::constructCoreStandardOrder(&coreBuilder);
+    
+    IPCRequestResponse<int> ipc;
     
     try {
         
