@@ -8,11 +8,11 @@
 
 #include <iostream>
 
+#include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
 
 #include "Device.h"
 
-#include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
 
 
@@ -20,11 +20,6 @@ int main(int argc, const char * argv[])
 {
     mw::StandardServerCoreBuilder coreBuilder;
     mw::CoreBuilderForeman::constructCoreStandardOrder(&coreBuilder);
-    
-    IPCRequestResponse<int> ipc;
-    
-    HelperControlMessage msg;
-    msg.createDeviceRequest.name = "Dev1";
     
     const char *deviceName = argv[1];
     nidaq::Device device(deviceName);
@@ -37,6 +32,10 @@ int main(int argc, const char * argv[])
                                                            sharedMemoryName,
                                                            boost::interprocess::read_write);
     std::cout << "Successfully opened shared memory" << std::endl;
+    
+    boost::interprocess::mapped_region mappedRegion(sharedMemory, boost::interprocess::read_write);
+    void *address = mappedRegion.get_address();
+    HelperControlChannel& controlChannel = *(static_cast<HelperControlChannel *>(address));
     
     return 0;
 }

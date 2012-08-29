@@ -37,12 +37,14 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     deviceName(parameters[NAME].str())
 {
     createSharedMemory();
+    createControlChannel();
     spawnHelper();
 }
 
 
 NIDAQDevice::~NIDAQDevice() {
     reapHelper();
+    destroyControlChannel();
     destroySharedMemory();
 }
 
@@ -63,12 +65,24 @@ void NIDAQDevice::createSharedMemory() {
     sharedMemory = boost::interprocess::shared_memory_object(boost::interprocess::create_only,
                                                              sharedMemoryName.c_str(),
                                                              boost::interprocess::read_write);
-    sharedMemory.truncate(sizeof(int));
 }
 
 
 void NIDAQDevice::destroySharedMemory() {
     boost::interprocess::shared_memory_object::remove(sharedMemoryName.c_str());
+}
+
+
+void NIDAQDevice::createControlChannel() {
+    sharedMemory.truncate(sizeof(HelperControlChannel));
+    mappedRegion = boost::interprocess::mapped_region(sharedMemory, boost::interprocess::read_write);
+    void *address = mappedRegion.get_address();
+    controlChannel = new(address) HelperControlChannel;
+}
+
+
+void NIDAQDevice::destroyControlChannel() {
+    controlChannel->~HelperControlChannel();
 }
 
 

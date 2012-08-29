@@ -27,6 +27,14 @@
 #define ASSERT_SIZE_AND_ALIGNMENT(type, size, alignment) \
     BOOST_STATIC_ASSERT(sizeof(type) == (size) && boost::alignment_of<type>::value == (alignment))
 
+// boost::is_pod can recognize POD classes and structs only if BOOST_IS_POD is defined
+#ifdef BOOST_IS_POD
+#  define ASSERT_IS_POD(type)  BOOST_STATIC_ASSERT(boost::is_pod<type>::value)
+#else
+#  include <boost/type_traits/is_class.hpp>
+#  define ASSERT_IS_POD(type)  BOOST_STATIC_ASSERT(boost::is_pod<type>::value || boost::is_class<type>::value)
+#endif
+
 
 class IPCRequestResponseBase : boost::noncopyable {
     
@@ -118,7 +126,7 @@ private:
     MessageType message;
     
     ASSERT_SIZE_AND_ALIGNMENT(IPCRequestResponseBase, 32, 8);
-    BOOST_STATIC_ASSERT(boost::is_pod<MessageType>::value);
+    ASSERT_IS_POD(MessageType);
     
 };
 

@@ -15,6 +15,8 @@
 #include <boost/array.hpp>
 #include <boost/cstdint.hpp>
 
+#include "IPCRequestResponse.h"
+
 
 template <std::size_t N>
 class char_array : public boost::array<char, N> {
@@ -40,6 +42,7 @@ struct HelperControlMessage {
     enum {
         // Request codes
         REQUEST_GET_DEVICE_SERIAL_NUMBER,
+        REQUEST_SHUTDOWN,
         
         // Response codes
         RESPONSE_OK,
@@ -50,13 +53,21 @@ struct HelperControlMessage {
     
     union {
         
+        /*
         struct {
             char_array<32> name;
         } createDeviceRequest;
+         */
+        
+        boost::uint64_t deviceSerialNumber;
+        char_array<1024> errorMessage;
         
     };
     
 };
+
+
+typedef IPCRequestResponse<HelperControlMessage> HelperControlChannel;
 
 
 #endif /* !defined(NIDAQ_HelperControlMessage_h) */

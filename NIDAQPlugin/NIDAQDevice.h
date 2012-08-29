@@ -9,7 +9,10 @@
 #ifndef __NIDAQ__NIDAQDevice__
 #define __NIDAQ__NIDAQDevice__
 
+#include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
+
+#include "HelperControlMessage.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -29,6 +32,9 @@ private:
     void createSharedMemory();
     void destroySharedMemory();
     
+    void createControlChannel();
+    void destroyControlChannel();
+    
     void spawnHelper();
     void reapHelper();
     
@@ -36,6 +42,9 @@ private:
     
     std::string sharedMemoryName;
     boost::interprocess::shared_memory_object sharedMemory;
+    boost::interprocess::mapped_region mappedRegion;
+    
+    HelperControlChannel *controlChannel;
     
     pid_t helperPID;
     
