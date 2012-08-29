@@ -35,7 +35,22 @@ int main(int argc, const char * argv[])
     
     boost::interprocess::mapped_region mappedRegion(sharedMemory, boost::interprocess::read_write);
     void *address = mappedRegion.get_address();
-    HelperControlChannel& controlChannel = *(static_cast<HelperControlChannel *>(address));
+    HelperControlChannel *controlChannel = static_cast<HelperControlChannel *>(address);
+    
+    boost::posix_time::time_duration timeout = boost::posix_time::seconds(5);
+    
+    if (!(controlChannel->receiveRequest(timeout))) {
+        std::cout << "Timeout while waiting for request" << std::endl;
+    } else if (controlChannel->getMessage().code != HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER) {
+        std::cout << "Unexpected request code: " << controlChannel->getMessage().code << std::endl;
+    } else {
+        controlChannel->getMessage().code = HelperControlMessage::RESPONSE_OK;
+        controlChannel->getMessage().deviceSerialNumber = device.getSerialNumber();
+        
+        if (!(controlChannel->sendResponse(timeout))) {
+            std::cout << "Timeout while sending response" << std::endl;
+        }
+    }
     
     return 0;
 }

@@ -39,6 +39,15 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     createSharedMemory();
     createControlChannel();
     spawnHelper();
+    
+    boost::posix_time::time_duration timeout = boost::posix_time::seconds(10);
+    controlChannel->getMessage().code = HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER;
+    
+    if (!(controlChannel->sendRequest(timeout) && controlChannel->receiveResponse(timeout))) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Timeout when contacting helper");
+    }
+    
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Device serial number = %X", controlChannel->getMessage().deviceSerialNumber);
 }
 
 

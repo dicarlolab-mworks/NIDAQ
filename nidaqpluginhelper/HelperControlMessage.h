@@ -59,7 +59,7 @@ struct HelperControlMessage {
         } createDeviceRequest;
          */
         
-        boost::uint64_t deviceSerialNumber;
+        boost::uint32_t deviceSerialNumber;
         char_array<1024> errorMessage;
         
     };
