@@ -32,6 +32,8 @@ private:
     void spawnHelper();
     void reapHelper();
     
+    const std::string deviceName;
+    
     std::string sharedMemoryName;
     boost::interprocess::shared_memory_object sharedMemory;
     

@@ -33,7 +33,8 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
 
 
 NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
-    IODevice(parameters)
+    IODevice(parameters),
+    deviceName(parameters[NAME].str())
 {
     createSharedMemory();
     spawnHelper();
@@ -72,7 +73,7 @@ void NIDAQDevice::destroySharedMemory() {
 
 
 void NIDAQDevice::spawnHelper() {
-    const char * const argv[] = { PLUGIN_HELPER_EXECUTABLE, sharedMemoryName.c_str(), 0 };
+    const char * const argv[] = { PLUGIN_HELPER_EXECUTABLE, deviceName.c_str(), sharedMemoryName.c_str(), 0 };
     
     int status = posix_spawn(&helperPID,
                              PLUGIN_HELPERS_DIR "/" PLUGIN_HELPER_EXECUTABLE,

@@ -10,6 +10,8 @@
 
 #include <boost/interprocess/shared_memory_object.hpp>
 
+#include "Device.h"
+
 #include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
 
@@ -24,7 +26,11 @@ int main(int argc, const char * argv[])
     HelperControlMessage msg;
     msg.createDeviceRequest.name = "Dev1";
     
-    const char *sharedMemoryName = argv[1];
+    const char *deviceName = argv[1];
+    nidaq::Device device(deviceName);
+    std::cout << std::endl << "device name = \"" << device.getName() << "\"" << std::endl;
+    
+    const char *sharedMemoryName = argv[2];
     std::cout << "sharedMemoryName = \"" << sharedMemoryName << "\"" << std::endl;
     
     boost::interprocess::shared_memory_object sharedMemory(boost::interprocess::open_only,
