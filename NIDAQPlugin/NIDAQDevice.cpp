@@ -34,9 +34,22 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
 
 NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     IODevice(parameters),
-    deviceName(parameters[NAME].str())
+    deviceName(parameters[NAME].str()),
+    controlChannel(NULL),
+    helperPID(-1)
 {
     createSharedMemory();
+}
+
+
+NIDAQDevice::~NIDAQDevice() {
+    reapHelper();
+    destroyControlChannel();
+    destroySharedMemory();
+}
+
+
+bool NIDAQDevice::initialize() {
     createControlChannel();
     spawnHelper();
     
@@ -49,20 +62,18 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Timeout when contacting helper");
     }
     
+    if (m.code == HelperControlMessage::RESPONSE_ERROR) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "Unable to obtain device serial number: %s", m.errorMessage.data());
+        return false;
+    }
+    
     if (m.code == HelperControlMessage::RESPONSE_OK) {
         mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Device serial number = %X", controlChannel->getMessage().deviceSerialNumber);
-    } else if (m.code == HelperControlMessage::RESPONSE_ERROR) {
-        merror(M_IODEVICE_MESSAGE_DOMAIN, "%s", m.errorMessage.data());
     } else {
         mwarning(M_IODEVICE_MESSAGE_DOMAIN, "Unknown message code (%d) from %s", m.code, PLUGIN_HELPER_EXECUTABLE);
     }
-}
-
-
-NIDAQDevice::~NIDAQDevice() {
-    reapHelper();
-    destroyControlChannel();
-    destroySharedMemory();
+    
+    return true;
 }
 
 
@@ -99,7 +110,9 @@ void NIDAQDevice::createControlChannel() {
 
 
 void NIDAQDevice::destroyControlChannel() {
-    controlChannel->~HelperControlChannel();
+    if (controlChannel) {
+        controlChannel->~HelperControlChannel();
+    }
 }
 
 
@@ -122,8 +135,10 @@ void NIDAQDevice::spawnHelper() {
 
 
 void NIDAQDevice::reapHelper() {
-    int stat;
-    waitpid(helperPID, &stat, 0);
+    if (helperPID > 0) {
+        int stat;
+        waitpid(helperPID, &stat, 0);
+    }
 }
 
 

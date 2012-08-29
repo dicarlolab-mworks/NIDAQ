@@ -28,6 +28,8 @@ public:
     explicit NIDAQDevice(const ParameterValueMap &parameters);
     ~NIDAQDevice();
     
+    bool initialize() MW_OVERRIDE;
+    
 private:
     void createSharedMemory();
     void destroySharedMemory();
