@@ -6,66 +6,36 @@
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
+#include <cstdlib>
 #include <iostream>
 
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
 
-#include "Device.h"
-
-#include "HelperControlMessage.h"
+#include "NIDAQPluginHelper.h"
 
 
 int main(int argc, const char * argv[])
 {
-    mw::StandardServerCoreBuilder coreBuilder;
-    mw::CoreBuilderForeman::constructCoreStandardOrder(&coreBuilder);
+    if (argc != 3) {
+        std::cerr << argv[0] << " requires 2 arguments" << std::endl;
+        return EXIT_FAILURE;
+    }
     
     const char *deviceName = argv[1];
-    nidaq::Device device(deviceName);
-    std::cout << std::endl << "device name = \"" << device.getName() << "\"" << std::endl;
-    
     const char *sharedMemoryName = argv[2];
-    std::cout << "sharedMemoryName = \"" << sharedMemoryName << "\"" << std::endl;
     
     boost::interprocess::shared_memory_object sharedMemory(boost::interprocess::open_only,
                                                            sharedMemoryName,
                                                            boost::interprocess::read_write);
-    std::cout << "Successfully opened shared memory" << std::endl;
-    
     boost::interprocess::mapped_region mappedRegion(sharedMemory, boost::interprocess::read_write);
     void *address = mappedRegion.get_address();
-    HelperControlChannel *controlChannel = static_cast<HelperControlChannel *>(address);
+    HelperControlChannel &controlChannel = *(static_cast<HelperControlChannel *>(address));
     
-    boost::posix_time::time_duration timeout = boost::posix_time::seconds(5);
+    NIDAQPluginHelper helper(deviceName, controlChannel);
+    bool success = helper.handleControlRequests();
     
-    if (!(controlChannel->receiveRequest(timeout))) {
-        
-        std::cout << "Timeout while waiting for request" << std::endl;
-        
-    } else if (controlChannel->getMessage().code != HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER) {
-        
-        std::cout << "Unexpected request code: " << controlChannel->getMessage().code << std::endl;
-        
-    } else {
-        
-        HelperControlMessage &m = controlChannel->getMessage();
-        
-        try {
-            m.code = HelperControlMessage::RESPONSE_OK;
-            m.deviceSerialNumber = device.getSerialNumber();
-        } catch (std::exception &e) {
-            m.code = HelperControlMessage::RESPONSE_ERROR;
-            m.errorMessage = e.what();
-        }
-        
-        if (!(controlChannel->sendResponse(timeout))) {
-            std::cout << "Timeout while sending response" << std::endl;
-        }
-            
-    }
-    
-    return 0;
+    return (success ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 

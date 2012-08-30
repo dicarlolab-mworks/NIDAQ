@@ -53,25 +53,19 @@ bool NIDAQDevice::initialize() {
     createControlChannel();
     spawnHelper();
     
-    HelperControlMessage &m = controlChannel->getMessage();
-    boost::posix_time::time_duration timeout = boost::posix_time::seconds(10);
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Looking for NIDAQ device \"%s\"...", deviceName.c_str());
     
+    HelperControlMessage &m = controlChannel->getMessage();
     m.code = HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER;
     
-    if (!(controlChannel->sendRequest(timeout) && controlChannel->receiveResponse(timeout))) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Timeout when contacting helper");
-    }
-    
-    if (m.code == HelperControlMessage::RESPONSE_ERROR) {
-        merror(M_IODEVICE_MESSAGE_DOMAIN, "Unable to obtain device serial number: %s", m.errorMessage.data());
+    if (!sendHelperRequest()) {
         return false;
     }
     
-    if (m.code == HelperControlMessage::RESPONSE_OK) {
-        mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Device serial number = %X", controlChannel->getMessage().deviceSerialNumber);
-    } else {
-        mwarning(M_IODEVICE_MESSAGE_DOMAIN, "Unknown message code (%d) from %s", m.code, PLUGIN_HELPER_EXECUTABLE);
-    }
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN,
+            "Connected to NIDAQ device \"%s\" (serial number = %X)",
+            deviceName.c_str(),
+            m.deviceSerialNumber);
     
     return true;
 }
@@ -135,10 +129,80 @@ void NIDAQDevice::spawnHelper() {
 
 
 void NIDAQDevice::reapHelper() {
-    if (helperPID > 0) {
-        int stat;
-        waitpid(helperPID, &stat, 0);
+    if (helperPID <= 0) {
+        return;
     }
+    
+    int status;
+    if (-1 == waitpid(helperPID, &status, WNOHANG | WUNTRACED)) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN,
+               "Error while waiting for %s to exit: %s",
+               PLUGIN_HELPER_EXECUTABLE,
+               std::strerror(errno));
+        return;
+    }
+    
+    if (!WIFEXITED(status)) {
+        mwarning(M_IODEVICE_MESSAGE_DOMAIN, "%s terminated abnormally", PLUGIN_HELPER_EXECUTABLE);
+        return;
+    }
+    
+    int exitStatus = WEXITSTATUS(status);
+    if (exitStatus != 0) {
+        mwarning(M_IODEVICE_MESSAGE_DOMAIN,
+                 "%s returned non-zero exit status (%d)",
+                 PLUGIN_HELPER_EXECUTABLE,
+                 exitStatus);
+    }
+}
+
+
+bool NIDAQDevice::sendHelperRequest() {
+    const boost::posix_time::time_duration timeout = boost::posix_time::seconds(10);
+    
+    if (!(controlChannel->sendRequest(timeout) && controlChannel->receiveResponse(timeout))) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "Control request to %s timed out", PLUGIN_HELPER_EXECUTABLE);
+        return false;
+    }
+    
+    HelperControlMessage &m = controlChannel->getMessage();
+    const HelperControlMessage::signed_int responseCode = m.code;
+    
+    switch (responseCode) {
+        case HelperControlMessage::RESPONSE_OK:
+            // Success
+            break;
+            
+        case HelperControlMessage::RESPONSE_BAD_REQUEST:
+            merror(M_IODEVICE_MESSAGE_DOMAIN,
+                   "Internal error: Bad request to %s: %s",
+                   PLUGIN_HELPER_EXECUTABLE,
+                   m.badRequest.info.data());
+            break;
+            
+        case HelperControlMessage::RESPONSE_NIDAQ_ERROR:
+            merror(M_IODEVICE_MESSAGE_DOMAIN,
+                   "NIDAQ error: %s (%d)",
+                   m.nidaqError.message.data(),
+                   m.nidaqError.code);
+            break;
+            
+        case HelperControlMessage::RESPONSE_EXCEPTION:
+            merror(M_IODEVICE_MESSAGE_DOMAIN,
+                   "Internal error: Exception in %s: %s",
+                   PLUGIN_HELPER_EXECUTABLE,
+                   m.exception.what.data());
+            break;
+            
+        default:
+            merror(M_IODEVICE_MESSAGE_DOMAIN,
+                   "Internal error: Unknown response code (%d) from %s",
+                   responseCode,
+                   PLUGIN_HELPER_EXECUTABLE);
+            break;
+    }
+    
+    return (responseCode == HelperControlMessage::RESPONSE_OK);
 }
 
 

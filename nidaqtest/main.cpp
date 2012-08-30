@@ -136,14 +136,14 @@ int main(int argc, const char * argv[])
         
         std::cout << "Done!" << std::endl;
         
-    } catch (nidaq::Error &e) {
+    } catch (const nidaq::Error &e) {
         
         std::cout << "Caught nidaq::Error" << std::endl;
         std::cout << "  what:    " << e.what() << std::endl;
         std::cout << "  code:    " << e.getCode() << std::endl;
         std::cout << "  message: " << e.getMessage() << std::endl;
         
-    } catch (std::exception &e) {
+    } catch (const std::exception &e) {
         
         std::cout << "Caught std::exception" << std::endl;
         std::cout << "  what: " << e.what() << std::endl;

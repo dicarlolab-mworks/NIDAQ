@@ -40,6 +40,8 @@ private:
     void spawnHelper();
     void reapHelper();
     
+    bool sendHelperRequest();
+    
     const std::string deviceName;
     
     std::string sharedMemoryName;

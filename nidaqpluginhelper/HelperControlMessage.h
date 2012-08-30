@@ -14,6 +14,7 @@
 
 #include <boost/array.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/format.hpp>
 
 #include "IPCRequestResponse.h"
 
@@ -24,6 +25,10 @@ class char_array : public boost::array<char, N> {
     typedef boost::array<char, N> base_type;
     
 public:
+    char_array& operator=(const boost::format &f) {
+        return (*this = f.str());
+    }
+    
     char_array& operator=(const std::string &s) {
         return (*this = s.c_str());
     }
@@ -39,6 +44,14 @@ public:
 
 struct HelperControlMessage {
     
+    typedef boost::int64_t signed_int;
+    typedef boost::uint64_t unsigned_int;
+    typedef char_array<1024> message_buffer;
+    
+    //
+    // Message code
+    //
+    
     enum {
         // Request codes
         REQUEST_GET_DEVICE_SERIAL_NUMBER,
@@ -46,22 +59,39 @@ struct HelperControlMessage {
         
         // Response codes
         RESPONSE_OK,
-        RESPONSE_ERROR
+        RESPONSE_BAD_REQUEST,
+        RESPONSE_NIDAQ_ERROR,
+        RESPONSE_EXCEPTION
     };
     
-    int64_t code;
+    signed_int code;
+    
+    //
+    // Message data
+    //
     
     union {
+        //
+        // Response data
+        //
         
-        /*
+        unsigned_int deviceSerialNumber;
+        
         struct {
-            char_array<32> name;
-        } createDeviceRequest;
-         */
+            // Description of invalid or unrecognized request
+            message_buffer info;
+        } badRequest;
         
-        boost::uint32_t deviceSerialNumber;
-        char_array<1024> errorMessage;
+        struct {
+            // NIDAQmxBase error info
+            signed_int code;
+            message_buffer message;
+        } nidaqError;
         
+        struct {
+            // what() from caught exception
+            message_buffer what;
+        } exception;
     };
     
 };

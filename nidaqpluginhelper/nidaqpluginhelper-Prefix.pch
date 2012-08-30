@@ -3,6 +3,6 @@
 //
 
 #ifdef __cplusplus
-    #include <MWorksCore/CoreBuilderForeman.h>
-    #include <MWorksCore/StandardServerCoreBuilder.h>
+    //#include <MWorksCore/CoreBuilderForeman.h>
+    //#include <MWorksCore/StandardServerCoreBuilder.h>
 #endif
