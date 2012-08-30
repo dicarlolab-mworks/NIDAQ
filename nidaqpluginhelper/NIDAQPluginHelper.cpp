@@ -19,7 +19,6 @@ NIDAQPluginHelper::NIDAQPluginHelper(const std::string &deviceName, HelperContro
 
 bool NIDAQPluginHelper::handleControlRequests() {
     const boost::posix_time::time_duration receiveTimeout = boost::posix_time::minutes(60);
-    const boost::posix_time::time_duration sendTimeout = boost::posix_time::seconds(10);
     
     HelperControlMessage &m = controlChannel.getMessage();
     bool done = false;
@@ -51,9 +50,7 @@ bool NIDAQPluginHelper::handleControlRequests() {
             
         }
         
-        if (!(controlChannel.sendResponse(sendTimeout))) {
-            return false;
-        }
+        controlChannel.sendResponse();
     }
     
     return true;

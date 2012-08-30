@@ -19,9 +19,7 @@
 // present do not work correctly on OS X, but may someday) aren't portable between x86_64 and i386
 #define BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION
 
-#include <boost/interprocess/sync/interprocess_condition.hpp>
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
-#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
 
 #define ASSERT_SIZE_AND_ALIGNMENT(type, size, alignment) \
@@ -42,74 +40,43 @@ public:
     typedef boost::posix_time::time_duration time_duration;
     
     IPCRequestResponseBase() :
-        requestAvailable(false),
-        responseAvailable(false)
+        wantRequest(0),
+        wantResponse(0)
     { }
     
-    bool sendRequest(const time_duration &timeout) {
-        return send(requestAvailable, wantRequest, timeout);
+    void sendRequest() {
+        send(wantRequest);
     }
     
     bool receiveRequest(const time_duration &timeout) {
-        return receive(requestAvailable, wantRequest, timeout);
+        return receive(wantRequest, timeout);
     }
     
-    bool sendResponse(const time_duration &timeout) {
-        return send(responseAvailable, wantResponse, timeout);
+    void sendResponse() {
+        send(wantResponse);
     }
     
     bool receiveResponse(const time_duration &timeout) {
-        return receive(responseAvailable, wantResponse, timeout);
+        return receive(wantResponse, timeout);
     }
     
 private:
-    typedef boost::interprocess::interprocess_mutex interprocess_mutex;
-    typedef boost::interprocess::interprocess_condition interprocess_condition;
-    typedef boost::uint16_t flag;
-    
-    typedef boost::interprocess::scoped_lock<interprocess_mutex> scoped_lock;
+    typedef boost::interprocess::interprocess_semaphore interprocess_semaphore;
     typedef boost::posix_time::ptime ptime;
+    typedef boost::date_time::microsec_clock<ptime> microsec_clock;
     
-    static ptime getExpirationTime(const time_duration &timeout) {
-        return boost::date_time::microsec_clock<ptime>::universal_time() + timeout;
+    void send(interprocess_semaphore &wantMessage) {
+        wantMessage.post();
     }
     
-    bool send(flag &messageAvailable, interprocess_condition &wantMessage, const time_duration &timeout) {
-        scoped_lock lock(mutex, getExpirationTime(timeout));
-        if (!lock) {
-            return false;
-        }
-        
-        messageAvailable = true;
-        wantMessage.notify_one();
-        return true;
+    bool receive(interprocess_semaphore &wantMessage, const time_duration &timeout) {
+        const ptime expirationTime = microsec_clock::universal_time() + timeout;
+        return wantMessage.timed_wait(expirationTime);
     }
     
-    bool receive(flag &messageAvailable, interprocess_condition &wantMessage, const time_duration &timeout) {
-        ptime expirationTime = getExpirationTime(timeout);
-        
-        scoped_lock lock(mutex, expirationTime);
-        if (!lock) {
-            return false;
-        }
-        
-        while (!messageAvailable) {
-            if (!(wantMessage.timed_wait(lock, expirationTime))) {
-                return false;
-            }
-        }
-        
-        messageAvailable = false;
-        return true;
-    }
+    interprocess_semaphore wantRequest, wantResponse;
     
-    interprocess_mutex mutex;
-    interprocess_condition wantRequest, wantResponse;
-    flag requestAvailable, responseAvailable;
-    
-    ASSERT_SIZE_AND_ALIGNMENT(interprocess_mutex, 4, 4);
-    ASSERT_SIZE_AND_ALIGNMENT(interprocess_condition, 12, 4);
-    ASSERT_SIZE_AND_ALIGNMENT(flag, 2, 2);
+    ASSERT_SIZE_AND_ALIGNMENT(interprocess_semaphore, 4, 4);
     
 } __attribute__((aligned (8)));
 
@@ -125,7 +92,7 @@ public:
 private:
     MessageType message;
     
-    ASSERT_SIZE_AND_ALIGNMENT(IPCRequestResponseBase, 32, 8);
+    ASSERT_SIZE_AND_ALIGNMENT(IPCRequestResponseBase, 8, 8);
     ASSERT_IS_POD(MessageType);
     
 };

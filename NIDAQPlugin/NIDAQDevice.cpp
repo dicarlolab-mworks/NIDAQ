@@ -133,8 +133,11 @@ void NIDAQDevice::reapHelper() {
         return;
     }
     
+    controlChannel->getMessage().code = HelperControlMessage::REQUEST_SHUTDOWN;
+    sendHelperRequest();
+    
     int status;
-    if (-1 == waitpid(helperPID, &status, WNOHANG | WUNTRACED)) {
+    if (-1 == waitpid(helperPID, &status, WUNTRACED)) {
         merror(M_IODEVICE_MESSAGE_DOMAIN,
                "Error while waiting for %s to exit: %s",
                PLUGIN_HELPER_EXECUTABLE,
@@ -158,9 +161,8 @@ void NIDAQDevice::reapHelper() {
 
 
 bool NIDAQDevice::sendHelperRequest() {
-    const boost::posix_time::time_duration timeout = boost::posix_time::seconds(10);
-    
-    if (!(controlChannel->sendRequest(timeout) && controlChannel->receiveResponse(timeout))) {
+    controlChannel->sendRequest();
+    if (!(controlChannel->receiveResponse(boost::posix_time::seconds(10)))) {
         merror(M_IODEVICE_MESSAGE_DOMAIN, "Control request to %s timed out", PLUGIN_HELPER_EXECUTABLE);
         return false;
     }
