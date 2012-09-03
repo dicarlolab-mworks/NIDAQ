@@ -9,11 +9,15 @@
 #ifndef __NIDAQ__NIDAQDevice__
 #define __NIDAQ__NIDAQDevice__
 
+#include <vector>
+
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
 
 #include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
+
+#include "NIDAQAnalogInputChannel.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -23,11 +27,17 @@ class NIDAQDevice : public IODevice {
     
 public:
     static const std::string NAME;
+    static const std::string ANALOG_INPUT_DATA_INTERVAL;
+    static const std::string UPDATE_INTERVAL;
     
     static void describeComponent(ComponentInfo &info);
     
     explicit NIDAQDevice(const ParameterValueMap &parameters);
     ~NIDAQDevice();
+    
+    void addChild(std::map<std::string, std::string> parameters,
+                  ComponentRegistryPtr reg,
+                  boost::shared_ptr<Component> child) MW_OVERRIDE;
     
     bool initialize() MW_OVERRIDE;
     
@@ -43,6 +53,9 @@ private:
     bool sendHelperRequest();
     
     const std::string deviceName;
+    MWTime analogInputDataInterval;
+    MWTime updateInterval;
+    std::vector< boost::shared_ptr<NIDAQAnalogInputChannel> > analogInputChannels;
     
     std::string wantRequestName, wantResponseName;
     IPCRequestResponse *controlChannel;

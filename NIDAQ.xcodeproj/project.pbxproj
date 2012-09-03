@@ -35,6 +35,8 @@
 /* Begin PBXBuildFile section */
 		E105A22015E6835A007F9F38 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E105A21E15E6835A007F9F38 /* InfoPlist.strings */; };
 		E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E105A22415E68597007F9F38 /* MWorksCore.framework */; };
+		E157464015F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */; };
+		E157464515F4F9010014089E /* NIDAQAnalogInputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E157464315F4F9010014089E /* NIDAQAnalogInputChannel.cpp */; };
 		E1690E8915E69688007DFCEF /* NIDAQPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = E105A21815E6835A007F9F38 /* NIDAQPlugin.bundle */; };
 		E1690E8E15E69851007DFCEF /* NIDAQPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1690E8C15E69851007DFCEF /* NIDAQPlugin.cpp */; };
 		E1690E9915E6ADD4007DFCEF /* NIDAQDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1690E9715E6ADD4007DFCEF /* NIDAQDevice.cpp */; };
@@ -110,6 +112,10 @@
 		E105A21D15E6835A007F9F38 /* NIDAQPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NIDAQPlugin-Info.plist"; sourceTree = "<group>"; };
 		E105A21F15E6835A007F9F38 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E105A22415E68597007F9F38 /* MWorksCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MWorksCore.framework; path = /Library/Frameworks/MWorksCore.framework; sourceTree = "<absolute>"; };
+		E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputVoltageChannel.cpp; sourceTree = "<group>"; };
+		E157463F15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputVoltageChannel.h; sourceTree = "<group>"; };
+		E157464315F4F9010014089E /* NIDAQAnalogInputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputChannel.cpp; sourceTree = "<group>"; };
+		E157464415F4F9010014089E /* NIDAQAnalogInputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputChannel.h; sourceTree = "<group>"; };
 		E1690E8C15E69851007DFCEF /* NIDAQPlugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQPlugin.cpp; sourceTree = "<group>"; };
 		E1690E9715E6ADD4007DFCEF /* NIDAQDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDevice.cpp; sourceTree = "<group>"; };
 		E1690E9815E6ADD4007DFCEF /* NIDAQDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDevice.h; sourceTree = "<group>"; };
@@ -194,6 +200,7 @@
 		E105A21B15E6835A007F9F38 /* NIDAQPlugin */ = {
 			isa = PBXGroup;
 			children = (
+				E157464215F4F8210014089E /* Channels */,
 				E1690E9815E6ADD4007DFCEF /* NIDAQDevice.h */,
 				E1690E9715E6ADD4007DFCEF /* NIDAQDevice.cpp */,
 				E1690E8C15E69851007DFCEF /* NIDAQPlugin.cpp */,
@@ -210,6 +217,17 @@
 				E1690EAD15E6B71D007DFCEF /* NIDAQPlugin-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E157464215F4F8210014089E /* Channels */ = {
+			isa = PBXGroup;
+			children = (
+				E157464415F4F9010014089E /* NIDAQAnalogInputChannel.h */,
+				E157464315F4F9010014089E /* NIDAQAnalogInputChannel.cpp */,
+				E157463F15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.h */,
+				E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */,
+			);
+			path = Channels;
 			sourceTree = "<group>";
 		};
 		E179EE5915E7D71400CC1BED /* nidaqpluginhelper */ = {
@@ -433,6 +451,8 @@
 			files = (
 				E1690E8E15E69851007DFCEF /* NIDAQPlugin.cpp in Sources */,
 				E1690E9915E6ADD4007DFCEF /* NIDAQDevice.cpp in Sources */,
+				E157464015F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp in Sources */,
+				E157464515F4F9010014089E /* NIDAQAnalogInputChannel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

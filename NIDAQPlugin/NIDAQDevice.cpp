@@ -21,6 +21,8 @@ BEGIN_NAMESPACE_MW
 
 
 const std::string NIDAQDevice::NAME("name");
+const std::string NIDAQDevice::ANALOG_INPUT_DATA_INTERVAL("analog_input_data_interval");
+const std::string NIDAQDevice::UPDATE_INTERVAL("update_interval");
 
 
 void NIDAQDevice::describeComponent(ComponentInfo &info) {
@@ -29,12 +31,16 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
     info.setSignature("iodevice/nidaq");
     
     info.addParameter(NAME, true, "Dev1");
+    info.addParameter(ANALOG_INPUT_DATA_INTERVAL, true, "1ms");
+    info.addParameter(UPDATE_INTERVAL, true, "3ms");
 }
 
 
 NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     IODevice(parameters),
     deviceName(parameters[NAME].str()),
+    analogInputDataInterval(parameters[ANALOG_INPUT_DATA_INTERVAL]),
+    updateInterval(parameters[UPDATE_INTERVAL]),
     controlChannel(NULL),
     controlMessage(NULL),
     helperPID(-1)
@@ -59,6 +65,20 @@ NIDAQDevice::~NIDAQDevice() {
 }
 
 
+void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
+                           ComponentRegistryPtr reg,
+                           boost::shared_ptr<Component> child)
+{
+    boost::shared_ptr<NIDAQAnalogInputChannel> aiChannel = boost::dynamic_pointer_cast<NIDAQAnalogInputChannel>(child);
+    if (aiChannel) {
+        analogInputChannels.push_back(aiChannel);
+        return;
+    }
+    
+    throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid channel type for NIDAQ device");
+}
+
+
 bool NIDAQDevice::initialize() {
     createControlChannel();
     createControlMessage();
@@ -72,7 +92,7 @@ bool NIDAQDevice::initialize() {
     }
     
     mprintf(M_IODEVICE_MESSAGE_DOMAIN,
-            "Connected to NIDAQ device \"%s\" (serial number = %X)",
+            "Connected to NIDAQ device \"%s\" (serial number: %X)",
             deviceName.c_str(),
             controlMessage->deviceSerialNumber);
     

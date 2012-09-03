@@ -7,6 +7,7 @@
 //
 
 #include "NIDAQDevice.h"
+#include "NIDAQAnalogInputVoltageChannel.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -15,6 +16,7 @@ BEGIN_NAMESPACE_MW
 class NIDAQPlugin : public Plugin {
     void registerComponents(shared_ptr<ComponentRegistry> registry) MW_OVERRIDE {
         registry->registerFactory<StandardComponentFactory, NIDAQDevice>();
+        registry->registerFactory<StandardComponentFactory, NIDAQAnalogInputVoltageChannel>();
     }
 };
 
