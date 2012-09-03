@@ -27,7 +27,7 @@ struct HelperControlMessage {
     class string_buffer {
     public:
         string_buffer& operator=(const char *str) {
-            std::strncpy(data.c_array(), str, size);
+            std::strncpy(data.data(), str, size);
             data.back() = '\0';  // In case str contains more than size-1 characters
             return (*this);
         }
@@ -45,7 +45,7 @@ struct HelperControlMessage {
         }
         
         std::string str() const {
-            return std::string(data.data());
+            return std::string(c_str());
         }
         
     private:
@@ -76,8 +76,8 @@ struct HelperControlMessage {
         REQUEST_CREATE_ANALOG_INPUT_TASK,
         REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL,
         REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING,
-        REQUEST_START_ALL_TASKS,
-        REQUEST_STOP_ALL_TASKS,
+        REQUEST_START_ANALOG_INPUT_TASK,
+        REQUEST_STOP_ANALOG_INPUT_TASK,
         REQUEST_SHUTDOWN,
         
         // Response codes

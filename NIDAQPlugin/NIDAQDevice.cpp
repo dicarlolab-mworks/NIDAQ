@@ -117,13 +117,13 @@ bool NIDAQDevice::initialize() {
 
 
 bool NIDAQDevice::startDeviceIO() {
-    controlMessage->code = HelperControlMessage::REQUEST_START_ALL_TASKS;
+    controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_INPUT_TASK;
     return sendHelperRequest();
 }
 
 
 bool NIDAQDevice::stopDeviceIO() {
-    controlMessage->code = HelperControlMessage::REQUEST_STOP_ALL_TASKS;
+    controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_INPUT_TASK;
     return sendHelperRequest();
 }
 

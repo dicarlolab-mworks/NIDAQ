@@ -10,8 +10,6 @@
 
 #include "Error.h"
 
-#include "NIDAQPluginHelperError.h"
-
 
 NIDAQPluginHelper::NIDAQPluginHelper(const std::string &deviceName,
                                      const std::string &wantRequestName,
@@ -89,12 +87,12 @@ void NIDAQPluginHelper::handleControlRequest(bool &done) {
             setAnalogInputSampleClockTiming(m.setAnalogInputSampleClockTiming.samplingRate);
             break;
             
-        case HelperControlMessage::REQUEST_START_ALL_TASKS:
-            startAllTasks();
+        case HelperControlMessage::REQUEST_START_ANALOG_INPUT_TASK:
+            startAnalogInputTask();
             break;
             
-        case HelperControlMessage::REQUEST_STOP_ALL_TASKS:
-            stopAllTasks();
+        case HelperControlMessage::REQUEST_STOP_ANALOG_INPUT_TASK:
+            stopAnalogInputTask();
             break;
             
         case HelperControlMessage::REQUEST_SHUTDOWN:
@@ -118,32 +116,26 @@ void NIDAQPluginHelper::createAnalogInputTask() {
 
 
 void NIDAQPluginHelper::createAnalogInputVoltageChannel(unsigned int channelNumber, double minVal, double maxVal) {
-    if (!analogInputTask) {
-        throw NIDAQPluginHelperError("Analog input task has not been created");
-    }
+    validateAnalogInputTask();
     analogInputTask->addVoltageChannel(channelNumber, minVal, maxVal);
 }
 
 
 void NIDAQPluginHelper::setAnalogInputSampleClockTiming(double samplingRate) {
-    if (!analogInputTask) {
-        throw NIDAQPluginHelperError("Analog input task has not been created");
-    }
+    validateAnalogInputTask();
     analogInputTask->setSampleClockTiming(samplingRate);
 }
 
 
-void NIDAQPluginHelper::startAllTasks() {
-    if (analogInputTask) {
-        analogInputTask->start();
-    }
+void NIDAQPluginHelper::startAnalogInputTask() {
+    validateAnalogInputTask();
+    analogInputTask->start();
 }
 
 
-void NIDAQPluginHelper::stopAllTasks() {
-    if (analogInputTask) {
-        analogInputTask->stop();
-    }
+void NIDAQPluginHelper::stopAnalogInputTask() {
+    validateAnalogInputTask();
+    analogInputTask->stop();
 }
 
 

@@ -17,6 +17,8 @@
 #include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
 
+#include "NIDAQPluginHelperError.h"
+
 
 class NIDAQPluginHelper {
     
@@ -31,12 +33,16 @@ public:
 private:
     void handleControlRequest(bool &done);
     
+    void validateAnalogInputTask() {
+        if (!analogInputTask) {
+            throw NIDAQPluginHelperError("Analog input task has not been created");
+        }
+    }
     void createAnalogInputTask();
     void createAnalogInputVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
     void setAnalogInputSampleClockTiming(double samplingRate);
-    
-    void startAllTasks();
-    void stopAllTasks();
+    void startAnalogInputTask();
+    void stopAnalogInputTask();
     
     nidaq::Device device;
     IPCRequestResponse ipc;
@@ -48,3 +54,31 @@ private:
 
 
 #endif /* !defined(__NIDAQ__NIDAQPluginHelper__) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
