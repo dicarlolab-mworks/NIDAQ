@@ -17,40 +17,60 @@
 #include <boost/format.hpp>
 
 
-template <std::size_t N>
-class char_array : public boost::array<char, N> {
-    
-    typedef boost::array<char, N> base_type;
-    
-public:
-    char_array& operator=(const boost::format &f) {
-        return (*this = f.str());
-    }
-    
-    char_array& operator=(const std::string &s) {
-        return (*this = s.c_str());
-    }
-    
-    char_array& operator=(const char *str) {
-        std::strncpy(base_type::c_array(), str, N);
-        base_type::back() = '\0';  // In case str contains more than N-1 characters
-        return (*this);
-    }
-    
-};
-
-
 struct HelperControlMessage {
+    
+    //
+    // Type definitions (portable between x86_64 and i386)
+    //
+    
+    template <std::size_t size>
+    class string_buffer {
+    public:
+        string_buffer& operator=(const char *str) {
+            std::strncpy(data.c_array(), str, size);
+            data.back() = '\0';  // In case str contains more than size-1 characters
+            return (*this);
+        }
+        
+        string_buffer& operator=(const std::string &s) {
+            return (*this = s.c_str());
+        }
+        
+        string_buffer& operator=(const boost::format &f) {
+            return (*this = f.str());
+        }
+        
+        const char* c_str() const {
+            return data.data();
+        }
+        
+        std::string str() const {
+            return std::string(data.data());
+        }
+        
+    private:
+        boost::array<char, size> data;
+    };
     
     typedef boost::int64_t signed_int;
     typedef boost::uint64_t unsigned_int;
-    typedef char_array<1024> message_buffer;
+    typedef string_buffer<1024> message_buffer;
+    
+    //
+    // Zeroing constructor
+    //
+    
+    HelperControlMessage() {
+        std::memset(this, 0, sizeof(*this));
+    }
     
     //
     // Message code
     //
     
     enum {
+        UNKNOWN_MESSAGE_CODE = 0,
+        
         // Request codes
         REQUEST_GET_DEVICE_SERIAL_NUMBER,
         REQUEST_SHUTDOWN,
@@ -73,21 +93,22 @@ struct HelperControlMessage {
         // Response data
         //
         
+        // Device serial number
         unsigned_int deviceSerialNumber;
         
+        // Description of invalid or unrecognized request
         struct {
-            // Description of invalid or unrecognized request
             message_buffer info;
         } badRequest;
         
+        // NIDAQmxBase error info
         struct {
-            // NIDAQmxBase error info
             signed_int code;
             message_buffer message;
         } nidaqError;
         
+        // what() from caught exception
         struct {
-            // what() from caught exception
             message_buffer what;
         } exception;
     };
