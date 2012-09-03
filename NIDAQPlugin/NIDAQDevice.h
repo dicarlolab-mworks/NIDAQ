@@ -40,6 +40,8 @@ public:
                   boost::shared_ptr<Component> child) MW_OVERRIDE;
     
     bool initialize() MW_OVERRIDE;
+    bool startDeviceIO() MW_OVERRIDE;
+    bool stopDeviceIO() MW_OVERRIDE;
     
 private:
     void createControlChannel();
@@ -50,9 +52,9 @@ private:
     void spawnHelper();
     void reapHelper();
     
-    bool sendHelperRequest();
-    
     bool createTasks();
+    
+    bool sendHelperRequest();
     
     const std::string deviceName;
     MWTime analogInputDataInterval;

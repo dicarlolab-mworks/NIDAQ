@@ -89,6 +89,14 @@ void NIDAQPluginHelper::handleControlRequest(bool &done) {
             setAnalogInputSampleClockTiming(m.setAnalogInputSampleClockTiming.samplingRate);
             break;
             
+        case HelperControlMessage::REQUEST_START_ALL_TASKS:
+            startAllTasks();
+            break;
+            
+        case HelperControlMessage::REQUEST_STOP_ALL_TASKS:
+            stopAllTasks();
+            break;
+            
         case HelperControlMessage::REQUEST_SHUTDOWN:
             done = true;
             break;
@@ -124,6 +132,19 @@ void NIDAQPluginHelper::setAnalogInputSampleClockTiming(double samplingRate) {
     analogInputTask->setSampleClockTiming(samplingRate);
 }
 
+
+void NIDAQPluginHelper::startAllTasks() {
+    if (analogInputTask) {
+        analogInputTask->start();
+    }
+}
+
+
+void NIDAQPluginHelper::stopAllTasks() {
+    if (analogInputTask) {
+        analogInputTask->stop();
+    }
+}
 
 
 

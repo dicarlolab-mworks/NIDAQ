@@ -35,6 +35,9 @@ private:
     void createAnalogInputVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
     void setAnalogInputSampleClockTiming(double samplingRate);
     
+    void startAllTasks();
+    void stopAllTasks();
+    
     nidaq::Device device;
     IPCRequestResponse ipc;
     HelperControlMessage &m;

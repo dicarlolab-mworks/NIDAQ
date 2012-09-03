@@ -116,36 +116,15 @@ bool NIDAQDevice::initialize() {
 }
 
 
-bool NIDAQDevice::createTasks() {
-    if (analogInputChannels.size() > 0) {
-        // Create the analog input task
-        controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_TASK;
-        if (!sendHelperRequest()) {
-            return false;
-        }
-        
-        // Create the analog input channels
-        BOOST_FOREACH(boost::shared_ptr<NIDAQAnalogInputVoltageChannel> channel, analogInputChannels) {
-            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL;
-            
-            controlMessage->createAnalogInputVoltageChannel.channelNumber = channel->getChannelNumber();
-            controlMessage->createAnalogInputVoltageChannel.minVal = channel->getRangeMin();
-            controlMessage->createAnalogInputVoltageChannel.maxVal = channel->getRangeMax();
-            
-            if (!sendHelperRequest()) {
-                return false;
-            }
-        }
-        
-        // Set the task's sample clock timing
-        controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING;
-        controlMessage->setAnalogInputSampleClockTiming.samplingRate = 1.0 / (analogInputDataInterval / 1e6);
-        if (!sendHelperRequest()) {
-            return false;
-        }
-    }
-    
-    return true;
+bool NIDAQDevice::startDeviceIO() {
+    controlMessage->code = HelperControlMessage::REQUEST_START_ALL_TASKS;
+    return sendHelperRequest();
+}
+
+
+bool NIDAQDevice::stopDeviceIO() {
+    controlMessage->code = HelperControlMessage::REQUEST_STOP_ALL_TASKS;
+    return sendHelperRequest();
 }
 
 
@@ -229,6 +208,39 @@ void NIDAQDevice::reapHelper() {
                  PLUGIN_HELPER_EXECUTABLE,
                  exitStatus);
     }
+}
+
+
+bool NIDAQDevice::createTasks() {
+    if (analogInputChannels.size() > 0) {
+        // Create the analog input task
+        controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_TASK;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        // Create the analog input channels
+        BOOST_FOREACH(boost::shared_ptr<NIDAQAnalogInputVoltageChannel> channel, analogInputChannels) {
+            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL;
+            
+            controlMessage->createAnalogInputVoltageChannel.channelNumber = channel->getChannelNumber();
+            controlMessage->createAnalogInputVoltageChannel.minVal = channel->getRangeMin();
+            controlMessage->createAnalogInputVoltageChannel.maxVal = channel->getRangeMax();
+            
+            if (!sendHelperRequest()) {
+                return false;
+            }
+        }
+        
+        // Set analog input task's sample clock timing
+        controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING;
+        controlMessage->setAnalogInputSampleClockTiming.samplingRate = 1.0 / (analogInputDataInterval / 1e6);
+        if (!sendHelperRequest()) {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 
