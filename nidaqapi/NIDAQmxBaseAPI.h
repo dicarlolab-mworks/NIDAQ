@@ -18,10 +18,14 @@
 #define ASSERT_SAME_TYPE(T1, T2)  BOOST_STATIC_ASSERT((boost::is_same<T1, T2>::value))
 
 
-namespace nidaqmxbase_type_assertions {
+namespace nidaqmxbase_static_assertions {
+    // Confirm our assumptions about type identities
     ASSERT_SAME_TYPE(float32, float);
     ASSERT_SAME_TYPE(float64, double);
     ASSERT_SAME_TYPE(TaskHandle, unsigned long *);
+    
+    // Confirm that both negative and positive status codes denote failure
+    BOOST_STATIC_ASSERT(DAQmxFailed(-1) && DAQmxFailed(1) && !DAQmxFailed(0));
 }
 
 

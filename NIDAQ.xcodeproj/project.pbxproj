@@ -116,6 +116,7 @@
 		E157463F15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputVoltageChannel.h; sourceTree = "<group>"; };
 		E157464315F4F9010014089E /* NIDAQAnalogInputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputChannel.cpp; sourceTree = "<group>"; };
 		E157464415F4F9010014089E /* NIDAQAnalogInputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputChannel.h; sourceTree = "<group>"; };
+		E157464615F50AAE0014089E /* NIDAQPluginHelperError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQPluginHelperError.h; sourceTree = "<group>"; };
 		E1690E8C15E69851007DFCEF /* NIDAQPlugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQPlugin.cpp; sourceTree = "<group>"; };
 		E1690E9715E6ADD4007DFCEF /* NIDAQDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDevice.cpp; sourceTree = "<group>"; };
 		E1690E9815E6ADD4007DFCEF /* NIDAQDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDevice.h; sourceTree = "<group>"; };
@@ -235,6 +236,7 @@
 			children = (
 				E169B0B215ED50E700408B75 /* IPCRequestResponse.h */,
 				E1A7226915EE4BD6006671AD /* HelperControlMessage.h */,
+				E157464615F50AAE0014089E /* NIDAQPluginHelperError.h */,
 				E1A7227415EEA72C006671AD /* NIDAQPluginHelper.h */,
 				E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */,
 				E179EE5A15E7D71400CC1BED /* main.cpp */,

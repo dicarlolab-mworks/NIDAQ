@@ -73,6 +73,9 @@ struct HelperControlMessage {
         
         // Request codes
         REQUEST_GET_DEVICE_SERIAL_NUMBER,
+        REQUEST_CREATE_ANALOG_INPUT_TASK,
+        REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL,
+        REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING,
         REQUEST_SHUTDOWN,
         
         // Response codes
@@ -89,6 +92,20 @@ struct HelperControlMessage {
     //
     
     union {
+        //
+        // Request data
+        //
+        
+        struct {
+            unsigned_int channelNumber;
+            double minVal;
+            double maxVal;
+        } createAnalogInputVoltageChannel;
+        
+        struct {
+            double samplingRate;
+        } setAnalogInputSampleClockTiming;
+        
         //
         // Response data
         //

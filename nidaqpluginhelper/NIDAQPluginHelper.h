@@ -9,7 +9,10 @@
 #ifndef __NIDAQ__NIDAQPluginHelper__
 #define __NIDAQ__NIDAQPluginHelper__
 
+#include <boost/scoped_ptr.hpp>
+
 #include "Device.h"
+#include "AnalogInputTask.h"
 
 #include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
@@ -28,9 +31,15 @@ public:
 private:
     void handleControlRequest(bool &done);
     
+    void createAnalogInputTask();
+    void createAnalogInputVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
+    void setAnalogInputSampleClockTiming(double samplingRate);
+    
     nidaq::Device device;
     IPCRequestResponse ipc;
     HelperControlMessage &m;
+    
+    boost::scoped_ptr<nidaq::AnalogInputTask> analogInputTask;
     
 };
 

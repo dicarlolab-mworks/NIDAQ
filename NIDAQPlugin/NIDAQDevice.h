@@ -17,7 +17,7 @@
 #include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
 
-#include "NIDAQAnalogInputChannel.h"
+#include "NIDAQAnalogInputVoltageChannel.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -28,7 +28,7 @@ class NIDAQDevice : public IODevice {
 public:
     static const std::string NAME;
     static const std::string ANALOG_INPUT_DATA_INTERVAL;
-    static const std::string UPDATE_INTERVAL;
+    static const std::string ANALOG_INPUT_UPDATE_INTERVAL;
     
     static void describeComponent(ComponentInfo &info);
     
@@ -52,10 +52,12 @@ private:
     
     bool sendHelperRequest();
     
+    bool createTasks();
+    
     const std::string deviceName;
     MWTime analogInputDataInterval;
-    MWTime updateInterval;
-    std::vector< boost::shared_ptr<NIDAQAnalogInputChannel> > analogInputChannels;
+    MWTime analogInputUpdateInterval;
+    std::vector< boost::shared_ptr<NIDAQAnalogInputVoltageChannel> > analogInputChannels;
     
     std::string wantRequestName, wantResponseName;
     IPCRequestResponse *controlChannel;

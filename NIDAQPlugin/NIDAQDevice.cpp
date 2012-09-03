@@ -14,6 +14,7 @@
 
 #include <openssl/rand.h>
 
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
 
@@ -22,7 +23,7 @@ BEGIN_NAMESPACE_MW
 
 const std::string NIDAQDevice::NAME("name");
 const std::string NIDAQDevice::ANALOG_INPUT_DATA_INTERVAL("analog_input_data_interval");
-const std::string NIDAQDevice::UPDATE_INTERVAL("update_interval");
+const std::string NIDAQDevice::ANALOG_INPUT_UPDATE_INTERVAL("analog_input_update_interval");
 
 
 void NIDAQDevice::describeComponent(ComponentInfo &info) {
@@ -32,7 +33,7 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
     
     info.addParameter(NAME, true, "Dev1");
     info.addParameter(ANALOG_INPUT_DATA_INTERVAL, true, "1ms");
-    info.addParameter(UPDATE_INTERVAL, true, "3ms");
+    info.addParameter(ANALOG_INPUT_UPDATE_INTERVAL, true, "3ms");
 }
 
 
@@ -40,15 +41,22 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     IODevice(parameters),
     deviceName(parameters[NAME].str()),
     analogInputDataInterval(parameters[ANALOG_INPUT_DATA_INTERVAL]),
-    updateInterval(parameters[UPDATE_INTERVAL]),
+    analogInputUpdateInterval(parameters[ANALOG_INPUT_UPDATE_INTERVAL]),
     controlChannel(NULL),
     controlMessage(NULL),
     helperPID(-1)
 {
+    if (analogInputDataInterval <= 0) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid analog input data interval");
+    }
+    if (analogInputUpdateInterval <= 0) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid analog input update interval");
+    }
+    
     boost::uint64_t uniqueID;
     
     if (RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID)) < 0) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Unable to generate random name for shared memory object");
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Unable to generate random name for shared memory objects");
     }
     
     std::string hexUniqueID = (boost::format("%x") % uniqueID).str();
@@ -69,7 +77,7 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
                            ComponentRegistryPtr reg,
                            boost::shared_ptr<Component> child)
 {
-    boost::shared_ptr<NIDAQAnalogInputChannel> aiChannel = boost::dynamic_pointer_cast<NIDAQAnalogInputChannel>(child);
+    boost::shared_ptr<NIDAQAnalogInputVoltageChannel> aiChannel = boost::dynamic_pointer_cast<NIDAQAnalogInputVoltageChannel>(child);
     if (aiChannel) {
         analogInputChannels.push_back(aiChannel);
         return;
@@ -80,6 +88,10 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
 
 
 bool NIDAQDevice::initialize() {
+    if (analogInputChannels.empty()) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device must have at least one channel");
+    }
+    
     createControlChannel();
     createControlMessage();
     spawnHelper();
@@ -95,6 +107,43 @@ bool NIDAQDevice::initialize() {
             "Connected to NIDAQ device \"%s\" (serial number: %X)",
             deviceName.c_str(),
             controlMessage->deviceSerialNumber);
+    
+    if (!createTasks()) {
+        return false;
+    }
+    
+    return true;
+}
+
+
+bool NIDAQDevice::createTasks() {
+    if (analogInputChannels.size() > 0) {
+        // Create the analog input task
+        controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_TASK;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        // Create the analog input channels
+        BOOST_FOREACH(boost::shared_ptr<NIDAQAnalogInputVoltageChannel> channel, analogInputChannels) {
+            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL;
+            
+            controlMessage->createAnalogInputVoltageChannel.channelNumber = channel->getChannelNumber();
+            controlMessage->createAnalogInputVoltageChannel.minVal = channel->getRangeMin();
+            controlMessage->createAnalogInputVoltageChannel.maxVal = channel->getRangeMax();
+            
+            if (!sendHelperRequest()) {
+                return false;
+            }
+        }
+        
+        // Set the task's sample clock timing
+        controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING;
+        controlMessage->setAnalogInputSampleClockTiming.samplingRate = 1.0 / (analogInputDataInterval / 1e6);
+        if (!sendHelperRequest()) {
+            return false;
+        }
+    }
     
     return true;
 }
