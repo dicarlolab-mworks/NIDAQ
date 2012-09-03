@@ -11,21 +11,26 @@
 
 #include "Device.h"
 
+#include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
 
 
 class NIDAQPluginHelper {
     
 public:
-    NIDAQPluginHelper(const std::string &deviceName, HelperControlChannel &controlChannel);
+    NIDAQPluginHelper(const std::string &deviceName,
+                      const std::string &wantRequestName,
+                      const std::string &wantResponseName,
+                      HelperControlMessage &message);
     
     bool handleControlRequests();
     
 private:
-    void handleControlRequest(HelperControlMessage &m, bool &done);
+    void handleControlRequest(bool &done);
     
     nidaq::Device device;
-    HelperControlChannel &controlChannel;
+    IPCRequestResponse ipc;
+    HelperControlMessage &m;
     
 };
 

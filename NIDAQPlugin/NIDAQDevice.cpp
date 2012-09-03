@@ -36,28 +36,37 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     IODevice(parameters),
     deviceName(parameters[NAME].str()),
     controlChannel(NULL),
+    controlMessage(NULL),
     helperPID(-1)
 {
-    createSharedMemory();
+    boost::uint64_t uniqueID;
+    
+    if (RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID)) < 0) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Unable to generate random name for shared memory object");
+    }
+    
+    std::string hexUniqueID = (boost::format("%x") % uniqueID).str();
+    wantRequestName = hexUniqueID + "_1";
+    wantResponseName = hexUniqueID + "_2";
+    sharedMemoryName = "nidaqplugin_" + hexUniqueID;
 }
 
 
 NIDAQDevice::~NIDAQDevice() {
     reapHelper();
+    boost::interprocess::shared_memory_object::remove(sharedMemoryName.c_str());
     destroyControlChannel();
-    destroySharedMemory();
 }
 
 
 bool NIDAQDevice::initialize() {
     createControlChannel();
+    createControlMessage();
     spawnHelper();
     
     mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Looking for NIDAQ device \"%s\"...", deviceName.c_str());
     
-    HelperControlMessage &m = controlChannel->getMessage();
-    m.code = HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER;
-    
+    controlMessage->code = HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER;
     if (!sendHelperRequest()) {
         return false;
     }
@@ -65,21 +74,24 @@ bool NIDAQDevice::initialize() {
     mprintf(M_IODEVICE_MESSAGE_DOMAIN,
             "Connected to NIDAQ device \"%s\" (serial number = %X)",
             deviceName.c_str(),
-            m.deviceSerialNumber);
+            controlMessage->deviceSerialNumber);
     
     return true;
 }
 
 
-void NIDAQDevice::createSharedMemory() {
-    boost::uint64_t uniqueID;
-    
-    if (RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID)) < 0) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Unable to generate random name for shared memory object");
-    }
-    
-    sharedMemoryName = (boost::format("nidaqplugin_%x") % uniqueID).str();
-    
+void NIDAQDevice::createControlChannel() {
+    controlChannel = new IPCRequestResponse(boost::interprocess::create_only, wantRequestName, wantResponseName);
+}
+
+
+void NIDAQDevice::destroyControlChannel() {
+    delete controlChannel;
+    IPCRequestResponse::remove(wantRequestName, wantResponseName);
+}
+
+
+void NIDAQDevice::createControlMessage() {
     // Don't attempt to destroy the shared memory here, since it's possible (although very unlikely) that another
     // NIDAQDevice instance has already generated and used an identical sharedMemoryName.  In that case, it's better
     // just to fail and let the user reload the experiment.
@@ -87,31 +99,22 @@ void NIDAQDevice::createSharedMemory() {
     sharedMemory = boost::interprocess::shared_memory_object(boost::interprocess::create_only,
                                                              sharedMemoryName.c_str(),
                                                              boost::interprocess::read_write);
-}
-
-
-void NIDAQDevice::destroySharedMemory() {
-    boost::interprocess::shared_memory_object::remove(sharedMemoryName.c_str());
-}
-
-
-void NIDAQDevice::createControlChannel() {
-    sharedMemory.truncate(sizeof(HelperControlChannel));
+    sharedMemory.truncate(sizeof(HelperControlMessage));
     mappedRegion = boost::interprocess::mapped_region(sharedMemory, boost::interprocess::read_write);
     void *address = mappedRegion.get_address();
-    controlChannel = new(address) HelperControlChannel;
-}
-
-
-void NIDAQDevice::destroyControlChannel() {
-    if (controlChannel) {
-        controlChannel->~HelperControlChannel();
-    }
+    controlMessage = new(address) HelperControlMessage;
 }
 
 
 void NIDAQDevice::spawnHelper() {
-    const char * const argv[] = { PLUGIN_HELPER_EXECUTABLE, deviceName.c_str(), sharedMemoryName.c_str(), 0 };
+    const char * const argv[] = {
+        PLUGIN_HELPER_EXECUTABLE,
+        deviceName.c_str(),
+        wantRequestName.c_str(),
+        wantResponseName.c_str(),
+        sharedMemoryName.c_str(),
+        0
+    };
     
     int status = posix_spawn(&helperPID,
                              PLUGIN_HELPERS_DIR "/" PLUGIN_HELPER_EXECUTABLE,
@@ -133,7 +136,7 @@ void NIDAQDevice::reapHelper() {
         return;
     }
     
-    controlChannel->getMessage().code = HelperControlMessage::REQUEST_SHUTDOWN;
+    controlMessage->code = HelperControlMessage::REQUEST_SHUTDOWN;
     sendHelperRequest();
     
     int status;
@@ -161,13 +164,13 @@ void NIDAQDevice::reapHelper() {
 
 
 bool NIDAQDevice::sendHelperRequest() {
-    controlChannel->sendRequest();
-    if (!(controlChannel->receiveResponse(boost::posix_time::seconds(10)))) {
+    controlChannel->postRequest();
+    if (!(controlChannel->waitForResponse(boost::posix_time::seconds(10)))) {
         merror(M_IODEVICE_MESSAGE_DOMAIN, "Control request to %s timed out", PLUGIN_HELPER_EXECUTABLE);
         return false;
     }
     
-    HelperControlMessage &m = controlChannel->getMessage();
+    HelperControlMessage &m = *controlMessage;
     const HelperControlMessage::signed_int responseCode = m.code;
     
     switch (responseCode) {

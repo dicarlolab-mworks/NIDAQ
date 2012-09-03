@@ -11,26 +11,28 @@
 #include "Error.h"
 
 
-NIDAQPluginHelper::NIDAQPluginHelper(const std::string &deviceName, HelperControlChannel &controlChannel) :
+NIDAQPluginHelper::NIDAQPluginHelper(const std::string &deviceName,
+                                     const std::string &wantRequestName,
+                                     const std::string &wantResponseName,
+                                     HelperControlMessage &message) :
     device(deviceName),
-    controlChannel(controlChannel)
+    ipc(boost::interprocess::open_only, wantRequestName, wantResponseName),
+    m(message)
 { }
 
 
 bool NIDAQPluginHelper::handleControlRequests() {
-    const boost::posix_time::time_duration receiveTimeout = boost::posix_time::minutes(60);
-    
-    HelperControlMessage &m = controlChannel.getMessage();
+    const boost::posix_time::time_duration timeout = boost::posix_time::minutes(60);
     bool done = false;
     
     while (!done) {
-        if (!(controlChannel.receiveRequest(receiveTimeout))) {
+        if (!(ipc.waitForRequest(timeout))) {
             return false;
         }
         
         try {
             
-            handleControlRequest(m, done);
+            handleControlRequest(done);
             
         } catch (const nidaq::Error &e) {
             
@@ -50,14 +52,14 @@ bool NIDAQPluginHelper::handleControlRequests() {
             
         }
         
-        controlChannel.sendResponse();
+        ipc.postResponse();
     }
     
     return true;
 }
 
 
-void NIDAQPluginHelper::handleControlRequest(HelperControlMessage &m, bool &done) {
+void NIDAQPluginHelper::handleControlRequest(bool &done) {
     const HelperControlMessage::signed_int requestCode = m.code;
     HelperControlMessage::signed_int responseCode = HelperControlMessage::RESPONSE_OK;
     

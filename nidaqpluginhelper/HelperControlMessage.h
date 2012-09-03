@@ -16,8 +16,6 @@
 #include <boost/cstdint.hpp>
 #include <boost/format.hpp>
 
-#include "IPCRequestResponse.h"
-
 
 template <std::size_t N>
 class char_array : public boost::array<char, N> {
@@ -94,10 +92,7 @@ struct HelperControlMessage {
         } exception;
     };
     
-};
-
-
-typedef IPCRequestResponse<HelperControlMessage> HelperControlChannel;
+} __attribute__((aligned (8)));;
 
 
 #endif /* !defined(NIDAQ_HelperControlMessage_h) */

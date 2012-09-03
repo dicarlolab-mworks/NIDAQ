@@ -17,22 +17,24 @@
 
 int main(int argc, const char * argv[])
 {
-    if (argc != 3) {
-        std::cerr << argv[0] << " requires 2 arguments" << std::endl;
+    if (argc != 5) {
+        std::cerr << argv[0] << " requires 4 arguments" << std::endl;
         return EXIT_FAILURE;
     }
     
     const char *deviceName = argv[1];
-    const char *sharedMemoryName = argv[2];
+    const char *wantRequestName = argv[2];
+    const char *wantResponseName = argv[3];
+    const char *sharedMemoryName = argv[4];
     
     boost::interprocess::shared_memory_object sharedMemory(boost::interprocess::open_only,
                                                            sharedMemoryName,
                                                            boost::interprocess::read_write);
     boost::interprocess::mapped_region mappedRegion(sharedMemory, boost::interprocess::read_write);
     void *address = mappedRegion.get_address();
-    HelperControlChannel &controlChannel = *(static_cast<HelperControlChannel *>(address));
+    HelperControlMessage &message = *(static_cast<HelperControlMessage *>(address));
     
-    NIDAQPluginHelper helper(deviceName, controlChannel);
+    NIDAQPluginHelper helper(deviceName, wantRequestName, wantResponseName, message);
     bool success = helper.handleControlRequests();
     
     return (success ? EXIT_SUCCESS : EXIT_FAILURE);

@@ -12,6 +12,7 @@
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
 
+#include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
 
 
@@ -31,11 +32,10 @@ public:
     bool initialize() MW_OVERRIDE;
     
 private:
-    void createSharedMemory();
-    void destroySharedMemory();
-    
     void createControlChannel();
     void destroyControlChannel();
+    
+    void createControlMessage();
     
     void spawnHelper();
     void reapHelper();
@@ -44,11 +44,14 @@ private:
     
     const std::string deviceName;
     
+    std::string wantRequestName, wantResponseName;
+    IPCRequestResponse *controlChannel;
+    
     std::string sharedMemoryName;
     boost::interprocess::shared_memory_object sharedMemory;
     boost::interprocess::mapped_region mappedRegion;
     
-    HelperControlChannel *controlChannel;
+    HelperControlMessage *controlMessage;
     
     pid_t helperPID;
     

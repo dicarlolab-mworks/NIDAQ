@@ -9,91 +9,81 @@
 #ifndef NIDAQ_IPCRequestResponse_h
 #define NIDAQ_IPCRequestResponse_h
 
-#include <boost/cstdint.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/alignment_of.hpp>
-#include <boost/type_traits/is_pod.hpp>
+#include <string>
 
-// Always use spinlock-based interprocess synchronization mechanisms, since the POSIX-based variants (which at
-// present do not work correctly on OS X, but may someday) aren't portable between x86_64 and i386
-#define BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION
+#include <boost/interprocess/sync/named_semaphore.hpp>
 
-#include <boost/interprocess/sync/interprocess_semaphore.hpp>
-
-
-#define ASSERT_SIZE_AND_ALIGNMENT(type, size, alignment) \
-    BOOST_STATIC_ASSERT(sizeof(type) == (size) && boost::alignment_of<type>::value == (alignment))
-
-// boost::is_pod can recognize POD classes and structs only if BOOST_IS_POD is defined
-#ifdef BOOST_IS_POD
-#  define ASSERT_IS_POD(type)  BOOST_STATIC_ASSERT(boost::is_pod<type>::value)
-#else
-#  include <boost/type_traits/is_class.hpp>
-#  define ASSERT_IS_POD(type)  BOOST_STATIC_ASSERT(boost::is_pod<type>::value || boost::is_class<type>::value)
+// We insist that boost::interprocess::named_semaphore use POSIX named semaphores, because the fallback
+// implementation spins in wait() (meaning the helper process would use 100% of a CPU core just by sitting
+// and waiting for the next request)
+#ifndef BOOST_INTERPROCESS_NAMED_SEMAPHORE_USES_POSIX_SEMAPHORES
+#  error POSIX named semaphores are not available
 #endif
 
 
-class IPCRequestResponseBase : boost::noncopyable {
+class IPCRequestResponse {
     
 public:
+    typedef boost::interprocess::create_only_t create_only_t;
+    typedef boost::interprocess::open_only_t open_only_t;
     typedef boost::posix_time::time_duration time_duration;
     
-    IPCRequestResponseBase() :
-        wantRequest(0),
-        wantResponse(0)
+    static void remove(const std::string &wantRequestName, const std::string &wantResponseName) {
+        named_semaphore::remove(wantRequestName.c_str());
+        named_semaphore::remove(wantResponseName.c_str());
+    }
+    
+    IPCRequestResponse(create_only_t createOnly,
+                       const std::string &wantRequestName,
+                       const std::string &wantResponseName) :
+        wantRequest(createOnly, wantRequestName.c_str(), 0),
+        wantResponse(createOnly, wantResponseName.c_str(), 0)
     { }
     
-    void sendRequest() {
-        send(wantRequest);
+    IPCRequestResponse(open_only_t openOnly,
+                       const std::string &wantRequestName,
+                       const std::string &wantResponseName) :
+        wantRequest(openOnly, wantRequestName.c_str()),
+        wantResponse(openOnly, wantResponseName.c_str())
+    { }
+    
+    void postRequest() {
+        post(wantRequest);
     }
     
-    bool receiveRequest(const time_duration &timeout) {
-        return receive(wantRequest, timeout);
+    bool waitForRequest(const time_duration &timeout) {
+        return wait(wantRequest, timeout);
     }
     
-    void sendResponse() {
-        send(wantResponse);
+    void postResponse() {
+        post(wantResponse);
     }
     
-    bool receiveResponse(const time_duration &timeout) {
-        return receive(wantResponse, timeout);
+    bool waitForResponse(const time_duration &timeout) {
+        return wait(wantResponse, timeout);
     }
     
 private:
-    typedef boost::interprocess::interprocess_semaphore interprocess_semaphore;
+    typedef boost::interprocess::named_semaphore named_semaphore;
     typedef boost::posix_time::ptime ptime;
     typedef boost::date_time::microsec_clock<ptime> microsec_clock;
     
-    void send(interprocess_semaphore &wantMessage) {
+    void post(named_semaphore &wantMessage) {
         wantMessage.post();
     }
     
-    bool receive(interprocess_semaphore &wantMessage, const time_duration &timeout) {
+    bool wait(named_semaphore &wantMessage, const time_duration &timeout) {
+#ifdef BOOST_INTERPROCESS_POSIX_TIMEOUTS
         const ptime expirationTime = microsec_clock::universal_time() + timeout;
         return wantMessage.timed_wait(expirationTime);
+#else
+        // timed_wait() would spin, so just ignore the timeout and do a regular wait
+        wantMessage.wait();
+        return true;
+#endif
     }
     
-    interprocess_semaphore wantRequest, wantResponse;
-    
-    ASSERT_SIZE_AND_ALIGNMENT(interprocess_semaphore, 4, 4);
-    
-} __attribute__((aligned (8)));
-
-
-template <typename MessageType>
-class IPCRequestResponse : public IPCRequestResponseBase {
-    
-public:
-    MessageType& getMessage() {
-        return message;
-    }
-    
-private:
-    MessageType message;
-    
-    ASSERT_SIZE_AND_ALIGNMENT(IPCRequestResponseBase, 8, 8);
-    ASSERT_IS_POD(MessageType);
+    named_semaphore wantRequest, wantResponse;
     
 };
 
