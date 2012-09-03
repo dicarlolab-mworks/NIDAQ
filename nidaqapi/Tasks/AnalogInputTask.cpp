@@ -39,23 +39,24 @@ void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
                                                  NULL);
     Error::throwIfFailed(error);
     
-    addChannel(physicalChannel);
+    addChannel();
 }
 
 
-int32_t AnalogInputTask::read(std::vector<double> &samples,
+int32_t AnalogInputTask::read(double &firstSample,
+                              std::size_t numSamples,
                               double timeout,
                               bool interleaved)
 {
-    int32_t numSampsPerChan = getNumSamplesPerChannel(samples);
+    int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanRead;
     
     int32_t error = DAQmxBaseReadAnalogF64(getHandle(),
                                            numSampsPerChan,
                                            timeout,
                                            (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
-                                           &(samples.front()),
-                                           samples.size(),
+                                           &firstSample,
+                                           numSamples,
                                            &sampsPerChanRead,
                                            NULL);
     Error::throwIfFailed(error);

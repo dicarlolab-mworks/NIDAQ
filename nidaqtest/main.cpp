@@ -79,7 +79,7 @@ static void analogRepeater(const nidaq::Device &device) {
     const double runTime = 10.0;
     const double timeout = 10.0;
     
-    std::vector<double> samples(1000, 0.0);
+    boost::array<double, 1000> samples;
     
     // Analog input task
     std::cout << "Creating analog input task" << std::endl;

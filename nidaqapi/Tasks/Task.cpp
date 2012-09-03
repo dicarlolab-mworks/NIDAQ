@@ -17,6 +17,7 @@ BEGIN_NAMESPACE_NIDAQ
 
 Task::Task(const Device &device, const std::string &name) :
     deviceName(device.getName()),
+    numChannels(0),
     running(false)
 {
     std::string taskName = deviceName + "/" + name;

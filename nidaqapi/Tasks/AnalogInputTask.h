@@ -9,6 +9,8 @@
 #ifndef __NIDAQ__AnalogInputTask__
 #define __NIDAQ__AnalogInputTask__
 
+#include <boost/array.hpp>
+
 #include "Task.h"
 
 
@@ -32,10 +34,19 @@ public:
                            double maxVal,
                            TerminalConfig termConfig = TerminalConfigDefault);
     
-    int32_t read(std::vector<double> &samples, double timeout, bool interleaved = false);
+    int32_t read(std::vector<double> &samples, double timeout, bool interleaved = false) {
+        return read(samples.front(), samples.size(), timeout, interleaved);
+    }
+    
+    template <std::size_t numSamples>
+    int32_t read(boost::array<double, numSamples> &samples, double timeout, bool interleaved = false) {
+        return read(samples.front(), numSamples, timeout, interleaved);
+    }
     
 private:
     static int32_t getTerminalConfigValue(TerminalConfig termConfig);
+    
+    int32_t read(double &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     
 };
 
@@ -44,3 +55,29 @@ END_NAMESPACE_NIDAQ
 
 
 #endif /* !defined(__NIDAQ__AnalogInputTask__) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

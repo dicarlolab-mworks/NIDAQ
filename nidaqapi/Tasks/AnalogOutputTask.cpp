@@ -37,15 +37,16 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
                                                  NULL);
     Error::throwIfFailed(error);
     
-    addChannel(physicalChannel);
+    addChannel();
 }
 
 
-int32_t AnalogOutputTask::write(const std::vector<double> &samples,
+int32_t AnalogOutputTask::write(const double &firstSample,
+                                std::size_t numSamples,
                                 double timeout,
                                 bool interleaved)
 {
-    int32_t numSampsPerChan = getNumSamplesPerChannel(samples);
+    int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanWritten;
     
     int32_t error = DAQmxBaseWriteAnalogF64(getHandle(),
@@ -53,7 +54,7 @@ int32_t AnalogOutputTask::write(const std::vector<double> &samples,
                                             FALSE,
                                             timeout,
                                             (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
-                                            &(const_cast< std::vector<double>& >(samples).front()),
+                                            const_cast<double *>(&firstSample),
                                             &sampsPerChanWritten,
                                             NULL);
     Error::throwIfFailed(error);

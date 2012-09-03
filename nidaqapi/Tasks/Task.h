@@ -53,23 +53,22 @@ protected:
         return deviceName;
     }
     
-    void addChannel(const std::string &name) {
-        channels.push_back(name);
+    void addChannel() {
+        numChannels++;
     }
     
-    template <typename T>
-    int32_t getNumSamplesPerChannel(const std::vector<T> &samples) const {
-        if ((channels.size() == 0) || (samples.size() % channels.size() != 0))
+    int32_t getNumSamplesPerChannel(std::size_t numSamples) const {
+        if ((numChannels == 0) || (numSamples % numChannels != 0))
         {
             throw std::invalid_argument("Invalid number of samples");
         }
-        return samples.size() / channels.size();
+        return numSamples / numChannels;
     }
     
 private:
     TaskHandle handle;
     const std::string deviceName;
-    std::vector<std::string> channels;
+    std::size_t numChannels;
     bool running;
     
 };
