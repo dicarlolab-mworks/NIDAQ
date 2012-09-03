@@ -77,9 +77,9 @@ struct HelperControlMessage {
         
         // Response codes
         RESPONSE_OK,
-        RESPONSE_BAD_REQUEST,
         RESPONSE_NIDAQ_ERROR,
-        RESPONSE_EXCEPTION
+        RESPONSE_EXCEPTION,
+        RESPONSE_BAD_REQUEST
     };
     
     signed_int code;
@@ -96,11 +96,6 @@ struct HelperControlMessage {
         // Device serial number
         unsigned_int deviceSerialNumber;
         
-        // Description of invalid or unrecognized request
-        struct {
-            message_buffer info;
-        } badRequest;
-        
         // NIDAQmxBase error info
         struct {
             signed_int code;
@@ -111,6 +106,11 @@ struct HelperControlMessage {
         struct {
             message_buffer what;
         } exception;
+        
+        // Description of invalid or unrecognized request
+        struct {
+            message_buffer info;
+        } badRequest;
     };
     
 } __attribute__((aligned (8)));;

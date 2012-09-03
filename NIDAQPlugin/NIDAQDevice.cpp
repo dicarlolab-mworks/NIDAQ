@@ -178,13 +178,6 @@ bool NIDAQDevice::sendHelperRequest() {
             // Success
             break;
             
-        case HelperControlMessage::RESPONSE_BAD_REQUEST:
-            merror(M_IODEVICE_MESSAGE_DOMAIN,
-                   "Internal error: Bad request to %s: %s",
-                   PLUGIN_HELPER_EXECUTABLE,
-                   m.badRequest.info.c_str());
-            break;
-            
         case HelperControlMessage::RESPONSE_NIDAQ_ERROR:
             merror(M_IODEVICE_MESSAGE_DOMAIN,
                    "NIDAQ error: %s (%d)",
@@ -197,6 +190,13 @@ bool NIDAQDevice::sendHelperRequest() {
                    "Internal error: Exception in %s: %s",
                    PLUGIN_HELPER_EXECUTABLE,
                    m.exception.what.c_str());
+            break;
+            
+        case HelperControlMessage::RESPONSE_BAD_REQUEST:
+            merror(M_IODEVICE_MESSAGE_DOMAIN,
+                   "Internal error: Bad request to %s: %s",
+                   PLUGIN_HELPER_EXECUTABLE,
+                   m.badRequest.info.c_str());
             break;
             
         default:
