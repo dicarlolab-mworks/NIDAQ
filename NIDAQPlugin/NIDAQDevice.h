@@ -13,6 +13,7 @@
 
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
@@ -71,6 +72,9 @@ private:
     HelperControlMessage *controlMessage;
     
     pid_t helperPID;
+    
+    typedef boost::mutex::scoped_lock scoped_lock;
+    boost::mutex controlMutex;
     
 };
 

@@ -117,12 +117,14 @@ bool NIDAQDevice::initialize() {
 
 
 bool NIDAQDevice::startDeviceIO() {
+    scoped_lock lock(controlMutex);
     controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_INPUT_TASK;
     return sendHelperRequest();
 }
 
 
 bool NIDAQDevice::stopDeviceIO() {
+    scoped_lock lock(controlMutex);
     controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_INPUT_TASK;
     return sendHelperRequest();
 }
