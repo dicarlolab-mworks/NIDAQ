@@ -11,7 +11,6 @@
 
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 #include <boost/noncopyable.hpp>
 
@@ -31,10 +30,12 @@ public:
                               uint64_t samplesPerChannelToAcquire = 0,
                               bool acquireOnRisingEdge = true);
     
-    void setAllowRegeneration(bool allowRegen);
-    
     void start();
     void stop();
+    
+    size_t getNumChannels() const {
+        return numChannels;
+    }
     
     bool isRunning() const {
         return running;
@@ -57,7 +58,7 @@ protected:
         numChannels++;
     }
     
-    int32_t getNumSamplesPerChannel(std::size_t numSamples) const {
+    int32_t getNumSamplesPerChannel(size_t numSamples) const {
         if ((numChannels == 0) || (numSamples % numChannels != 0))
         {
             throw std::invalid_argument("Invalid number of samples");
@@ -68,7 +69,7 @@ protected:
 private:
     TaskHandle handle;
     const std::string deviceName;
-    std::size_t numChannels;
+    size_t numChannels;
     bool running;
     
 };

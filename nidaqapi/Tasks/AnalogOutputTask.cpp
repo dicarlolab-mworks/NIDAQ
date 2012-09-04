@@ -22,6 +22,12 @@ AnalogOutputTask::AnalogOutputTask(const Device &device) :
 { }
 
 
+void AnalogOutputTask::setAllowRegeneration(bool allowRegen) {
+    int32_t value = (allowRegen ? DAQmx_Val_AllowRegen : DAQmx_Val_DoNotAllowRegen);
+    Error::throwIfFailed(  DAQmxBaseSetWriteAttribute(getHandle(), DAQmx_Write_RegenMode, value)  );
+}
+
+
 void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
                                          double minVal,
                                          double maxVal)
@@ -41,10 +47,10 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
-int32_t AnalogOutputTask::write(const double &firstSample,
-                                std::size_t numSamples,
-                                double timeout,
-                                bool interleaved)
+size_t AnalogOutputTask::write(const double &firstSample,
+                               size_t numSamples,
+                               double timeout,
+                               bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanWritten;
@@ -59,7 +65,7 @@ int32_t AnalogOutputTask::write(const double &firstSample,
                                             NULL);
     Error::throwIfFailed(error);
     
-    return sampsPerChanWritten;
+    return size_t(sampsPerChanWritten) * getNumChannels();
 }
 
 

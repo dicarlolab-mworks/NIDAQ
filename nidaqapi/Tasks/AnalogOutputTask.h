@@ -9,8 +9,6 @@
 #ifndef __NIDAQ__AnalogOutputTask__
 #define __NIDAQ__AnalogOutputTask__
 
-#include <boost/array.hpp>
-
 #include "Task.h"
 
 
@@ -22,19 +20,17 @@ class AnalogOutputTask : public Task {
 public:
     AnalogOutputTask(const Device &device);
     
+    void setAllowRegeneration(bool allowRegen);
+    
     void addVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
     
-    int32_t write(const std::vector<double> &samples, double timeout, bool interleaved = false) {
-        return write(samples.front(), samples.size(), timeout, interleaved);
-    }
-    
-    template <std::size_t numSamples>
-    int32_t write(const boost::array<double, numSamples> &samples, double timeout, bool interleaved = false) {
-        return write(samples.front(), numSamples, timeout, interleaved);
+    template <typename DoubleArrayType>
+    size_t write(const DoubleArrayType &samples, double timeout, bool interleaved = false) {
+        return write(samples[0], samples.size(), timeout, interleaved);
     }
     
 private:
-    int32_t write(const double &firstSample, std::size_t numSamples, double timeout, bool interleaved);
+    size_t write(const double &firstSample, size_t numSamples, double timeout, bool interleaved);
     
 };
 

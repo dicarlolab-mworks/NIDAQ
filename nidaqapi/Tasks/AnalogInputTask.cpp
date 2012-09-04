@@ -43,10 +43,10 @@ void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
-int32_t AnalogInputTask::read(double &firstSample,
-                              std::size_t numSamples,
-                              double timeout,
-                              bool interleaved)
+size_t AnalogInputTask::read(double &firstSample,
+                             size_t numSamples,
+                             double timeout,
+                             bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanRead;
@@ -61,7 +61,7 @@ int32_t AnalogInputTask::read(double &firstSample,
                                            NULL);
     Error::throwIfFailed(error);
     
-    return sampsPerChanRead;
+    return size_t(sampsPerChanRead) * getNumChannels();
 }
 
 

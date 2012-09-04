@@ -12,6 +12,8 @@
 #include <boost/cstdint.hpp>
 
 
+using std::size_t;
+
 using boost::int8_t;
 using boost::uint8_t;
 using boost::int16_t;

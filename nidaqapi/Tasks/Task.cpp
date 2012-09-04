@@ -49,12 +49,6 @@ void Task::setSampleClockTiming(double samplingRate,
 }
 
 
-void Task::setAllowRegeneration(bool allowRegen) {
-    int32_t value = (allowRegen ? DAQmx_Val_AllowRegen : DAQmx_Val_DoNotAllowRegen);
-    Error::throwIfFailed(  DAQmxBaseSetWriteAttribute(getHandle(), DAQmx_Write_RegenMode, value)  );
-}
-
-
 void Task::start() {
     if (!running) {
         Error::throwIfFailed(  DAQmxBaseStartTask(getHandle())  );
