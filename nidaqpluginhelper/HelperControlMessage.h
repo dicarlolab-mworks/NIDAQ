@@ -9,12 +9,15 @@
 #ifndef NIDAQ_HelperControlMessage_h
 #define NIDAQ_HelperControlMessage_h
 
+#include <algorithm>
 #include <cstring>
 #include <string>
 
 #include <boost/array.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/format.hpp>
+
+using std::size_t;
 
 
 struct HelperControlMessage {
@@ -23,7 +26,38 @@ struct HelperControlMessage {
     // Type definitions (portable between x86_64 and i386)
     //
     
-    template <std::size_t size>
+    typedef boost::int64_t signed_int;
+    typedef boost::uint64_t unsigned_int;
+    
+    template <typename SampleType>
+    class samples_buffer {
+    public:
+        size_t size() const {
+            return size_t(numSamples);
+        }
+        
+        const SampleType& operator[](size_t i) const {
+            return *(&firstSample + i);
+        }
+        
+        SampleType& operator[](size_t i) {
+            return const_cast<SampleType &>(static_cast<const samples_buffer &>(*this)[i]);
+        }
+        
+        unsigned_int getNumSamples() const {
+            return numSamples;
+        }
+        
+        void setNumSamples(unsigned_int n) {
+            numSamples = n;
+        }
+        
+    private:
+        unsigned_int numSamples;  // *not* size_t
+        SampleType firstSample;
+    };
+    
+    template <size_t size>
     class string_buffer {
     public:
         string_buffer& operator=(const char *str) {
@@ -52,17 +86,7 @@ struct HelperControlMessage {
         boost::array<char, size> data;
     };
     
-    typedef boost::int64_t signed_int;
-    typedef boost::uint64_t unsigned_int;
     typedef string_buffer<1024> message_buffer;
-    
-    //
-    // Zeroing constructor
-    //
-    
-    HelperControlMessage() {
-        std::memset(this, 0, sizeof(*this));
-    }
     
     //
     // Message code
@@ -78,6 +102,7 @@ struct HelperControlMessage {
         REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING,
         REQUEST_START_ANALOG_INPUT_TASK,
         REQUEST_STOP_ANALOG_INPUT_TASK,
+        REQUEST_READ_ANALOG_INPUT_SAMPLES,
         REQUEST_SHUTDOWN,
         
         // Response codes
@@ -109,6 +134,12 @@ struct HelperControlMessage {
         } setAnalogInputSampleClockTiming;
         
         //
+        // Request/response data
+        //
+        
+        samples_buffer<double> analogSamples;
+        
+        //
         // Response data
         //
         
@@ -131,6 +162,30 @@ struct HelperControlMessage {
             message_buffer info;
         } badRequest;
     };
+    
+    //
+    // Utility methods
+    //
+    
+    static size_t sizeWithSamples(size_t numAnalogSamples) {
+        HelperControlMessage m;
+        size_t size = sizeof(m);
+        char * const startAddress = reinterpret_cast<char *>(&m);
+        
+        size = std::max(size, sizeWithBuffer(startAddress, m.analogSamples, numAnalogSamples));
+        
+        return size;
+    }
+    
+private:
+    template <typename SampleType>
+    static size_t sizeWithBuffer(char * const startAddress,
+                                 samples_buffer<SampleType> &samples,
+                                 size_t numSamples)
+    {
+        char * const endAddress = reinterpret_cast<char *>(&(samples[0]) + numSamples);
+        return size_t(endAddress - startAddress);
+    }
     
 } __attribute__((aligned (8)));;
 

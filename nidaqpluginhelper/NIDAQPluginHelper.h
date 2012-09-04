@@ -43,6 +43,7 @@ private:
     void setAnalogInputSampleClockTiming(double samplingRate);
     void startAnalogInputTask();
     void stopAnalogInputTask();
+    void readAnalogInputSamples();
     
     nidaq::Device device;
     IPCRequestResponse ipc;

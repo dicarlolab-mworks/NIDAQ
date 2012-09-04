@@ -95,6 +95,10 @@ void NIDAQPluginHelper::handleControlRequest(bool &done) {
             stopAnalogInputTask();
             break;
             
+        case HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES:
+            readAnalogInputSamples();
+            break;
+            
         case HelperControlMessage::REQUEST_SHUTDOWN:
             done = true;
             break;
@@ -136,6 +140,17 @@ void NIDAQPluginHelper::startAnalogInputTask() {
 void NIDAQPluginHelper::stopAnalogInputTask() {
     validateAnalogInputTask();
     analogInputTask->stop();
+}
+
+
+void NIDAQPluginHelper::readAnalogInputSamples() {
+    validateAnalogInputTask();
+    if (!(analogInputTask->isRunning())) {
+        throw NIDAQPluginHelperError("Analog input task is not running");
+    }
+    
+    size_t numSamplesRead = analogInputTask->read(m.analogSamples, 0.0, true);
+    m.analogSamples.setNumSamples(numSamplesRead);
 }
 
 
