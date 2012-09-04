@@ -149,8 +149,10 @@ void NIDAQPluginHelper::readAnalogInputSamples() {
         throw NIDAQPluginHelperError("Analog input task is not running");
     }
     
-    size_t numSamplesRead = analogInputTask->read(m.analogSamples, 0.0, true);
-    m.analogSamples.setNumSamples(numSamplesRead);
+    size_t numSamplesRead = analogInputTask->read(m.readAnalogInputSamples.samples,
+                                                  m.readAnalogInputSamples.timeout,
+                                                  true);
+    m.readAnalogInputSamples.samples.setNumSamples(numSamplesRead);
 }
 
 

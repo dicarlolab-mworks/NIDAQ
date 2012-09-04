@@ -137,7 +137,10 @@ struct HelperControlMessage {
         // Request/response data
         //
         
-        samples_buffer<double> analogSamples;
+        struct {
+            double timeout;
+            samples_buffer<double> samples;
+        } readAnalogInputSamples;
         
         //
         // Response data
@@ -172,7 +175,7 @@ struct HelperControlMessage {
         size_t size = sizeof(m);
         char * const startAddress = reinterpret_cast<char *>(&m);
         
-        size = std::max(size, sizeWithBuffer(startAddress, m.analogSamples, numAnalogSamples));
+        size = std::max(size, sizeWithBuffer(startAddress, m.readAnalogInputSamples.samples, numAnalogSamples));
         
         return size;
     }

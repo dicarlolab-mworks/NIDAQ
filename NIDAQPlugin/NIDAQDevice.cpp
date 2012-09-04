@@ -14,6 +14,7 @@
 
 #include <openssl/rand.h>
 
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
@@ -51,6 +52,10 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     }
     if (analogInputUpdateInterval <= 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid analog input update interval");
+    }
+    if (analogInputUpdateInterval % analogInputDataInterval != 0) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
+                              "Analog input update interval must be an integer multiple of analog input data interval");
     }
     
     boost::uint64_t uniqueID;
@@ -91,6 +96,8 @@ bool NIDAQDevice::initialize() {
     if (analogInputChannels.empty()) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device must have at least one channel");
     }
+    analogInputSampleBufferSize = (size_t(analogInputUpdateInterval / analogInputDataInterval) *
+                                   analogInputChannels.size());
     
     createControlChannel();
     createControlMessage();
@@ -118,15 +125,50 @@ bool NIDAQDevice::initialize() {
 
 bool NIDAQDevice::startDeviceIO() {
     scoped_lock lock(controlMutex);
+    
+    if (analogInputScheduleTask) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device is already running");
+        return false;
+    }
+    
     controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_INPUT_TASK;
-    return sendHelperRequest();
+    if (!sendHelperRequest()) {
+        return false;
+    }
+    
+    MWTime initialDelay = 10 * analogInputUpdateInterval;  // Give the device some time to get going
+    boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
+    
+    analogInputScheduleTask = Scheduler::instance()->scheduleUS(FILELINE,
+                                                                initialDelay,
+                                                                analogInputUpdateInterval,
+                                                                M_REPEAT_INDEFINITELY,
+                                                                boost::bind(&NIDAQDevice::readAnalogInput, sharedThis),
+                                                                M_DEFAULT_IODEVICE_PRIORITY,
+                                                                M_DEFAULT_IODEVICE_WARN_SLOP_US,
+                                                                M_DEFAULT_IODEVICE_FAIL_SLOP_US,
+                                                                M_MISSED_EXECUTION_DROP);
+    
+    return true;
 }
 
 
 bool NIDAQDevice::stopDeviceIO() {
     scoped_lock lock(controlMutex);
+    
+    if (!analogInputScheduleTask) {
+        return true;
+    }
+    
+    analogInputScheduleTask->cancel();
+    analogInputScheduleTask.reset();
+    
     controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_INPUT_TASK;
-    return sendHelperRequest();
+    if (!sendHelperRequest()) {
+        return false;
+    }
+    
+    return true;
 }
 
 
@@ -149,7 +191,7 @@ void NIDAQDevice::createControlMessage() {
     sharedMemory = boost::interprocess::shared_memory_object(boost::interprocess::create_only,
                                                              sharedMemoryName.c_str(),
                                                              boost::interprocess::read_write);
-    sharedMemory.truncate(sizeof(HelperControlMessage));
+    sharedMemory.truncate(HelperControlMessage::sizeWithSamples(analogInputSampleBufferSize));
     mappedRegion = boost::interprocess::mapped_region(sharedMemory, boost::interprocess::read_write);
     void *address = mappedRegion.get_address();
     controlMessage = new(address) HelperControlMessage;
@@ -291,6 +333,40 @@ bool NIDAQDevice::sendHelperRequest() {
     }
     
     return (responseCode == HelperControlMessage::RESPONSE_OK);
+}
+
+
+void* NIDAQDevice::readAnalogInput() {
+    scoped_lock lock(controlMutex);
+    
+    if (!analogInputScheduleTask) {
+        // If we've already been canceled, don't try to read more data
+        return NULL;
+    }
+    
+    controlMessage->code = HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES;
+    controlMessage->readAnalogInputSamples.timeout = 2.0 * double(analogInputUpdateInterval) / 1e6;
+    controlMessage->readAnalogInputSamples.samples.setNumSamples(analogInputSampleBufferSize);
+    
+    if (!sendHelperRequest()) {
+        return NULL;
+    }
+    
+    const size_t numSamplesRead = controlMessage->readAnalogInputSamples.samples.getNumSamples();
+    if (numSamplesRead != analogInputSampleBufferSize) {
+        mwarning(M_IODEVICE_MESSAGE_DOMAIN,
+                 "NIDAQ device requested %u analog samples but got only %u",
+                 analogInputSampleBufferSize,
+                 numSamplesRead);
+    }
+    
+    const size_t numChannels = analogInputChannels.size();
+    for (size_t i = 0; i < numSamplesRead; i++) {
+        double sample = controlMessage->readAnalogInputSamples.samples[i];
+        analogInputChannels[i % numChannels]->getVariable()->setValue(sample);
+    }
+    
+    return NULL;
 }
 
 

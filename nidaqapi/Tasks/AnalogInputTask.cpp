@@ -49,7 +49,7 @@ size_t AnalogInputTask::read(double &firstSample,
                              bool interleaved)
 {
     int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
-    nidaqmxbase::int32_t sampsPerChanRead;
+    nidaqmxbase::int32_t sampsPerChanRead = 0;
     
     int32_t error = DAQmxBaseReadAnalogF64(getHandle(),
                                            numSampsPerChan,
@@ -59,7 +59,11 @@ size_t AnalogInputTask::read(double &firstSample,
                                            numSamples,
                                            &sampsPerChanRead,
                                            NULL);
-    Error::throwIfFailed(error);
+    
+    // Don't throw if we did a partial read (not sure this ever happens, but just to be safe ...)
+    if ((error != DAQmxErrorSamplesNotYetAvailable) || (sampsPerChanRead == 0)) {
+        Error::throwIfFailed(error);
+    }
     
     return size_t(sampsPerChanRead) * getNumChannels();
 }

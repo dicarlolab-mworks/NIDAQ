@@ -57,10 +57,14 @@ private:
     
     bool sendHelperRequest();
     
+    void* readAnalogInput();
+    
     const std::string deviceName;
     MWTime analogInputDataInterval;
     MWTime analogInputUpdateInterval;
     std::vector< boost::shared_ptr<NIDAQAnalogInputVoltageChannel> > analogInputChannels;
+    size_t analogInputSampleBufferSize;
+    shared_ptr<ScheduleTask> analogInputScheduleTask;
     
     std::string wantRequestName, wantResponseName;
     IPCRequestResponse *controlChannel;
