@@ -17,7 +17,7 @@
 #include <boost/thread/mutex.hpp>
 
 #include "IPCRequestResponse.h"
-#include "HelperControlMessage.h"
+#include "HelperSharedMemory.h"
 
 #include "NIDAQAnalogInputVoltageChannel.h"
 
@@ -46,8 +46,6 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
-    void createControlMessage();
-    
     void spawnHelper();
     void reapHelper();
     
@@ -64,13 +62,11 @@ private:
     size_t analogInputSampleBufferSize;
     shared_ptr<ScheduleTask> analogInputScheduleTask;
     
-    std::string wantRequestName, wantResponseName;
-    IPCRequestResponse *controlChannel;
+    std::string requestSemName, responseSemName;
+    IPCRequestResponse controlChannel;
     
     std::string sharedMemoryName;
-    boost::interprocess::shared_memory_object sharedMemory;
-    boost::interprocess::mapped_region mappedRegion;
-    
+    HelperSharedMemory sharedMemory;
     HelperControlMessage *controlMessage;
     
     pid_t helperPID;

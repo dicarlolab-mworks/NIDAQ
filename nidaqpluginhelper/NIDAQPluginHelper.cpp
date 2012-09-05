@@ -11,13 +11,12 @@
 #include "Error.h"
 
 
-NIDAQPluginHelper::NIDAQPluginHelper(const std::string &deviceName,
-                                     const std::string &wantRequestName,
-                                     const std::string &wantResponseName,
-                                     HelperControlMessage &message) :
-    device(deviceName),
-    ipc(boost::interprocess::open_only, wantRequestName, wantResponseName),
-    m(message)
+NIDAQPluginHelper::NIDAQPluginHelper(IPCRequestResponse &ipc,
+                                     HelperControlMessage &message,
+                                     const std::string &deviceName) :
+    ipc(ipc),
+    m(message),
+    device(deviceName)
 { }
 
 

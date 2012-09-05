@@ -24,10 +24,9 @@
 class NIDAQPluginHelper : boost::noncopyable {
     
 public:
-    NIDAQPluginHelper(const std::string &deviceName,
-                      const std::string &wantRequestName,
-                      const std::string &wantResponseName,
-                      HelperControlMessage &message);
+    NIDAQPluginHelper(IPCRequestResponse &ipc,
+                      HelperControlMessage &message,
+                      const std::string &deviceName);
     
     bool handleRequests();
     
@@ -41,10 +40,10 @@ private:
     void stopAnalogInputTask();
     void readAnalogInputSamples();
     
-    nidaq::Device device;
-    IPCRequestResponse ipc;
+    IPCRequestResponse &ipc;
     HelperControlMessage &m;
     
+    nidaq::Device device;
     boost::scoped_ptr<nidaq::AnalogInputTask> analogInputTask;
     
 };

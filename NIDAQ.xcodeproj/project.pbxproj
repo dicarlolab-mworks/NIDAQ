@@ -112,6 +112,7 @@
 		E105A21D15E6835A007F9F38 /* NIDAQPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NIDAQPlugin-Info.plist"; sourceTree = "<group>"; };
 		E105A21F15E6835A007F9F38 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E105A22415E68597007F9F38 /* MWorksCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MWorksCore.framework; path = /Library/Frameworks/MWorksCore.framework; sourceTree = "<absolute>"; };
+		E13DEB6215F7BB2100AC7480 /* HelperSharedMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelperSharedMemory.h; sourceTree = "<group>"; };
 		E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputVoltageChannel.cpp; sourceTree = "<group>"; };
 		E157463F15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputVoltageChannel.h; sourceTree = "<group>"; };
 		E157464315F4F9010014089E /* NIDAQAnalogInputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputChannel.cpp; sourceTree = "<group>"; };
@@ -236,6 +237,7 @@
 			children = (
 				E169B0B215ED50E700408B75 /* IPCRequestResponse.h */,
 				E1A7226915EE4BD6006671AD /* HelperControlMessage.h */,
+				E13DEB6215F7BB2100AC7480 /* HelperSharedMemory.h */,
 				E157464615F50AAE0014089E /* NIDAQPluginHelperError.h */,
 				E1A7227415EEA72C006671AD /* NIDAQPluginHelper.h */,
 				E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */,
@@ -570,6 +572,7 @@
 					"\"/Applications/National Instruments/NI-DAQmx Base/includes\"",
 					"$(MW_INCLUDE_DIR)",
 				);
+				WARNING_CFLAGS = "-Wreorder";
 			};
 			name = Development;
 		};

@@ -38,12 +38,26 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
 }
 
 
+static std::string generateUniqueID() {
+    boost::uint64_t uniqueID;
+    if (RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID)) < 0) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
+                              "Internal error: Unable to generate unique identifier for NIDAQ device shared resource");
+    }
+    return (boost::format("%x") % uniqueID).str();
+}
+
+
 NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     IODevice(parameters),
     deviceName(parameters[NAME].str()),
     analogInputDataInterval(parameters[ANALOG_INPUT_DATA_INTERVAL]),
     analogInputUpdateInterval(parameters[ANALOG_INPUT_UPDATE_INTERVAL]),
-    controlChannel(NULL),
+    requestSemName(generateUniqueID()),
+    responseSemName(generateUniqueID()),
+    controlChannel(boost::interprocess::create_only, requestSemName, responseSemName),
+    sharedMemoryName(generateUniqueID()),
+    sharedMemory(boost::interprocess::create_only, sharedMemoryName),
     controlMessage(NULL),
     helperPID(-1)
 {
@@ -57,25 +71,11 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
                               "Analog input update interval must be an integer multiple of analog input data interval");
     }
-    
-    boost::uint64_t uniqueID;
-    
-    if (RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID)) < 0) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Unable to generate random name for shared memory objects");
-    }
-    
-    std::string hexUniqueID = (boost::format("%x") % uniqueID).str();
-    wantRequestName = hexUniqueID + "_1";
-    wantResponseName = hexUniqueID + "_2";
-    sharedMemoryName = "nidaqplugin_" + hexUniqueID;
 }
 
 
 NIDAQDevice::~NIDAQDevice() {
     reapHelper();
-    boost::interprocess::shared_memory_object::remove(sharedMemoryName.c_str());
-    delete controlChannel;
-    IPCRequestResponse::remove(wantRequestName, wantResponseName);
 }
 
 
@@ -100,8 +100,9 @@ bool NIDAQDevice::initialize() {
     analogInputSampleBufferSize = (size_t(analogInputUpdateInterval / analogInputDataInterval) *
                                    analogInputChannels.size());
     
-    controlChannel = new IPCRequestResponse(boost::interprocess::create_only, wantRequestName, wantResponseName);
-    createControlMessage();
+    sharedMemory.setSize(HelperControlMessage::sizeWithSamples(analogInputSampleBufferSize));
+    controlMessage = sharedMemory.getMessagePtr();
+    
     spawnHelper();
     
     mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Looking for NIDAQ device \"%s\"...", deviceName.c_str());
@@ -173,28 +174,13 @@ bool NIDAQDevice::stopDeviceIO() {
 }
 
 
-void NIDAQDevice::createControlMessage() {
-    // Don't attempt to destroy the shared memory here, since it's possible (although very unlikely) that another
-    // NIDAQDevice instance has already generated and used an identical sharedMemoryName.  In that case, it's better
-    // just to fail and let the user reload the experiment.
-    
-    sharedMemory = boost::interprocess::shared_memory_object(boost::interprocess::create_only,
-                                                             sharedMemoryName.c_str(),
-                                                             boost::interprocess::read_write);
-    sharedMemory.truncate(HelperControlMessage::sizeWithSamples(analogInputSampleBufferSize));
-    mappedRegion = boost::interprocess::mapped_region(sharedMemory, boost::interprocess::read_write);
-    void *address = mappedRegion.get_address();
-    controlMessage = new(address) HelperControlMessage;
-}
-
-
 void NIDAQDevice::spawnHelper() {
     const char * const argv[] = {
         PLUGIN_HELPER_EXECUTABLE,
-        deviceName.c_str(),
-        wantRequestName.c_str(),
-        wantResponseName.c_str(),
+        requestSemName.c_str(),
+        responseSemName.c_str(),
         sharedMemoryName.c_str(),
+        deviceName.c_str(),
         0
     };
     
@@ -273,8 +259,8 @@ bool NIDAQDevice::createTasks() {
 
 
 bool NIDAQDevice::sendHelperRequest() {
-    controlChannel->postRequest();
-    if (!(controlChannel->waitForResponse(boost::posix_time::seconds(10)))) {
+    controlChannel.postRequest();
+    if (!(controlChannel.waitForResponse(boost::posix_time::seconds(10)))) {
         merror(M_IODEVICE_MESSAGE_DOMAIN, "Internal error: Request to %s timed out", PLUGIN_HELPER_EXECUTABLE);
         return false;
     }

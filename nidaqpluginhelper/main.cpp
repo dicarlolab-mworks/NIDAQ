@@ -9,9 +9,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <boost/interprocess/mapped_region.hpp>
-#include <boost/interprocess/shared_memory_object.hpp>
-
+#include "HelperSharedMemory.h"
 #include "NIDAQPluginHelper.h"
 
 
@@ -22,19 +20,15 @@ int main(int argc, const char * argv[])
         return EXIT_FAILURE;
     }
     
-    const char *deviceName = argv[1];
-    const char *wantRequestName = argv[2];
-    const char *wantResponseName = argv[3];
-    const char *sharedMemoryName = argv[4];
+    const char *requestSemName = argv[1];
+    const char *responseSemName = argv[2];
+    const char *sharedMemoryName = argv[3];
+    const char *deviceName = argv[4];
     
-    boost::interprocess::shared_memory_object sharedMemory(boost::interprocess::open_only,
-                                                           sharedMemoryName,
-                                                           boost::interprocess::read_write);
-    boost::interprocess::mapped_region mappedRegion(sharedMemory, boost::interprocess::read_write);
-    void *address = mappedRegion.get_address();
-    HelperControlMessage &message = *(static_cast<HelperControlMessage *>(address));
+    IPCRequestResponse ipc(boost::interprocess::open_only, requestSemName, responseSemName);
+    HelperSharedMemory sharedMemory(boost::interprocess::open_only, sharedMemoryName);
     
-    NIDAQPluginHelper helper(deviceName, wantRequestName, wantResponseName, message);
+    NIDAQPluginHelper helper(ipc, *(sharedMemory.getMessagePtr()), deviceName);
     bool success = helper.handleRequests();
     
     return (success ? EXIT_SUCCESS : EXIT_FAILURE);
