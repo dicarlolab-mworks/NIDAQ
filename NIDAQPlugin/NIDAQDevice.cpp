@@ -74,7 +74,8 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
 NIDAQDevice::~NIDAQDevice() {
     reapHelper();
     boost::interprocess::shared_memory_object::remove(sharedMemoryName.c_str());
-    destroyControlChannel();
+    delete controlChannel;
+    IPCRequestResponse::remove(wantRequestName, wantResponseName);
 }
 
 
@@ -99,7 +100,7 @@ bool NIDAQDevice::initialize() {
     analogInputSampleBufferSize = (size_t(analogInputUpdateInterval / analogInputDataInterval) *
                                    analogInputChannels.size());
     
-    createControlChannel();
+    controlChannel = new IPCRequestResponse(boost::interprocess::create_only, wantRequestName, wantResponseName);
     createControlMessage();
     spawnHelper();
     
@@ -169,17 +170,6 @@ bool NIDAQDevice::stopDeviceIO() {
     }
     
     return true;
-}
-
-
-void NIDAQDevice::createControlChannel() {
-    controlChannel = new IPCRequestResponse(boost::interprocess::create_only, wantRequestName, wantResponseName);
-}
-
-
-void NIDAQDevice::destroyControlChannel() {
-    delete controlChannel;
-    IPCRequestResponse::remove(wantRequestName, wantResponseName);
 }
 
 
@@ -285,12 +275,12 @@ bool NIDAQDevice::createTasks() {
 bool NIDAQDevice::sendHelperRequest() {
     controlChannel->postRequest();
     if (!(controlChannel->waitForResponse(boost::posix_time::seconds(10)))) {
-        merror(M_IODEVICE_MESSAGE_DOMAIN, "Control request to %s timed out", PLUGIN_HELPER_EXECUTABLE);
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "Internal error: Request to %s timed out", PLUGIN_HELPER_EXECUTABLE);
         return false;
     }
     
     HelperControlMessage &m = *controlMessage;
-    const HelperControlMessage::signed_int responseCode = m.code;
+    HelperControlMessage::signed_int responseCode = m.code;
     
     switch (responseCode) {
         case HelperControlMessage::RESPONSE_OK:

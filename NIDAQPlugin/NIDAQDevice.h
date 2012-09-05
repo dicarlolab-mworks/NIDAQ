@@ -46,9 +46,6 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
-    void createControlChannel();
-    void destroyControlChannel();
-    
     void createControlMessage();
     
     void spawnHelper();
