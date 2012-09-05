@@ -9,6 +9,7 @@
 #ifndef __NIDAQ__NIDAQPluginHelper__
 #define __NIDAQ__NIDAQPluginHelper__
 
+#include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
 #include "Device.h"
@@ -20,7 +21,7 @@
 #include "NIDAQPluginHelperError.h"
 
 
-class NIDAQPluginHelper {
+class NIDAQPluginHelper : boost::noncopyable {
     
 public:
     NIDAQPluginHelper(const std::string &deviceName,
@@ -28,19 +29,14 @@ public:
                       const std::string &wantResponseName,
                       HelperControlMessage &message);
     
-    bool handleControlRequests();
+    bool handleRequests();
     
 private:
-    void handleControlRequest(bool &done);
+    void handleRequest(bool &done);
     
-    void validateAnalogInputTask() {
-        if (!analogInputTask) {
-            throw NIDAQPluginHelperError("Analog input task has not been created");
-        }
-    }
-    void createAnalogInputTask();
-    void createAnalogInputVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
-    void setAnalogInputSampleClockTiming(double samplingRate);
+    void requireAnalogInputTask();
+    void createAnalogInputVoltageChannel();
+    void setAnalogInputSampleClockTiming();
     void startAnalogInputTask();
     void stopAnalogInputTask();
     void readAnalogInputSamples();

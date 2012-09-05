@@ -30,8 +30,7 @@ struct HelperControlMessage {
     typedef boost::uint64_t unsigned_int;
     
     template <typename SampleType>
-    class samples_buffer {
-    public:
+    struct samples_buffer {
         size_t size() const {
             return size_t(numSamples);
         }
@@ -44,24 +43,17 @@ struct HelperControlMessage {
             return const_cast<SampleType &>(static_cast<const samples_buffer &>(*this)[i]);
         }
         
-        unsigned_int getNumSamples() const {
-            return numSamples;
-        }
-        
-        void setNumSamples(unsigned_int n) {
-            numSamples = n;
-        }
+        unsigned_int numSamples;  // *not* size_t
         
     private:
-        unsigned_int numSamples;  // *not* size_t
         SampleType firstSample;
     };
     
-    template <size_t size>
+    template <size_t bufferSize>
     class string_buffer {
     public:
         string_buffer& operator=(const char *str) {
-            std::strncpy(data.data(), str, size);
+            std::strncpy(data.data(), str, bufferSize);
             data.back() = '\0';  // In case str contains more than size-1 characters
             return (*this);
         }
@@ -83,7 +75,7 @@ struct HelperControlMessage {
         }
         
     private:
-        boost::array<char, size> data;
+        boost::array<char, bufferSize> data;
     };
     
     typedef string_buffer<1024> message_buffer;
@@ -97,7 +89,6 @@ struct HelperControlMessage {
         
         // Request codes
         REQUEST_GET_DEVICE_SERIAL_NUMBER,
-        REQUEST_CREATE_ANALOG_INPUT_TASK,
         REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL,
         REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING,
         REQUEST_START_ANALOG_INPUT_TASK,
@@ -127,11 +118,11 @@ struct HelperControlMessage {
             unsigned_int channelNumber;
             double minVal;
             double maxVal;
-        } createAnalogInputVoltageChannel;
+        } analogVoltageChannel;
         
         struct {
             double samplingRate;
-        } setAnalogInputSampleClockTiming;
+        } sampleClockTiming;
         
         //
         // Request/response data
@@ -140,27 +131,23 @@ struct HelperControlMessage {
         struct {
             double timeout;
             samples_buffer<double> samples;
-        } readAnalogInputSamples;
+        } analogSamples;
         
         //
         // Response data
         //
         
-        // Device serial number
         unsigned_int deviceSerialNumber;
         
-        // NIDAQmxBase error info
         struct {
             signed_int code;
             message_buffer message;
         } nidaqError;
         
-        // what() from caught exception
         struct {
             message_buffer what;
         } exception;
         
-        // Description of invalid or unrecognized request
         struct {
             message_buffer info;
         } badRequest;
@@ -175,7 +162,7 @@ struct HelperControlMessage {
         size_t size = sizeof(m);
         char * const startAddress = reinterpret_cast<char *>(&m);
         
-        size = std::max(size, sizeWithBuffer(startAddress, m.readAnalogInputSamples.samples, numAnalogSamples));
+        size = std::max(size, sizeWithBuffer(startAddress, m.analogSamples.samples, numAnalogSamples));
         
         return size;
     }

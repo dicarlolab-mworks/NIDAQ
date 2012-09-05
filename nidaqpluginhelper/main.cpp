@@ -35,7 +35,7 @@ int main(int argc, const char * argv[])
     HelperControlMessage &message = *(static_cast<HelperControlMessage *>(address));
     
     NIDAQPluginHelper helper(deviceName, wantRequestName, wantResponseName, message);
-    bool success = helper.handleControlRequests();
+    bool success = helper.handleRequests();
     
     return (success ? EXIT_SUCCESS : EXIT_FAILURE);
 }

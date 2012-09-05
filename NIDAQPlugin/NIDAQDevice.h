@@ -13,6 +13,7 @@
 
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include "IPCRequestResponse.h"
@@ -24,7 +25,7 @@
 BEGIN_NAMESPACE_MW
 
 
-class NIDAQDevice : public IODevice {
+class NIDAQDevice : public IODevice, boost::noncopyable {
     
 public:
     static const std::string NAME;

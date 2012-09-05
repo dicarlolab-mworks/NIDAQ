@@ -21,7 +21,7 @@ NIDAQPluginHelper::NIDAQPluginHelper(const std::string &deviceName,
 { }
 
 
-bool NIDAQPluginHelper::handleControlRequests() {
+bool NIDAQPluginHelper::handleRequests() {
     const boost::posix_time::time_duration timeout = boost::posix_time::minutes(60);
     bool done = false;
     
@@ -32,7 +32,7 @@ bool NIDAQPluginHelper::handleControlRequests() {
         
         try {
             
-            handleControlRequest(done);
+            handleRequest(done);
             
         } catch (const NIDAQPluginHelperError &e) {
             
@@ -64,27 +64,18 @@ bool NIDAQPluginHelper::handleControlRequests() {
 }
 
 
-void NIDAQPluginHelper::handleControlRequest(bool &done) {
-    const HelperControlMessage::signed_int requestCode = m.code;
-    HelperControlMessage::signed_int responseCode = HelperControlMessage::RESPONSE_OK;
-    
-    switch (requestCode) {
+void NIDAQPluginHelper::handleRequest(bool &done) {
+    switch (m.code) {
         case HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER:
             m.deviceSerialNumber = device.getSerialNumber();
             break;
             
-        case HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_TASK:
-            createAnalogInputTask();
-            break;
-            
         case HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL:
-            createAnalogInputVoltageChannel(m.createAnalogInputVoltageChannel.channelNumber,
-                                            m.createAnalogInputVoltageChannel.minVal,
-                                            m.createAnalogInputVoltageChannel.maxVal);
+            createAnalogInputVoltageChannel();
             break;
             
         case HelperControlMessage::REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING:
-            setAnalogInputSampleClockTiming(m.setAnalogInputSampleClockTiming.samplingRate);
+            setAnalogInputSampleClockTiming();
             break;
             
         case HelperControlMessage::REQUEST_START_ANALOG_INPUT_TASK:
@@ -104,55 +95,56 @@ void NIDAQPluginHelper::handleControlRequest(bool &done) {
             break;
             
         default:
-            throw NIDAQPluginHelperError(boost::format("Unknown request code: %d") % requestCode);
+            throw NIDAQPluginHelperError(boost::format("Unknown request code: %d") % m.code);
     }
     
-    m.code = responseCode;
+    m.code = HelperControlMessage::RESPONSE_OK;
 }
 
 
-void NIDAQPluginHelper::createAnalogInputTask() {
-    if (analogInputTask) {
-        throw NIDAQPluginHelperError("Analog input task already created");
+void NIDAQPluginHelper::requireAnalogInputTask() {
+    if (!analogInputTask) {
+        analogInputTask.reset(new nidaq::AnalogInputTask(device));
     }
-    analogInputTask.reset(new nidaq::AnalogInputTask(device));
 }
 
 
-void NIDAQPluginHelper::createAnalogInputVoltageChannel(unsigned int channelNumber, double minVal, double maxVal) {
-    validateAnalogInputTask();
-    analogInputTask->addVoltageChannel(channelNumber, minVal, maxVal);
+void NIDAQPluginHelper::createAnalogInputVoltageChannel() {
+    requireAnalogInputTask();
+    analogInputTask->addVoltageChannel(m.analogVoltageChannel.channelNumber,
+                                       m.analogVoltageChannel.minVal,
+                                       m.analogVoltageChannel.maxVal);
 }
 
 
-void NIDAQPluginHelper::setAnalogInputSampleClockTiming(double samplingRate) {
-    validateAnalogInputTask();
-    analogInputTask->setSampleClockTiming(samplingRate);
+void NIDAQPluginHelper::setAnalogInputSampleClockTiming() {
+    requireAnalogInputTask();
+    analogInputTask->setSampleClockTiming(m.sampleClockTiming.samplingRate);
 }
 
 
 void NIDAQPluginHelper::startAnalogInputTask() {
-    validateAnalogInputTask();
+    requireAnalogInputTask();
     analogInputTask->start();
 }
 
 
 void NIDAQPluginHelper::stopAnalogInputTask() {
-    validateAnalogInputTask();
+    requireAnalogInputTask();
     analogInputTask->stop();
 }
 
 
 void NIDAQPluginHelper::readAnalogInputSamples() {
-    validateAnalogInputTask();
+    requireAnalogInputTask();
     if (!(analogInputTask->isRunning())) {
         throw NIDAQPluginHelperError("Analog input task is not running");
     }
     
-    size_t numSamplesRead = analogInputTask->read(m.readAnalogInputSamples.samples,
-                                                  m.readAnalogInputSamples.timeout,
-                                                  true);
-    m.readAnalogInputSamples.samples.setNumSamples(numSamplesRead);
+    size_t numSamplesRead = analogInputTask->read(m.analogSamples.samples,
+                                                  m.analogSamples.timeout,
+                                                  true);  // Group samples by scan number
+    m.analogSamples.samples.numSamples = numSamplesRead;
 }
 
 
