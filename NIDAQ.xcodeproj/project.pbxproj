@@ -60,6 +60,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		E13DEB6B15F7E78900AC7480 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E196C52315E2AD3200059BF2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E1CA0DDA15EBCA7200EB6B60;
+			remoteInfo = nidaqapi;
+		};
+		E13DEB6E15F7E78F00AC7480 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E196C52315E2AD3200059BF2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E1CA0DDA15EBCA7200EB6B60;
+			remoteInfo = nidaqapi;
+		};
 		E1690E8615E69673007DFCEF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E196C52315E2AD3200059BF2 /* Project object */;
@@ -372,6 +386,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				E13DEB6F15F7E78F00AC7480 /* PBXTargetDependency */,
 			);
 			name = nidaqpluginhelper;
 			productName = nidaqpluginhelper;
@@ -388,6 +403,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				E13DEB6C15F7E78900AC7480 /* PBXTargetDependency */,
 			);
 			name = nidaqtest;
 			productName = nidaqtest;
@@ -498,6 +514,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		E13DEB6C15F7E78900AC7480 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E1CA0DDA15EBCA7200EB6B60 /* nidaqapi */;
+			targetProxy = E13DEB6B15F7E78900AC7480 /* PBXContainerItemProxy */;
+		};
+		E13DEB6F15F7E78F00AC7480 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E1CA0DDA15EBCA7200EB6B60 /* nidaqapi */;
+			targetProxy = E13DEB6E15F7E78F00AC7480 /* PBXContainerItemProxy */;
+		};
 		E1690E8715E69673007DFCEF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E105A21715E6835A007F9F38 /* NIDAQPlugin */;
