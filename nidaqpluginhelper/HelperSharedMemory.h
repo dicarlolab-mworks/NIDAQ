@@ -40,7 +40,7 @@ public:
         message = new(mappedRegion.get_address()) HelperControlMessage;
     }
     
-    HelperControlMessage* getMessagePtr() {
+    HelperControlMessage* getMessagePtr() const {
         return message;
     }
     
