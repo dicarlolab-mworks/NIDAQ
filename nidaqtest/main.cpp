@@ -28,15 +28,15 @@ static void generateSineWaves(const nidaq::Device &device) {
     std::cout << "Creating second analog output channel" << std::endl;
     task.addVoltageChannel(1, -1.0, 1.0);
     
-    std::cout << "Configuring sample clock timing" << std::endl;
-    task.setSampleClockTiming(10000.0);
-    
     const size_t samplesPerChan = 512;
     std::vector<double> data(2*samplesPerChan, 0.0);
     for (size_t i = 0; i < samplesPerChan; i++) {
         data[i] = 9.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
         data[i+samplesPerChan] = 0.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
     }
+    
+    std::cout << "Configuring sample clock timing" << std::endl;
+    task.setSampleClockTiming(10000.0, samplesPerChan);
     
     std::cout << "Writing samples" << std::endl;
     size_t samplesWritten = task.write(data, 10.0);
@@ -58,7 +58,7 @@ static void acquireNScans(const nidaq::Device &device) {
     std::vector<double> data(1000, 0.0);
     
     std::cout << "Configuring sample clock timing" << std::endl;
-    task.setSampleClockTiming(1000.0, "OnboardClock", data.size());
+    task.setSampleClockTiming(1000.0, data.size(), false, "OnboardClock");
     
     task.start();
     
@@ -87,13 +87,13 @@ static void analogRepeater(const nidaq::Device &device) {
     std::cout << "Creating analog input task" << std::endl;
     nidaq::AnalogInputTask aiTask(device);
     aiTask.addVoltageChannel(0, minVal, maxVal);
-    aiTask.setSampleClockTiming(10000.0);
+    aiTask.setSampleClockTiming(10000.0, samples.size());
     
     // Analog output task
     std::cout << "Creating analog output task" << std::endl;
     nidaq::AnalogOutputTask aoTask(device);
     aoTask.addVoltageChannel(0, minVal, maxVal);
-    aoTask.setSampleClockTiming(10000.0);
+    aoTask.setSampleClockTiming(10000.0, samples.size());
     aoTask.setAllowRegeneration(false);
     
     aiTask.start();

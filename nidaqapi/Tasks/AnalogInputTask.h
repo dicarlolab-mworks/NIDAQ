@@ -32,6 +32,8 @@ public:
                            double maxVal,
                            TerminalConfig termConfig = TerminalConfigDefault);
     
+    size_t getNumSamplesAvailable() const;
+    
     template <typename DoubleArrayType>
     size_t read(DoubleArrayType &samples, double timeout, bool interleaved = false) {
         return read(samples[0], samples.size(), timeout, interleaved);

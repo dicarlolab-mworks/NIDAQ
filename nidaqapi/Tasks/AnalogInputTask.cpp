@@ -43,6 +43,13 @@ void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
+size_t AnalogInputTask::getNumSamplesAvailable() const {
+    nidaqmxbase::uint32_t sampsPerChanAvail;
+    Error::throwIfFailed(  DAQmxBaseGetReadAttribute(getHandle(), DAQmx_Read_AvailSampPerChan, &sampsPerChanAvail)  );
+    return size_t(sampsPerChanAvail) * getNumChannels();
+}
+
+
 size_t AnalogInputTask::read(double &firstSample,
                              size_t numSamples,
                              double timeout,

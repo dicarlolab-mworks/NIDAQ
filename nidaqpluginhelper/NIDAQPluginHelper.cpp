@@ -8,6 +8,9 @@
 
 #include "NIDAQPluginHelper.h"
 
+#include <mach/mach.h>
+#include <mach/mach_time.h>
+
 #include "Error.h"
 
 
@@ -17,7 +20,14 @@ NIDAQPluginHelper::NIDAQPluginHelper(IPCRequestResponse &ipc,
     ipc(ipc),
     m(message),
     device(deviceName)
-{ }
+{
+    mach_timebase_info_data_t timebaseInfo;
+    kern_return_t kr = mach_timebase_info(&timebaseInfo);
+    if (kr != KERN_SUCCESS) {
+        throw std::runtime_error(mach_error_string(kr));
+    }
+    absoluteTimeToNS = double(timebaseInfo.numer) / double(timebaseInfo.denom);
+}
 
 
 bool NIDAQPluginHelper::handleRequests() {
@@ -65,10 +75,6 @@ bool NIDAQPluginHelper::handleRequests() {
 
 void NIDAQPluginHelper::handleRequest(bool &done) {
     switch (m.code) {
-        case HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER:
-            m.deviceSerialNumber = device.getSerialNumber();
-            break;
-            
         case HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL:
             createAnalogInputVoltageChannel();
             break;
@@ -91,6 +97,10 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             
         case HelperControlMessage::REQUEST_SHUTDOWN:
             done = true;
+            break;
+            
+        case HelperControlMessage::REQUEST_PING:
+            // Nothing to do
             break;
             
         default:
@@ -118,7 +128,8 @@ void NIDAQPluginHelper::createAnalogInputVoltageChannel() {
 
 void NIDAQPluginHelper::setAnalogInputSampleClockTiming() {
     requireAnalogInputTask();
-    analogInputTask->setSampleClockTiming(m.sampleClockTiming.samplingRate);
+    analogInputTask->setSampleClockTiming(m.sampleClockTiming.samplingRate,
+                                          m.sampleClockTiming.samplesPerChannelToAcquire);
 }
 
 
@@ -144,6 +155,11 @@ void NIDAQPluginHelper::readAnalogInputSamples() {
                                                   m.analogSamples.timeout,
                                                   true);  // Group samples by scan number
     m.analogSamples.samples.numSamples = numSamplesRead;
+}
+
+
+double NIDAQPluginHelper::getSystemTimeNS() const {
+    return double(mach_absolute_time()) * absoluteTimeToNS;
 }
 
 

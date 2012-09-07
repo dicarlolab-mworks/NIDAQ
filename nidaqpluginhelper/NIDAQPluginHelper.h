@@ -40,11 +40,15 @@ private:
     void stopAnalogInputTask();
     void readAnalogInputSamples();
     
+    double getSystemTimeNS() const;
+    
     IPCRequestResponse &ipc;
     HelperControlMessage &m;
     
     nidaq::Device device;
     boost::scoped_ptr<nidaq::AnalogInputTask> analogInputTask;
+    
+    double absoluteTimeToNS;
     
 };
 

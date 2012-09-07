@@ -26,8 +26,9 @@ public:
     ~Task();
     
     void setSampleClockTiming(double samplingRate,
+                              uint64_t samplesPerChannelToAcquire,
+                              bool continuous = true,
                               const std::string &clockSourceTerminal = "",
-                              uint64_t samplesPerChannelToAcquire = 0,
                               bool acquireOnRisingEdge = true);
     
     void start();

@@ -88,13 +88,13 @@ struct HelperControlMessage {
         UNKNOWN_MESSAGE_CODE = 0,
         
         // Request codes
-        REQUEST_GET_DEVICE_SERIAL_NUMBER,
         REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL,
         REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING,
         REQUEST_START_ANALOG_INPUT_TASK,
         REQUEST_STOP_ANALOG_INPUT_TASK,
         REQUEST_READ_ANALOG_INPUT_SAMPLES,
         REQUEST_SHUTDOWN,
+        REQUEST_PING,
         
         // Response codes
         RESPONSE_OK,
@@ -122,6 +122,7 @@ struct HelperControlMessage {
         
         struct {
             double samplingRate;
+            unsigned_int samplesPerChannelToAcquire;
         } sampleClockTiming;
         
         //
@@ -136,8 +137,6 @@ struct HelperControlMessage {
         //
         // Response data
         //
-        
-        unsigned_int deviceSerialNumber;
         
         struct {
             signed_int code;

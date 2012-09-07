@@ -105,21 +105,13 @@ bool NIDAQDevice::initialize() {
     
     spawnHelper();
     
-    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Looking for NIDAQ device \"%s\"...", deviceName.c_str());
-    
-    controlMessage->code = HelperControlMessage::REQUEST_GET_DEVICE_SERIAL_NUMBER;
-    if (!sendHelperRequest()) {
-        return false;
-    }
-    
-    mprintf(M_IODEVICE_MESSAGE_DOMAIN,
-            "Connected to NIDAQ device \"%s\" (serial number: %X)",
-            deviceName.c_str(),
-            controlMessage->deviceSerialNumber);
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Configuring NIDAQ device \"%s\"...", deviceName.c_str());
     
     if (!createTasks()) {
         return false;
     }
+    
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device \"%s\" is ready", deviceName.c_str());
     
     return true;
 }
@@ -138,11 +130,10 @@ bool NIDAQDevice::startDeviceIO() {
         return false;
     }
     
-    MWTime initialDelay = 10 * analogInputUpdateInterval;  // Give the device some time to get going
     boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
     
     analogInputScheduleTask = Scheduler::instance()->scheduleUS(FILELINE,
-                                                                initialDelay,
+                                                                0,
                                                                 analogInputUpdateInterval,
                                                                 M_REPEAT_INDEFINITELY,
                                                                 boost::bind(&NIDAQDevice::readAnalogInput, sharedThis),
@@ -249,6 +240,8 @@ bool NIDAQDevice::createTasks() {
         // Set analog input task's sample clock timing
         controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING;
         controlMessage->sampleClockTiming.samplingRate = 1.0 / (analogInputDataInterval / 1e6);
+        controlMessage->sampleClockTiming.samplesPerChannelToAcquire = (analogInputUpdateInterval /
+                                                                        analogInputDataInterval);
         if (!sendHelperRequest()) {
             return false;
         }
@@ -315,7 +308,7 @@ void* NIDAQDevice::readAnalogInput() {
     }
     
     controlMessage->code = HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES;
-    controlMessage->analogSamples.timeout = 2.0 * double(analogInputUpdateInterval) / 1e6;
+    controlMessage->analogSamples.timeout = double(analogInputUpdateInterval) / 1e6;
     controlMessage->analogSamples.samples.numSamples = analogInputSampleBufferSize;
     
     if (!sendHelperRequest()) {
