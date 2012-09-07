@@ -42,7 +42,7 @@ static std::string generateUniqueID() {
     boost::uint64_t uniqueID;
     if (RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID)) < 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
-                              "Internal error: Unable to generate unique identifier for NIDAQ device shared resource");
+                              "Internal error: Unable to generate unique identifier for NIDAQ device IPC resource");
     }
     return (boost::format("%x") % uniqueID).str();
 }
@@ -51,15 +51,15 @@ static std::string generateUniqueID() {
 NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     IODevice(parameters),
     deviceName(parameters[NAME].str()),
-    analogInputDataInterval(parameters[ANALOG_INPUT_DATA_INTERVAL]),
-    analogInputUpdateInterval(parameters[ANALOG_INPUT_UPDATE_INTERVAL]),
     requestSemName(generateUniqueID()),
     responseSemName(generateUniqueID()),
     controlChannel(boost::interprocess::create_only, requestSemName, responseSemName),
     sharedMemoryName(generateUniqueID()),
     sharedMemory(boost::interprocess::create_only, sharedMemoryName),
     controlMessage(NULL),
-    helperPID(-1)
+    helperPID(-1),
+    analogInputDataInterval(parameters[ANALOG_INPUT_DATA_INTERVAL]),
+    analogInputUpdateInterval(parameters[ANALOG_INPUT_UPDATE_INTERVAL])
 {
     if (analogInputDataInterval <= 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid analog input data interval");
@@ -71,11 +71,6 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
                               "Analog input update interval must be an integer multiple of analog input data interval");
     }
-}
-
-
-NIDAQDevice::~NIDAQDevice() {
-    reapHelper();
 }
 
 
@@ -117,6 +112,35 @@ bool NIDAQDevice::initialize() {
 }
 
 
+bool NIDAQDevice::createTasks() {
+    if (analogInputChannels.size() > 0) {
+        // Create the analog input channels
+        BOOST_FOREACH(boost::shared_ptr<NIDAQAnalogInputVoltageChannel> channel, analogInputChannels) {
+            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL;
+            
+            controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
+            controlMessage->analogVoltageChannel.minVal = channel->getRangeMin();
+            controlMessage->analogVoltageChannel.maxVal = channel->getRangeMax();
+            
+            if (!sendHelperRequest()) {
+                return false;
+            }
+        }
+        
+        // Set analog input task's sample clock timing
+        controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING;
+        controlMessage->sampleClockTiming.samplingRate = 1.0 / (analogInputDataInterval / 1e6);
+        controlMessage->sampleClockTiming.samplesPerChannelToAcquire = (analogInputUpdateInterval /
+                                                                        analogInputDataInterval);
+        if (!sendHelperRequest()) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
 bool NIDAQDevice::startDeviceIO() {
     scoped_lock lock(controlMutex);
     
@@ -146,6 +170,40 @@ bool NIDAQDevice::startDeviceIO() {
 }
 
 
+void* NIDAQDevice::readAnalogInput() {
+    scoped_lock lock(controlMutex);
+    
+    if (!analogInputScheduleTask) {
+        // If we've already been canceled, don't try to read more data
+        return NULL;
+    }
+    
+    controlMessage->code = HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES;
+    controlMessage->analogSamples.timeout = double(analogInputUpdateInterval) / 1e6;
+    controlMessage->analogSamples.samples.numSamples = analogInputSampleBufferSize;
+    
+    if (!sendHelperRequest()) {
+        return NULL;
+    }
+    
+    const size_t numSamplesRead = controlMessage->analogSamples.samples.numSamples;
+    if (numSamplesRead != analogInputSampleBufferSize) {
+        mwarning(M_IODEVICE_MESSAGE_DOMAIN,
+                 "NIDAQ device requested %u analog samples but got only %u",
+                 analogInputSampleBufferSize,
+                 numSamplesRead);
+    }
+    
+    const size_t numChannels = analogInputChannels.size();
+    for (size_t i = 0; i < numSamplesRead; i++) {
+        double sample = controlMessage->analogSamples.samples[i];
+        analogInputChannels[i % numChannels]->getVariable()->setValue(sample);
+    }
+    
+    return NULL;
+}
+
+
 bool NIDAQDevice::stopDeviceIO() {
     scoped_lock lock(controlMutex);
     
@@ -162,6 +220,11 @@ bool NIDAQDevice::stopDeviceIO() {
     }
     
     return true;
+}
+
+
+NIDAQDevice::~NIDAQDevice() {
+    reapHelper();
 }
 
 
@@ -222,35 +285,6 @@ void NIDAQDevice::reapHelper() {
 }
 
 
-bool NIDAQDevice::createTasks() {
-    if (analogInputChannels.size() > 0) {
-        // Create the analog input channels
-        BOOST_FOREACH(boost::shared_ptr<NIDAQAnalogInputVoltageChannel> channel, analogInputChannels) {
-            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL;
-            
-            controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
-            controlMessage->analogVoltageChannel.minVal = channel->getRangeMin();
-            controlMessage->analogVoltageChannel.maxVal = channel->getRangeMax();
-            
-            if (!sendHelperRequest()) {
-                return false;
-            }
-        }
-        
-        // Set analog input task's sample clock timing
-        controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING;
-        controlMessage->sampleClockTiming.samplingRate = 1.0 / (analogInputDataInterval / 1e6);
-        controlMessage->sampleClockTiming.samplesPerChannelToAcquire = (analogInputUpdateInterval /
-                                                                        analogInputDataInterval);
-        if (!sendHelperRequest()) {
-            return false;
-        }
-    }
-    
-    return true;
-}
-
-
 bool NIDAQDevice::sendHelperRequest() {
     controlChannel.postRequest();
     if (!(controlChannel.waitForResponse(boost::posix_time::seconds(10)))) {
@@ -296,40 +330,6 @@ bool NIDAQDevice::sendHelperRequest() {
     }
     
     return (responseCode == HelperControlMessage::RESPONSE_OK);
-}
-
-
-void* NIDAQDevice::readAnalogInput() {
-    scoped_lock lock(controlMutex);
-    
-    if (!analogInputScheduleTask) {
-        // If we've already been canceled, don't try to read more data
-        return NULL;
-    }
-    
-    controlMessage->code = HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES;
-    controlMessage->analogSamples.timeout = double(analogInputUpdateInterval) / 1e6;
-    controlMessage->analogSamples.samples.numSamples = analogInputSampleBufferSize;
-    
-    if (!sendHelperRequest()) {
-        return NULL;
-    }
-    
-    const size_t numSamplesRead = controlMessage->analogSamples.samples.numSamples;
-    if (numSamplesRead != analogInputSampleBufferSize) {
-        mwarning(M_IODEVICE_MESSAGE_DOMAIN,
-                 "NIDAQ device requested %u analog samples but got only %u",
-                 analogInputSampleBufferSize,
-                 numSamplesRead);
-    }
-    
-    const size_t numChannels = analogInputChannels.size();
-    for (size_t i = 0; i < numSamplesRead; i++) {
-        double sample = controlMessage->analogSamples.samples[i];
-        analogInputChannels[i % numChannels]->getVariable()->setValue(sample);
-    }
-    
-    return NULL;
 }
 
 

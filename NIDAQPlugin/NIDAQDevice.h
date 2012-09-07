@@ -46,21 +46,14 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
-    void spawnHelper();
-    void reapHelper();
-    
     bool createTasks();
-    
-    bool sendHelperRequest();
-    
     void* readAnalogInput();
     
+    void spawnHelper();
+    void reapHelper();
+    bool sendHelperRequest();
+    
     const std::string deviceName;
-    MWTime analogInputDataInterval;
-    MWTime analogInputUpdateInterval;
-    std::vector< boost::shared_ptr<NIDAQAnalogInputVoltageChannel> > analogInputChannels;
-    size_t analogInputSampleBufferSize;
-    shared_ptr<ScheduleTask> analogInputScheduleTask;
     
     std::string requestSemName, responseSemName;
     IPCRequestResponse controlChannel;
@@ -73,6 +66,12 @@ private:
     
     typedef boost::mutex::scoped_lock scoped_lock;
     boost::mutex controlMutex;
+    
+    MWTime analogInputDataInterval;
+    MWTime analogInputUpdateInterval;
+    std::vector< boost::shared_ptr<NIDAQAnalogInputVoltageChannel> > analogInputChannels;
+    size_t analogInputSampleBufferSize;
+    shared_ptr<ScheduleTask> analogInputScheduleTask;
     
 };
 
