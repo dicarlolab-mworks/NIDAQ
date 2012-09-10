@@ -11,9 +11,8 @@
 #include "MachError.h"
 
 
-MachClock::MachClock() {
+double MachClock::getAbsoluteToNano() {
     mach_timebase_info_data_t timebaseInfo;
     MachError::throwIfFailed(  mach_timebase_info(&timebaseInfo)  );
-    absoluteToNano = double(timebaseInfo.numer) / double(timebaseInfo.denom);
-    absoluteToMilli = absoluteToNano / 1e6;
+    return (double(timebaseInfo.numer) / double(timebaseInfo.denom));
 }

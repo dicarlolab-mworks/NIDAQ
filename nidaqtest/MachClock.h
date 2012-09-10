@@ -15,23 +15,22 @@
 class MachClock {
     
 public:
-    MachClock();
+    MachClock() :
+        absoluteToNano(getAbsoluteToNano())
+    { }
     
     double nanoTime() const {
-        return absoluteTime() * absoluteToNano;
+        return double(mach_absolute_time()) * absoluteToNano;
     }
     
     double milliTime() const {
-        return absoluteTime() * absoluteToMilli;
+        return nanoTime() / 1e6;
     }
     
 private:
-    static double absoluteTime() {
-        return double(mach_absolute_time());
-    }
+    static double getAbsoluteToNano();
     
-    double absoluteToNano;
-    double absoluteToMilli;
+    const double absoluteToNano;
     
 };
 

@@ -184,13 +184,15 @@ static void testTiming(const nidaq::Device &device) {
         std::cout << "aiSamples[" << i << "] = " << aiSamples[i] << std::endl;
     }
     
+    double readElapsed = readTime - startTime;
+    
     std::cout << std::endl;
-    std::cout << "Sampling interval: " << (1000.0 / samplingRate) << " ms" << std::endl;
-    std::cout << "Samples read:      " << samplesRead << std::endl;
-    std::cout << "Samples available: " << samplesAvailable << std::endl;
-    std::cout << "Time in start():   " << (startTime - preStartTime) << " ms" << std::endl;
-    std::cout << "Time in read():    " << (readTime - startTime) << " ms" << std::endl;
-    std::cout << "Time per sample:   " << ((readTime - startTime) / double(samplesRead)) << " ms" << std::endl;
+    std::cout << "Sampling interval:    " << (1000.0 / samplingRate) << " ms" << std::endl;
+    std::cout << "Samples read:         " << samplesRead << std::endl;
+    std::cout << "Samples available:    " << samplesAvailable << std::endl;
+    std::cout << "Time in start():      " << (startTime - preStartTime) << " ms" << std::endl;
+    std::cout << "Time in read():       " << readElapsed << " ms" << std::endl;
+    std::cout << "Read time per sample: " << (readElapsed / double(samplesRead)) << " ms" << std::endl;
     std::cout << std::endl;
 }
 
