@@ -18,6 +18,8 @@
 #include "AnalogInputTask.h"
 #include "AnalogOutputTask.h"
 
+#include "MachClock.h"
+
 
 static void generateSineWaves(const nidaq::Device &device) {
     std::cout << "Creating analog output task" << std::endl;
@@ -122,6 +124,77 @@ static void analogRepeater(const nidaq::Device &device) {
 }
 
 
+static void testTiming(const nidaq::Device &device) {
+    const double samplingRate = 10000.0;
+    const double minVal = -10.0;
+    const double maxVal = 10.0;
+    const double timeout = 10.0;
+    
+    // Set up AO task
+    
+    nidaq::AnalogOutputTask aoTask(device);
+    aoTask.addVoltageChannel(0, minVal, maxVal);
+    
+    boost::array<double, 100> aoSamples;
+    for (size_t i = 0; i < aoSamples.size(); i++) {
+        aoSamples[i] = 0.995 * maxVal * std::sin(double(i) * 2.0 * M_PI / double(aoSamples.size()));
+    }
+    
+    aoTask.setSampleClockTiming(samplingRate, aoSamples.size());
+    size_t samplesWritten = aoTask.write(aoSamples, timeout);
+    if (samplesWritten != aoSamples.size()) {
+        std::cout << "Wrote only " << samplesWritten << " of " << aoSamples.size() << " samples!" << std::endl;
+        std::cout << "Aborting test" << std::endl;
+        return;
+    }
+    
+    // Set up AI task
+    
+    nidaq::AnalogInputTask aiTask(device);
+    aiTask.addVoltageChannel(0, minVal, maxVal);
+    
+    boost::array<double, 1000> aiSamples;
+    aiTask.setSampleClockTiming(samplingRate, aiSamples.size());
+    
+    // Collect data
+    
+    MachClock clock;
+    
+    aoTask.start();
+    
+    double preStartTime = clock.milliTime();
+    aiTask.start();
+    double startTime = clock.milliTime();
+    size_t samplesRead = aiTask.read(aiSamples, timeout);
+    double readTime = clock.milliTime();
+    size_t samplesAvailable = aiTask.getNumSamplesAvailable();
+    
+    aiTask.stop();
+    aoTask.stop();
+    
+    // Report results
+    
+    if (samplesRead != aiSamples.size()) {
+        std::cout << "Read only " << samplesRead << " of " << aiSamples.size() << " samples!" << std::endl;
+        std::cout << "Aborting test" << std::endl;
+        return;
+    }
+    
+    for (size_t i = 0; i < 100; i++) {
+        std::cout << "aiSamples[" << i << "] = " << aiSamples[i] << std::endl;
+    }
+    
+    std::cout << std::endl;
+    std::cout << "Sampling interval: " << (1000.0 / samplingRate) << " ms" << std::endl;
+    std::cout << "Samples read:      " << samplesRead << std::endl;
+    std::cout << "Samples available: " << samplesAvailable << std::endl;
+    std::cout << "Time in start():   " << (startTime - preStartTime) << " ms" << std::endl;
+    std::cout << "Time in read():    " << (readTime - startTime) << " ms" << std::endl;
+    std::cout << "Time per sample:   " << ((readTime - startTime) / double(samplesRead)) << " ms" << std::endl;
+    std::cout << std::endl;
+}
+
+
 int main(int argc, const char * argv[])
 {
     try {
@@ -134,7 +207,8 @@ int main(int argc, const char * argv[])
         
         //generateSineWaves(device);
         //acquireNScans(device);
-        analogRepeater(device);
+        //analogRepeater(device);
+        testTiming(device);
         
         std::cout << "Done!" << std::endl;
         
