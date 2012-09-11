@@ -25,7 +25,7 @@ public:
     
     ~MachError() throw() /*override*/ { }
     
-    MachError(mach_error_t value);
+    explicit MachError(mach_error_t value);
     
     mach_error_t getValue() const {
         return value;

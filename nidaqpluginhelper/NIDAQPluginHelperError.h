@@ -17,11 +17,11 @@
 class NIDAQPluginHelperError : public std::logic_error {
     
 public:
-    NIDAQPluginHelperError(const std::string &s) :
+    explicit NIDAQPluginHelperError(const std::string &s) :
         std::logic_error(s)
     { }
     
-    NIDAQPluginHelperError(const boost::format &f) :
+    explicit NIDAQPluginHelperError(const boost::format &f) :
         std::logic_error(f.str())
     { }
     

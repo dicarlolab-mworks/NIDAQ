@@ -20,7 +20,7 @@ BEGIN_NAMESPACE_NIDAQ
 class Device {
     
 public:
-    Device(const std::string &name) :
+    explicit Device(const std::string &name) :
         name(name)
     { }
     

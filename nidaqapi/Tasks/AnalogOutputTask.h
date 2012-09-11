@@ -18,7 +18,7 @@ BEGIN_NAMESPACE_NIDAQ
 class AnalogOutputTask : public Task {
     
 public:
-    AnalogOutputTask(const Device &device);
+    explicit AnalogOutputTask(const Device &device);
     
     void setAllowRegeneration(bool allowRegen);
     

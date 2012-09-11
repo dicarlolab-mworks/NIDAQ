@@ -158,15 +158,13 @@ static void testTiming(const nidaq::Device &device) {
     
     // Collect data
     
-    MachClock clock;
-    
     aoTask.start();
     
-    double preStartTime = clock.milliTime();
+    MachClock clock;
     aiTask.start();
-    double startTime = clock.milliTime();
+    double startElapsed = clock.intervalMilli();
     size_t samplesRead = aiTask.read(aiSamples, timeout);
-    double readTime = clock.milliTime();
+    double readElapsed = clock.intervalMilli();
     size_t samplesAvailable = aiTask.getNumSamplesAvailable();
     
     aiTask.stop();
@@ -184,13 +182,11 @@ static void testTiming(const nidaq::Device &device) {
         std::cout << "aiSamples[" << i << "] = " << aiSamples[i] << std::endl;
     }
     
-    double readElapsed = readTime - startTime;
-    
     std::cout << std::endl;
     std::cout << "Sampling interval:    " << (1000.0 / samplingRate) << " ms" << std::endl;
     std::cout << "Samples read:         " << samplesRead << std::endl;
     std::cout << "Samples available:    " << samplesAvailable << std::endl;
-    std::cout << "Time in start():      " << (startTime - preStartTime) << " ms" << std::endl;
+    std::cout << "Time in start():      " << startElapsed << " ms" << std::endl;
     std::cout << "Time in read():       " << readElapsed << " ms" << std::endl;
     std::cout << "Read time per sample: " << (readElapsed / double(samplesRead)) << " ms" << std::endl;
     std::cout << std::endl;

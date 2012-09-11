@@ -25,7 +25,7 @@ public:
         TerminalConfigDifferential
     } TerminalConfig;
     
-    AnalogInputTask(const Device &device);
+    explicit AnalogInputTask(const Device &device);
     
     void addVoltageChannel(unsigned int channelNumber,
                            double minVal,

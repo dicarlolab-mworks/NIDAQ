@@ -28,7 +28,7 @@ class IPCNamedResourceRemover : boost::noncopyable {
 public:
     IPCNamedResourceRemover() { }
     
-    IPCNamedResourceRemover(const std::string &name) :
+    explicit IPCNamedResourceRemover(const std::string &name) :
         name(name)
     { }
     
