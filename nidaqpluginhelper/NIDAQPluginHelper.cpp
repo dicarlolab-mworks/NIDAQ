@@ -8,9 +8,6 @@
 
 #include "NIDAQPluginHelper.h"
 
-#include <mach/mach.h>
-#include <mach/mach_time.h>
-
 #include "Error.h"
 
 
@@ -20,14 +17,7 @@ NIDAQPluginHelper::NIDAQPluginHelper(IPCRequestResponse &ipc,
     ipc(ipc),
     m(message),
     device(deviceName)
-{
-    mach_timebase_info_data_t timebaseInfo;
-    kern_return_t kr = mach_timebase_info(&timebaseInfo);
-    if (kr != KERN_SUCCESS) {
-        throw std::runtime_error(mach_error_string(kr));
-    }
-    absoluteTimeToNS = double(timebaseInfo.numer) / double(timebaseInfo.denom);
-}
+{ }
 
 
 bool NIDAQPluginHelper::handleRequests() {
@@ -136,6 +126,7 @@ void NIDAQPluginHelper::setAnalogInputSampleClockTiming() {
 void NIDAQPluginHelper::startAnalogInputTask() {
     requireAnalogInputTask();
     analogInputTask->start();
+    m.taskStartTime = clock.nanoTime();
 }
 
 
@@ -156,12 +147,6 @@ void NIDAQPluginHelper::readAnalogInputSamples() {
                                                   true);  // Group samples by scan number
     m.analogSamples.samples.numSamples = numSamplesRead;
 }
-
-
-double NIDAQPluginHelper::getSystemTimeNS() const {
-    return double(mach_absolute_time()) * absoluteTimeToNS;
-}
-
 
 
 

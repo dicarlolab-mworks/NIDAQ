@@ -71,6 +71,8 @@ private:
     MWTime analogInputUpdateInterval;
     std::vector< boost::shared_ptr<NIDAQAnalogInputVoltageChannel> > analogInputChannels;
     size_t analogInputSampleBufferSize;
+    MWTime analogInputStartTime;
+    boost::uint64_t totalNumAnalogInputSamplesAcquired;
     shared_ptr<ScheduleTask> analogInputScheduleTask;
     
 };

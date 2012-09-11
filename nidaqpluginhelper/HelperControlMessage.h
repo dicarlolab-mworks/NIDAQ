@@ -138,6 +138,8 @@ struct HelperControlMessage {
         // Response data
         //
         
+        unsigned_int taskStartTime;
+        
         struct {
             signed_int code;
             message_buffer message;
