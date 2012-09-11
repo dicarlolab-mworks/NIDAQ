@@ -11,8 +11,8 @@
 #include "MachError.h"
 
 
-double MachClock::getAbsoluteToNano() {
+mach_timebase_info_data_t MachClock::getTimebaseInfo() {
     mach_timebase_info_data_t timebaseInfo;
     MachError::throwIfFailed(  mach_timebase_info(&timebaseInfo)  );
-    return (double(timebaseInfo.numer) / double(timebaseInfo.denom));
+    return timebaseInfo;
 }

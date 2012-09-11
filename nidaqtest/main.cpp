@@ -18,7 +18,7 @@
 #include "AnalogInputTask.h"
 #include "AnalogOutputTask.h"
 
-#include "MachClock.h"
+#include "MachTimer.h"
 
 
 static void generateSineWaves(const nidaq::Device &device) {
@@ -160,11 +160,11 @@ static void testTiming(const nidaq::Device &device) {
     
     aoTask.start();
     
-    MachClock clock;
+    MachTimer timer;
     aiTask.start();
-    double startElapsed = clock.intervalMilli();
+    double startElapsed = timer.intervalMilli();
     size_t samplesRead = aiTask.read(aiSamples, timeout);
-    double readElapsed = clock.intervalMilli();
+    double readElapsed = timer.intervalMilli();
     size_t samplesAvailable = aiTask.getNumSamplesAvailable();
     
     aiTask.stop();

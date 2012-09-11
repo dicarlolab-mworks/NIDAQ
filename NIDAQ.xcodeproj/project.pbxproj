@@ -161,6 +161,7 @@
 		E196C54415E2BF7000059BF2 /* Device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
 		E196C54715E2C13200059BF2 /* Error.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Error.cpp; sourceTree = "<group>"; };
 		E196C54815E2C13200059BF2 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
+		E1A081EB15FF84DA005D8094 /* MachTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachTimer.h; sourceTree = "<group>"; };
 		E1A7226915EE4BD6006671AD /* HelperControlMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelperControlMessage.h; sourceTree = "<group>"; };
 		E1A7226B15EE606B006671AD /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
 		E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQPluginHelper.cpp; sourceTree = "<group>"; };
@@ -332,6 +333,7 @@
 				E15E883115FE32DD0077757B /* MachError.cpp */,
 				E15E883715FE32F60077757B /* MachClock.h */,
 				E15E883615FE32F60077757B /* MachClock.cpp */,
+				E1A081EB15FF84DA005D8094 /* MachTimer.h */,
 				E196C53015E2AD3200059BF2 /* main.cpp */,
 			);
 			path = nidaqtest;
