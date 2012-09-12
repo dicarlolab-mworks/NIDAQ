@@ -17,6 +17,8 @@
 #include "Device.h"
 #include "AnalogInputTask.h"
 #include "AnalogOutputTask.h"
+#include "DigitalInputTask.h"
+#include "DigitalOutputTask.h"
 
 #include "MachTimer.h"
 
@@ -193,6 +195,46 @@ static void testTiming(const nidaq::Device &device) {
 }
 
 
+static inline void assertNumSamples(size_t expected, size_t actual) {
+    if (actual != expected) {
+        throw std::runtime_error("Wrong number of samples read or written");
+    }
+}
+
+
+static void simpleDigitalIO(const nidaq::Device &device) {
+    nidaq::DigitalOutputTask doTask(device);
+    doTask.addChannel(0);
+    
+    nidaq::DigitalInputTask diTask(device);
+    diTask.addChannel(1);
+    
+    boost::array<uint32_t, 1> outSamples, inSamples;
+    const double timeout = 10.0;
+    
+    doTask.start();
+    diTask.start();
+    
+    outSamples[0] = 0;
+    assertNumSamples(1, doTask.write(outSamples, timeout));
+    assertNumSamples(1, diTask.read(inSamples, timeout));
+    std::cout << inSamples[0] << std::endl;
+    
+    outSamples[0] = 1;
+    assertNumSamples(1, doTask.write(outSamples, timeout));
+    assertNumSamples(1, diTask.read(inSamples, timeout));
+    std::cout << inSamples[0] << std::endl;
+    
+    outSamples[0] = 0;
+    assertNumSamples(1, doTask.write(outSamples, timeout));
+    assertNumSamples(1, diTask.read(inSamples, timeout));
+    std::cout << inSamples[0] << std::endl;
+    
+    diTask.stop();
+    doTask.stop();
+}
+
+
 int main(int argc, const char * argv[])
 {
     try {
@@ -206,7 +248,8 @@ int main(int argc, const char * argv[])
         //generateSineWaves(device);
         //acquireNScans(device);
         //analogRepeater(device);
-        testTiming(device);
+        //testTiming(device);
+        simpleDigitalIO(device);
         
         std::cout << "Done!" << std::endl;
         
