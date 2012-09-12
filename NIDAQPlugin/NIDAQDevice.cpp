@@ -25,6 +25,7 @@ BEGIN_NAMESPACE_MW
 const std::string NIDAQDevice::NAME("name");
 const std::string NIDAQDevice::ANALOG_INPUT_DATA_INTERVAL("analog_input_data_interval");
 const std::string NIDAQDevice::ANALOG_INPUT_UPDATE_INTERVAL("analog_input_update_interval");
+const std::string NIDAQDevice::ASSUME_MULTIPLEXED_ADC("assume_multiplexed_adc");
 
 
 void NIDAQDevice::describeComponent(ComponentInfo &info) {
@@ -35,6 +36,7 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
     info.addParameter(NAME, true, "Dev1");
     info.addParameter(ANALOG_INPUT_DATA_INTERVAL, true, "1ms");
     info.addParameter(ANALOG_INPUT_UPDATE_INTERVAL, true, "3ms");
+    info.addParameter(ASSUME_MULTIPLEXED_ADC, "1");
 }
 
 
@@ -59,7 +61,8 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     controlMessage(NULL),
     helperPID(-1),
     analogInputDataInterval(parameters[ANALOG_INPUT_DATA_INTERVAL]),
-    analogInputUpdateInterval(parameters[ANALOG_INPUT_UPDATE_INTERVAL])
+    analogInputUpdateInterval(parameters[ANALOG_INPUT_UPDATE_INTERVAL]),
+    assumeMultiplexedADC(parameters[ASSUME_MULTIPLEXED_ADC])
 {
     if (analogInputDataInterval <= 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid analog input data interval");
@@ -209,7 +212,26 @@ void* NIDAQDevice::readAnalogInput() {
     
     for (size_t i = 0; i < numSamplesRead; i++) {
         double sample = controlMessage->analogSamples.samples[i];
-        MWTime sampleTime = firstSampleTime + analogInputDataInterval * (i / numChannels);
+        MWTime sampleTime = firstSampleTime;
+        
+        //
+        // analogInputDataInterval determines the *per-channel* sampling rate.  The method for computing a
+        // timestamp for each sample depends on whether the device supports simultaneous sampling, i.e. whether
+        // there's a separate analog-to-digital converter (ADC) for each channel, or there's a single ADC that
+        // is multiplexed among all channels.  Given an acquisition with N analog input channels and a per-channel
+        // sampling rate of S samples per second:
+        //
+        if (assumeMultiplexedADC) {
+            // If there's a single, multiplexed ADC, then the true sampling rate of the device is N*S, and each sample
+            // is acquired 1/(N*S) seconds (i.e. analogInputDataInterval/numChannels microseconds) after the previous
+            // sample
+            sampleTime += (analogInputDataInterval * i) / numChannels;  // Multiply first to minimize truncation
+        } else {
+            // If there's a separate ADC for each channel, then the device acquires N simultaneous samples every 1/S
+            // seconds, and all N samples get the same timestamp
+            sampleTime += analogInputDataInterval * (i / numChannels);
+        }
+        
         analogInputChannels[i % numChannels]->getVariable()->setValue(sample, sampleTime);
     }
     

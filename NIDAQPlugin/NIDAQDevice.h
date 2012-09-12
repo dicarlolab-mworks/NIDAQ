@@ -31,6 +31,7 @@ public:
     static const std::string NAME;
     static const std::string ANALOG_INPUT_DATA_INTERVAL;
     static const std::string ANALOG_INPUT_UPDATE_INTERVAL;
+    static const std::string ASSUME_MULTIPLEXED_ADC;
     
     static void describeComponent(ComponentInfo &info);
     
@@ -69,6 +70,7 @@ private:
     
     MWTime analogInputDataInterval;
     MWTime analogInputUpdateInterval;
+    const bool assumeMultiplexedADC;
     std::vector< boost::shared_ptr<NIDAQAnalogInputVoltageChannel> > analogInputChannels;
     size_t analogInputSampleBufferSize;
     MWTime analogInputStartTime;
