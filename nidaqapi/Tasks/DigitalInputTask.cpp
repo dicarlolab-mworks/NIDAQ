@@ -16,15 +16,20 @@ BEGIN_NAMESPACE_NIDAQ
 
 
 DigitalInputTask::DigitalInputTask(const Device &device) :
-    DigitalIOTask(device, "DigitalInputTask")
+    Task(device, "DigitalInputTask")
 { }
 
 
-int32_t DigitalInputTask::createChannel(const std::string &lines) {
-    return DAQmxBaseCreateDIChan(getHandle(),
-                                 lines.c_str(),
-                                 NULL,
-                                 DAQmx_Val_ChanForAllLines);
+void DigitalInputTask::addChannel(unsigned int portNumber) {
+    std::string lines = getChannelName("port", portNumber);
+    
+    int32_t error = DAQmxBaseCreateDIChan(getHandle(),
+                                          lines.c_str(),
+                                          NULL,
+                                          DAQmx_Val_ChanForAllLines);
+    Error::throwIfFailed(error);
+    
+    Task::addChannel();
 }
 
 

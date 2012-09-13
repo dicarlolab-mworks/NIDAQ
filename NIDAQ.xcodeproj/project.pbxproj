@@ -49,7 +49,6 @@
 		E179EE6715E7D8CC00CC1BED /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E179EE6815E7D8CE00CC1BED /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
 		E179EE7815E7DAFA00CC1BED /* MWNIDAQPluginHelper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E179EE5715E7D71400CC1BED /* MWNIDAQPluginHelper */; };
-		E18BF7E416010DF700B23BCA /* DigitalIOTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E18BF7E216010DF700B23BCA /* DigitalIOTask.cpp */; };
 		E18BF7E9160110E400B23BCA /* DigitalInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E18BF7E7160110E400B23BCA /* DigitalInputTask.cpp */; };
 		E18BF7ED1601133500B23BCA /* DigitalOutputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E18BF7EB1601133400B23BCA /* DigitalOutputTask.cpp */; };
 		E196C53115E2AD3200059BF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C53015E2AD3200059BF2 /* main.cpp */; };
@@ -156,8 +155,6 @@
 		E183169015E51F940028F623 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		E183169415E540770028F623 /* AnalogInputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnalogInputTask.cpp; sourceTree = "<group>"; };
 		E183169515E540770028F623 /* AnalogInputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalogInputTask.h; sourceTree = "<group>"; };
-		E18BF7E216010DF700B23BCA /* DigitalIOTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DigitalIOTask.cpp; sourceTree = "<group>"; };
-		E18BF7E316010DF700B23BCA /* DigitalIOTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DigitalIOTask.h; sourceTree = "<group>"; };
 		E18BF7E7160110E400B23BCA /* DigitalInputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DigitalInputTask.cpp; sourceTree = "<group>"; };
 		E18BF7E8160110E400B23BCA /* DigitalInputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DigitalInputTask.h; sourceTree = "<group>"; };
 		E18BF7EB1601133400B23BCA /* DigitalOutputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DigitalOutputTask.cpp; sourceTree = "<group>"; };
@@ -307,8 +304,6 @@
 				E183169415E540770028F623 /* AnalogInputTask.cpp */,
 				E1B3C56515E42252000B0F8E /* AnalogOutputTask.h */,
 				E1B3C56415E42252000B0F8E /* AnalogOutputTask.cpp */,
-				E18BF7E316010DF700B23BCA /* DigitalIOTask.h */,
-				E18BF7E216010DF700B23BCA /* DigitalIOTask.cpp */,
 				E18BF7E8160110E400B23BCA /* DigitalInputTask.h */,
 				E18BF7E7160110E400B23BCA /* DigitalInputTask.cpp */,
 				E18BF7EC1601133500B23BCA /* DigitalOutputTask.h */,
@@ -541,7 +536,6 @@
 				E1CA0DE015EBCB0E00EB6B60 /* Task.cpp in Sources */,
 				E1CA0DE215EBCB1300EB6B60 /* AnalogInputTask.cpp in Sources */,
 				E1CA0DE115EBCB1100EB6B60 /* AnalogOutputTask.cpp in Sources */,
-				E18BF7E416010DF700B23BCA /* DigitalIOTask.cpp in Sources */,
 				E18BF7E9160110E400B23BCA /* DigitalInputTask.cpp in Sources */,
 				E18BF7ED1601133500B23BCA /* DigitalOutputTask.cpp in Sources */,
 			);
@@ -657,7 +651,6 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				EXECUTABLE_PREFIX = lib;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Development;

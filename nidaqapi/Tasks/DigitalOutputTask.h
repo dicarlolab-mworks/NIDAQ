@@ -9,16 +9,18 @@
 #ifndef __NIDAQ__DigitalOutputTask__
 #define __NIDAQ__DigitalOutputTask__
 
-#include "DigitalIOTask.h"
+#include "Task.h"
 
 
 BEGIN_NAMESPACE_NIDAQ
 
 
-class DigitalOutputTask : public DigitalIOTask {
+class DigitalOutputTask : public Task {
     
 public:
     explicit DigitalOutputTask(const Device &device);
+    
+    void addChannel(unsigned int portNumber);
     
     template <typename UInt32ArrayType>
     size_t write(const UInt32ArrayType &samples, double timeout, bool interleaved = false) {
@@ -26,8 +28,6 @@ public:
     }
     
 private:
-    int32_t createChannel(const std::string &lines) /*override*/;
-    
     size_t write(const uint32_t &firstSample, size_t numSamples, double timeout, bool interleaved);
     
 };

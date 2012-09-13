@@ -9,16 +9,18 @@
 #ifndef __NIDAQ__DigitalInputTask__
 #define __NIDAQ__DigitalInputTask__
 
-#include "DigitalIOTask.h"
+#include "Task.h"
 
 
 BEGIN_NAMESPACE_NIDAQ
 
 
-class DigitalInputTask : public DigitalIOTask {
+class DigitalInputTask : public Task {
     
 public:
     explicit DigitalInputTask(const Device &device);
+    
+    void addChannel(unsigned int portNumber);
     
     template <typename UInt32ArrayType>
     size_t read(UInt32ArrayType &samples, double timeout, bool interleaved = false) {
@@ -26,8 +28,6 @@ public:
     }
     
 private:
-    int32_t createChannel(const std::string &lines) /*override*/;
-    
     size_t read(uint32_t &firstSample, size_t numSamples, double timeout, bool interleaved);
     
 };

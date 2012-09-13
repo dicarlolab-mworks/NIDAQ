@@ -8,8 +8,6 @@
 
 #include "AnalogInputTask.h"
 
-#include <boost/format.hpp>
-
 #include "NIDAQmxBaseAPI.h"
 #include "Error.h"
 
@@ -27,7 +25,7 @@ void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
                                         double maxVal,
                                         TerminalConfig termConfig)
 {
-    std::string physicalChannel = (boost::format("%s/ai%u") % getDeviceName() % channelNumber).str();
+    std::string physicalChannel = getChannelName("ai", channelNumber);
     
     int32_t error = DAQmxBaseCreateAIVoltageChan(getHandle(),
                                                  physicalChannel.c_str(),
@@ -39,7 +37,7 @@ void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
                                                  NULL);
     Error::throwIfFailed(error);
     
-    addChannel();
+    Task::addChannel();
 }
 
 

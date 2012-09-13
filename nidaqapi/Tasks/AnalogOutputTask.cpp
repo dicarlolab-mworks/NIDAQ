@@ -8,8 +8,6 @@
 
 #include "AnalogOutputTask.h"
 
-#include <boost/format.hpp>
-
 #include "NIDAQmxBaseAPI.h"
 #include "Error.h"
 
@@ -32,7 +30,7 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
                                          double minVal,
                                          double maxVal)
 {
-    std::string physicalChannel = (boost::format("%s/ao%u") % getDeviceName() % channelNumber).str();
+    std::string physicalChannel = getChannelName("ao", channelNumber);
     
     int32_t error = DAQmxBaseCreateAOVoltageChan(getHandle(),
                                                  physicalChannel.c_str(),
@@ -43,7 +41,7 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
                                                  NULL);
     Error::throwIfFailed(error);
     
-    addChannel();
+    Task::addChannel();
 }
 
 

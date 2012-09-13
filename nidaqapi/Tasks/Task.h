@@ -55,6 +55,8 @@ protected:
         return deviceName;
     }
     
+    std::string getChannelName(const std::string &type, unsigned int number) const;
+    
     void addChannel() {
         numChannels++;
     }

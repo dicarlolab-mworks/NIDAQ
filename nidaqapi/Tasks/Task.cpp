@@ -8,6 +8,8 @@
 
 #include "Task.h"
 
+#include <boost/format.hpp>
+
 #include "NIDAQmxBaseAPI.h"
 #include "Error.h"
 
@@ -62,6 +64,11 @@ void Task::stop() {
         Error::throwIfFailed(  DAQmxBaseStopTask(getHandle())  );
         running = false;
     }
+}
+
+
+std::string Task::getChannelName(const std::string &type, unsigned int number) const {
+    return (boost::format("%s/%s%u") % getDeviceName() % type % number).str();
 }
 
 
