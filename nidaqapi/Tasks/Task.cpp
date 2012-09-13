@@ -17,12 +17,18 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-Task::Task(const Device &device, const std::string &name) :
+std::set<std::string> Task::allTaskNames;
+
+
+Task::Task(const Device &device, const std::string &taskType) :
     deviceName(device.getName()),
+    taskName(deviceName + "/" + taskType),
     numChannels(0),
     running(false)
 {
-    std::string taskName = deviceName + "/" + name;
+    if (!(allTaskNames.insert(taskName).second)) {
+        throw std::logic_error("Task " + taskName + " already exists");
+    }
     Error::throwIfFailed(  DAQmxBaseCreateTask(taskName.c_str(), &handle)  );
 }
 
@@ -32,6 +38,7 @@ Task::~Task() {
         Error::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
     }
     Error::logIfFailed(  DAQmxBaseClearTask(getHandle())  );
+    allTaskNames.erase(taskName);
 }
 
 

@@ -9,6 +9,7 @@
 #ifndef __NIDAQ__Task__
 #define __NIDAQ__Task__
 
+#include <set>
 #include <stdexcept>
 #include <string>
 
@@ -45,7 +46,7 @@ public:
 protected:
     typedef unsigned long * TaskHandle;
     
-    Task(const Device &device, const std::string &name);
+    Task(const Device &device, const std::string &taskType);
     
     TaskHandle getHandle() const {
         return handle;
@@ -70,8 +71,11 @@ protected:
     }
     
 private:
+    static std::set<std::string> allTaskNames;
+    
     TaskHandle handle;
     const std::string deviceName;
+    const std::string taskName;
     size_t numChannels;
     bool running;
     
