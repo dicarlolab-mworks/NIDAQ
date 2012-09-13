@@ -27,10 +27,14 @@ void NIDAQAnalogChannel::describeComponent(ComponentInfo &info) {
 
 NIDAQAnalogChannel::NIDAQAnalogChannel(const ParameterValueMap &parameters) :
     Component(parameters),
-    channelNumber(int(parameters[CHANNEL_NUMBER])),
+    channelNumber(parameters[CHANNEL_NUMBER]),
     rangeMin(parameters[RANGE_MIN]),
     rangeMax(parameters[RANGE_MAX])
-{ }
+{
+    if (channelNumber < 0) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid channel number");
+    }
+}
 
 
 END_NAMESPACE_MW

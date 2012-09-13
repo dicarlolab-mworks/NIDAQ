@@ -24,12 +24,12 @@ public:
     
     explicit NIDAQAnalogChannel(const ParameterValueMap &parameters);
     
-    unsigned int getChannelNumber() const { return channelNumber; }
+    int getChannelNumber() const { return channelNumber; }
     double getRangeMin() const { return rangeMin; }
     double getRangeMax() const { return rangeMax; }
     
 private:
-    unsigned int channelNumber;
+    int channelNumber;
     double rangeMin, rangeMax;
     
 };
