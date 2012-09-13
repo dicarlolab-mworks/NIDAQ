@@ -29,7 +29,7 @@ void DigitalInputTask::addChannel(unsigned int portNumber) {
                                           DAQmx_Val_ChanForAllLines);
     Error::throwIfFailed(error);
     
-    Task::addChannel();
+    Task::addChannel(lines);
 }
 
 

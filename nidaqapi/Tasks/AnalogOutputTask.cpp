@@ -41,7 +41,7 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
                                                  NULL);
     Error::throwIfFailed(error);
     
-    Task::addChannel();
+    Task::addChannel(physicalChannel);
 }
 
 

@@ -35,10 +35,6 @@ public:
     void start();
     void stop();
     
-    size_t getNumChannels() const {
-        return numChannels;
-    }
-    
     bool isRunning() const {
         return running;
     }
@@ -57,12 +53,14 @@ protected:
     }
     
     std::string getChannelName(const std::string &type, unsigned int number) const;
+    void addChannel(const std::string &name);
     
-    void addChannel() {
-        numChannels++;
+    size_t getNumChannels() const {
+        return channelNames.size();
     }
     
     int32_t getNumSamplesPerChannel(size_t numSamples) const {
+        size_t numChannels = getNumChannels();
         if ((numChannels == 0) || (numSamples % numChannels != 0))
         {
             throw std::invalid_argument("Invalid number of samples");
@@ -72,11 +70,12 @@ protected:
     
 private:
     static std::set<std::string> allTaskNames;
+    static std::set<std::string> allChannelNames;
     
     TaskHandle handle;
     const std::string deviceName;
     const std::string taskName;
-    size_t numChannels;
+    std::set<std::string> channelNames;
     bool running;
     
 };

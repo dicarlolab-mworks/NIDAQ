@@ -8,6 +8,7 @@
 
 #include "Task.h"
 
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
 #include "NIDAQmxBaseAPI.h"
@@ -18,12 +19,12 @@ BEGIN_NAMESPACE_NIDAQ
 
 
 std::set<std::string> Task::allTaskNames;
+std::set<std::string> Task::allChannelNames;
 
 
 Task::Task(const Device &device, const std::string &taskType) :
     deviceName(device.getName()),
     taskName(deviceName + "/" + taskType),
-    numChannels(0),
     running(false)
 {
     if (!(allTaskNames.insert(taskName).second)) {
@@ -38,6 +39,11 @@ Task::~Task() {
         Error::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
     }
     Error::logIfFailed(  DAQmxBaseClearTask(getHandle())  );
+    
+    BOOST_FOREACH(const std::string &name, channelNames) {
+        allChannelNames.erase(name);
+    }
+    
     allTaskNames.erase(taskName);
 }
 
@@ -76,6 +82,14 @@ void Task::stop() {
 
 std::string Task::getChannelName(const std::string &type, unsigned int number) const {
     return (boost::format("%s/%s%u") % getDeviceName() % type % number).str();
+}
+
+
+void Task::addChannel(const std::string &name) {
+    if (!(allChannelNames.insert(name).second)) {
+        throw std::logic_error("Channel " + name + " is already in use");
+    }
+    channelNames.insert(name);
 }
 
 
