@@ -257,8 +257,8 @@ int main(int argc, const char * argv[])
         
         std::cout << "Caught nidaq::Error" << std::endl;
         std::cout << "  what:    " << e.what() << std::endl;
-        std::cout << "  code:    " << e.getCode() << std::endl;
         std::cout << "  message: " << e.getMessage() << std::endl;
+        std::cout << "  code:    " << e.getCode() << std::endl;
         
     } catch (const std::exception &e) {
         

@@ -19,10 +19,10 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-Error::Error(int32_t code, const std::string &message) :
-    std::runtime_error(formatErrorMessage(code, message)),
-    code(code),
-    message(message)
+Error::Error(const std::string &message, int32_t code) :
+    std::runtime_error(formatErrorMessage(message, code)),
+    message(message),
+    code(code)
 { }
 
 
@@ -41,13 +41,17 @@ std::string Error::getExtendedErrorInfo() {
 }
 
 
-std::string Error::formatErrorMessage(int32_t code, const std::string &message) {
-    return (boost::format("NIDAQmxBase error %d: %s") % code % message).str();
+std::string Error::formatErrorMessage(const std::string &message, int32_t code) {
+    std::string result("NIDAQ error: " + message);
+    if (code != 0) {
+        result += (boost::format(" (%d)") % code).str();
+    }
+    return result;
 }
 
 
-void Error::logErrorMessage(int32_t code, const std::string &message) {
-    std::cerr << formatErrorMessage(code, message) << std::endl;
+void Error::logErrorMessage(const std::string &message, int32_t code) {
+    std::cerr << formatErrorMessage(message, code) << std::endl;
 }
 
 

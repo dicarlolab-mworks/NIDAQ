@@ -42,7 +42,7 @@ bool NIDAQPluginHelper::handleRequests() {
             
             m.code = HelperControlMessage::RESPONSE_NIDAQ_ERROR;
             m.nidaqError.code = e.getCode();
-            m.nidaqError.message = e.getMessage();
+            m.nidaqError.what = e.what();
             
         } catch (const std::exception &e) {
             

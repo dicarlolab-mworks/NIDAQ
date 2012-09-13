@@ -142,7 +142,7 @@ struct HelperControlMessage {
         
         struct {
             signed_int code;
-            message_buffer message;
+            message_buffer what;
         } nidaqError;
         
         struct {

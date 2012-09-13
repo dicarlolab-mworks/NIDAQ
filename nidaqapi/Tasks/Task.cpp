@@ -24,11 +24,11 @@ std::set<std::string> Task::allChannelNames;
 
 Task::Task(const Device &device, const std::string &taskType) :
     deviceName(device.getName()),
-    taskName(deviceName + "/" + taskType),
+    taskName(deviceName + " " + taskType),
     running(false)
 {
     if (!(allTaskNames.insert(taskName).second)) {
-        throw std::logic_error("Task " + taskName + " already exists");
+        throw Error("Cannot create more than one " + taskType + " task for device " + deviceName);
     }
     Error::throwIfFailed(  DAQmxBaseCreateTask(taskName.c_str(), &handle)  );
 }
@@ -87,7 +87,7 @@ std::string Task::getChannelName(const std::string &type, unsigned int number) c
 
 void Task::addChannel(const std::string &name) {
     if (!(allChannelNames.insert(name).second)) {
-        throw std::logic_error("Channel " + name + " is already in use");
+        throw Error("Channel " + name + " is already in use");
     }
     channelNames.insert(name);
 }

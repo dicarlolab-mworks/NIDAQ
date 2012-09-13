@@ -16,7 +16,7 @@ BEGIN_NAMESPACE_NIDAQ
 
 
 DigitalOutputTask::DigitalOutputTask(const Device &device) :
-    Task(device, "DigitalOutput")
+    Task(device, "digital output")
 { }
 
 

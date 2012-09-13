@@ -27,35 +27,35 @@ public:
     
     static void throwIfFailed(int32_t errorCode) {
         if (failed(errorCode)) {
-            throw Error(errorCode, getExtendedErrorInfo());
+            throw Error(getExtendedErrorInfo(), errorCode);
         }
     }
     
     static void logIfFailed(int32_t errorCode) {
         if (failed(errorCode)) {
-            logErrorMessage(errorCode, getExtendedErrorInfo());
+            logErrorMessage(getExtendedErrorInfo(), errorCode);
         }
     }
     
     ~Error() throw() /*override*/ { }
     
-    Error(int32_t code, const std::string &message);
-    
-    int32_t getCode() const {
-        return code;
-    }
+    Error(const std::string &message, int32_t code = 0);
     
     const std::string& getMessage() const {
         return message;
     }
     
+    int32_t getCode() const {
+        return code;
+    }
+    
 private:
     static std::string getExtendedErrorInfo();
-    static std::string formatErrorMessage(int32_t code, const std::string &message);
-    static void logErrorMessage(int32_t code, const std::string &message);
+    static std::string formatErrorMessage(const std::string &message, int32_t code);
+    static void logErrorMessage(const std::string &message, int32_t code);
     
-    const int32_t code;
     const std::string message;
+    const int32_t code;
     
 };
 

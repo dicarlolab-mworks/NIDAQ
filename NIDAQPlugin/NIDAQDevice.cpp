@@ -336,10 +336,7 @@ bool NIDAQDevice::sendHelperRequest() {
             break;
             
         case HelperControlMessage::RESPONSE_NIDAQ_ERROR:
-            merror(M_IODEVICE_MESSAGE_DOMAIN,
-                   "NIDAQ error: %s (%d)",
-                   m.nidaqError.message.c_str(),
-                   m.nidaqError.code);
+            merror(M_IODEVICE_MESSAGE_DOMAIN, "%s", m.nidaqError.what.c_str());
             break;
             
         case HelperControlMessage::RESPONSE_EXCEPTION:
