@@ -93,6 +93,16 @@ void Task::addChannel(const std::string &name) {
 }
 
 
+int32_t Task::getNumSamplesPerChannel(size_t numSamples) const {
+    size_t numChannels = getNumChannels();
+    if ((numChannels == 0) || (numSamples % numChannels != 0))
+    {
+        throw std::invalid_argument("Invalid number of samples");
+    }
+    return numSamples / numChannels;
+}
+
+
 END_NAMESPACE_NIDAQ
 
 

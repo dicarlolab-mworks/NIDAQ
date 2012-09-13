@@ -10,7 +10,6 @@
 #define __NIDAQ__Task__
 
 #include <set>
-#include <stdexcept>
 #include <string>
 
 #include <boost/noncopyable.hpp>
@@ -59,14 +58,7 @@ protected:
         return channelNames.size();
     }
     
-    int32_t getNumSamplesPerChannel(size_t numSamples) const {
-        size_t numChannels = getNumChannels();
-        if ((numChannels == 0) || (numSamples % numChannels != 0))
-        {
-            throw std::invalid_argument("Invalid number of samples");
-        }
-        return numSamples / numChannels;
-    }
+    int32_t getNumSamplesPerChannel(size_t numSamples) const;
     
 private:
     static std::set<std::string> allTaskNames;
