@@ -9,18 +9,25 @@
 #ifndef __NIDAQ__NIDAQAnalogInputVoltageChannel__
 #define __NIDAQ__NIDAQAnalogInputVoltageChannel__
 
-#include "NIDAQAnalogInputChannel.h"
+#include "NIDAQAnalogChannel.h"
 
 
 BEGIN_NAMESPACE_MW
 
 
-class NIDAQAnalogInputVoltageChannel : public NIDAQAnalogInputChannel {
+class NIDAQAnalogInputVoltageChannel : public NIDAQAnalogChannel {
     
 public:
+    static const std::string VARIABLE;
+    
     static void describeComponent(ComponentInfo &info);
     
     explicit NIDAQAnalogInputVoltageChannel(const ParameterValueMap &parameters);
+    
+    VariablePtr getVariable() const { return variable; }
+    
+private:
+    VariablePtr variable;
     
 };
 
