@@ -14,6 +14,7 @@
 
 #include "Device.h"
 #include "AnalogInputTask.h"
+#include "AnalogOutputTask.h"
 
 #include "MachClock.h"
 
@@ -42,11 +43,19 @@ private:
     void stopAnalogInputTask();
     void readAnalogInputSamples();
     
+    void requireAnalogOutputTask();
+    void createAnalogOutputVoltageChannel();
+    void setAnalogOutputSampleClockTiming();
+    void startAnalogOutputTask();
+    void stopAnalogOutputTask();
+    void writeAnalogOutputSamples();
+    
     IPCRequestResponse &ipc;
     HelperControlMessage &m;
     
     nidaq::Device device;
     boost::scoped_ptr<nidaq::AnalogInputTask> analogInputTask;
+    boost::scoped_ptr<nidaq::AnalogOutputTask> analogOutputTask;
     
     MachClock clock;
     

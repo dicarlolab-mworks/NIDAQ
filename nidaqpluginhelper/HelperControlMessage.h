@@ -87,16 +87,29 @@ struct HelperControlMessage {
     enum {
         UNKNOWN_MESSAGE_CODE = 0,
         
+        //
         // Request codes
+        //
+        
         REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL,
         REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING,
         REQUEST_START_ANALOG_INPUT_TASK,
         REQUEST_STOP_ANALOG_INPUT_TASK,
         REQUEST_READ_ANALOG_INPUT_SAMPLES,
+        
+        REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL,
+        REQUEST_SET_ANALOG_OUTPUT_SAMPLE_CLOCK_TIMING,
+        REQUEST_START_ANALOG_OUTPUT_TASK,
+        REQUEST_STOP_ANALOG_OUTPUT_TASK,
+        REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES,
+        
         REQUEST_SHUTDOWN,
         REQUEST_PING,
         
+        //
         // Response codes
+        //
+        
         RESPONSE_OK,
         RESPONSE_NIDAQ_ERROR,
         RESPONSE_EXCEPTION,

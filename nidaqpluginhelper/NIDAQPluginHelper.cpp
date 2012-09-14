@@ -85,6 +85,26 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             readAnalogInputSamples();
             break;
             
+        case HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL:
+            createAnalogOutputVoltageChannel();
+            break;
+            
+        case HelperControlMessage::REQUEST_SET_ANALOG_OUTPUT_SAMPLE_CLOCK_TIMING:
+            setAnalogOutputSampleClockTiming();
+            break;
+            
+        case HelperControlMessage::REQUEST_START_ANALOG_OUTPUT_TASK:
+            startAnalogOutputTask();
+            break;
+            
+        case HelperControlMessage::REQUEST_STOP_ANALOG_OUTPUT_TASK:
+            stopAnalogOutputTask();
+            break;
+            
+        case HelperControlMessage::REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES:
+            writeAnalogOutputSamples();
+            break;
+            
         case HelperControlMessage::REQUEST_SHUTDOWN:
             done = true;
             break;
@@ -146,6 +166,47 @@ void NIDAQPluginHelper::readAnalogInputSamples() {
                                                   m.analogSamples.timeout,
                                                   true);  // Group samples by scan number
     m.analogSamples.samples.numSamples = numSamplesRead;
+}
+
+
+void NIDAQPluginHelper::requireAnalogOutputTask() {
+    if (!analogOutputTask) {
+        analogOutputTask.reset(new nidaq::AnalogOutputTask(device));
+    }
+}
+
+
+void NIDAQPluginHelper::createAnalogOutputVoltageChannel() {
+    requireAnalogOutputTask();
+    analogOutputTask->addVoltageChannel(m.analogVoltageChannel.channelNumber,
+                                        m.analogVoltageChannel.minVal,
+                                        m.analogVoltageChannel.maxVal);
+}
+
+
+void NIDAQPluginHelper::setAnalogOutputSampleClockTiming() {
+    requireAnalogOutputTask();
+    analogOutputTask->setSampleClockTiming(m.sampleClockTiming.samplingRate,
+                                           m.sampleClockTiming.samplesPerChannelToAcquire);
+}
+
+
+void NIDAQPluginHelper::startAnalogOutputTask() {
+    requireAnalogOutputTask();
+    analogOutputTask->start();
+}
+
+
+void NIDAQPluginHelper::stopAnalogOutputTask() {
+    requireAnalogOutputTask();
+    analogOutputTask->stop();
+}
+
+
+void NIDAQPluginHelper::writeAnalogOutputSamples() {
+    requireAnalogOutputTask();
+    size_t numSamplesWritten = analogOutputTask->write(m.analogSamples.samples, m.analogSamples.timeout);
+    m.analogSamples.samples.numSamples = numSamplesWritten;
 }
 
 
