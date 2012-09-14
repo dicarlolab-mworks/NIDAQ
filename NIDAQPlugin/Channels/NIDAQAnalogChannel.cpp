@@ -34,6 +34,9 @@ NIDAQAnalogChannel::NIDAQAnalogChannel(const ParameterValueMap &parameters) :
     if (channelNumber < 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid channel number");
     }
+    if (rangeMin > rangeMax) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Analog channel range minimum cannot be greater than maximum");
+    }
 }
 
 
