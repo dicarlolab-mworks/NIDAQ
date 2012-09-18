@@ -46,6 +46,12 @@ NIDAQAnalogOutputVoltageWaveformChannel::getWaveformFunction(std::string wavefor
     boost::algorithm::to_lower(waveform);
     if (waveform == "sinusoid") {
         return &sinusoid;
+    } else if (waveform == "square") {
+        return &square;
+    } else if (waveform == "triangle") {
+        return &triangle;
+    } else if (waveform == "sawtooth") {
+        return &sawtooth;
     } else {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid waveform type", waveform);
     }
@@ -54,6 +60,21 @@ NIDAQAnalogOutputVoltageWaveformChannel::getWaveformFunction(std::string wavefor
 
 double NIDAQAnalogOutputVoltageWaveformChannel::sinusoid(double period, double time) {
     return std::sin((2.0*M_PI / period) * time);
+}
+
+
+double NIDAQAnalogOutputVoltageWaveformChannel::square(double period, double time) {
+    return std::pow(-1.0, std::floor(2.0 * time / period));
+}
+
+
+double NIDAQAnalogOutputVoltageWaveformChannel::triangle(double period, double time) {
+    return M_2_PI * std::asin(sinusoid(period, time));
+}
+
+
+double NIDAQAnalogOutputVoltageWaveformChannel::sawtooth(double period, double time) {
+    return 2.0 * (time/period - std::floor(0.5 + time/period));
 }
 
 

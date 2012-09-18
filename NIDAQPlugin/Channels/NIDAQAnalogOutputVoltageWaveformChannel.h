@@ -42,6 +42,9 @@ private:
     static WaveformFunction getWaveformFunction(std::string waveform);
     
     static double sinusoid(double period, double time);
+    static double square(double period, double time);
+    static double triangle(double period, double time);
+    static double sawtooth(double period, double time);
     
     const WaveformFunction waveformFunc;
     const double amplitude;
