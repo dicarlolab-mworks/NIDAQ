@@ -20,6 +20,7 @@
 #include "HelperSharedMemory.h"
 
 #include "NIDAQAnalogInputVoltageChannel.h"
+#include "NIDAQAnalogOutputVoltageWaveformChannel.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -31,6 +32,7 @@ public:
     static const std::string NAME;
     static const std::string ANALOG_INPUT_DATA_INTERVAL;
     static const std::string ANALOG_INPUT_UPDATE_INTERVAL;
+    static const std::string ANALOG_OUTPUT_DATA_INTERVAL;
     static const std::string ASSUME_MULTIPLEXED_ADC;
     
     static void describeComponent(ComponentInfo &info);
@@ -47,7 +49,8 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
-    bool createTasks();
+    bool createAnalogInputTask();
+    bool createAnalogOutputTask();
     void* readAnalogInput();
     
     void spawnHelper();
@@ -75,7 +78,13 @@ private:
     size_t analogInputSampleBufferSize;
     MWTime analogInputStartTime;
     boost::uint64_t totalNumAnalogInputSamplesAcquired;
+    bool analogInputTaskRunning;
     shared_ptr<ScheduleTask> analogInputScheduleTask;
+    
+    MWTime analogOutputDataInterval;
+    std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> > analogOutputChannels;
+    size_t analogOutputSampleBufferSize;
+    bool analogOutputTaskRunning;
     
 };
 

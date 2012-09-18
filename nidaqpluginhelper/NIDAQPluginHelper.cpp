@@ -205,7 +205,11 @@ void NIDAQPluginHelper::stopAnalogOutputTask() {
 
 void NIDAQPluginHelper::writeAnalogOutputSamples() {
     requireAnalogOutputTask();
-    size_t numSamplesWritten = analogOutputTask->write(m.analogSamples.samples, m.analogSamples.timeout);
+    
+    size_t numSamplesWritten = analogOutputTask->write(m.analogSamples.samples,
+                                                       m.analogSamples.timeout,
+                                                       true);  // Group samples by scan number
+    
     m.analogSamples.samples.numSamples = numSamplesWritten;
 }
 

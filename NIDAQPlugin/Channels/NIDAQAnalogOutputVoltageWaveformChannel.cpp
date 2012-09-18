@@ -32,22 +32,23 @@ void NIDAQAnalogOutputVoltageWaveformChannel::describeComponent(ComponentInfo &i
 
 NIDAQAnalogOutputVoltageWaveformChannel::NIDAQAnalogOutputVoltageWaveformChannel(const ParameterValueMap &parameters) :
     NIDAQAnalogChannel(parameters),
+    waveformFunc(getWaveformFunction(parameters[WAVEFORM].str())),
     amplitude((getRangeMax() - getRangeMin()) / 2.0),
     period(parameters[PERIOD]),
     timeOffset(parameters[OFFSET]),
     voltageOffset(getRangeMin() + amplitude)
+{ }
+
+
+NIDAQAnalogOutputVoltageWaveformChannel::WaveformFunction
+NIDAQAnalogOutputVoltageWaveformChannel::getWaveformFunction(std::string waveform)
 {
-    std::string waveformType(boost::algorithm::to_lower_copy(parameters[WAVEFORM].str()));
-    if (waveformType == "sinusoid") {
-        waveform = &sinusoid;
+    boost::algorithm::to_lower(waveform);
+    if (waveform == "sinusoid") {
+        return &sinusoid;
     } else {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid waveform type", waveformType);
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid waveform type", waveform);
     }
-}
-
-
-double NIDAQAnalogOutputVoltageWaveformChannel::getSampleForTime(double time) const {
-    return amplitude * waveform(period, time - timeOffset) + voltageOffset;
 }
 
 

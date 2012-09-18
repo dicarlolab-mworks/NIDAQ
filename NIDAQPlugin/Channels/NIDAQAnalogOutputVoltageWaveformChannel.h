@@ -28,18 +28,26 @@ public:
     
     explicit NIDAQAnalogOutputVoltageWaveformChannel(const ParameterValueMap &parameters);
     
-    double getSampleForTime(double time) const;
+    MWTime getPeriod() const {
+        return period;
+    }
+    
+    double getSampleForTime(MWTime time) const {
+        return (amplitude * waveformFunc(double(period), double(time - timeOffset))) + voltageOffset;
+    }
     
 private:
     typedef boost::function<double (double period, double time)> WaveformFunction;
     
+    static WaveformFunction getWaveformFunction(std::string waveform);
+    
     static double sinusoid(double period, double time);
     
-    WaveformFunction waveform;
-    double amplitude;
-    double period;
-    double timeOffset;
-    double voltageOffset;
+    const WaveformFunction waveformFunc;
+    const double amplitude;
+    const MWTime period;
+    const MWTime timeOffset;
+    const double voltageOffset;
     
 };
 
