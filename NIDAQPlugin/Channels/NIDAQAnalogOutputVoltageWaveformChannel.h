@@ -33,7 +33,7 @@ public:
     }
     
     double getSampleForTime(MWTime time) const {
-        return (amplitude * waveformFunc(double(period), double(time - timeOffset))) + voltageOffset;
+        return (amplitude * waveformFunc(double(period), double(time + timeOffset))) + voltageOffset;
     }
     
 private:

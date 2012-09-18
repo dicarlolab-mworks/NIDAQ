@@ -135,10 +135,10 @@ bool NIDAQDevice::initialize() {
     
     mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Configuring NIDAQ device \"%s\"...", deviceName.c_str());
     
-    if ((analogInputChannels.size() > 0) && !createAnalogInputTask()) {
+    if (haveAnalogInputChannels() && !createAnalogInputTask()) {
         return false;
     }
-    if ((analogOutputChannels.size() > 0) && !createAnalogOutputTask()) {
+    if (haveAnalogOutputChannels() && !createAnalogOutputTask()) {
         return false;
     }
     
@@ -186,14 +186,38 @@ bool NIDAQDevice::createAnalogOutputTask() {
         }
     }
     
-    const size_t numChannels = analogOutputChannels.size();
-    
     controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_OUTPUT_SAMPLE_CLOCK_TIMING;
     controlMessage->sampleClockTiming.samplingRate = 1.0 / (analogOutputDataInterval / 1e6);  // us to s
-    controlMessage->sampleClockTiming.samplesPerChannelToAcquire = analogOutputSampleBufferSize / numChannels;
+    controlMessage->sampleClockTiming.samplesPerChannelToAcquire = (analogOutputSampleBufferSize /
+                                                                    analogOutputChannels.size());
     if (!sendHelperRequest()) {
         return false;
     }
+    
+    return true;
+}
+
+
+bool NIDAQDevice::startDeviceIO() {
+    scoped_lock lock(controlMutex);
+    
+    if (haveAnalogOutputChannels() && !startAnalogOutputTask()) {
+        return false;
+    }
+    if (haveAnalogInputChannels() && !startAnalogInputTask()) {
+        return false;
+    }
+    
+    return true;
+}
+
+
+bool NIDAQDevice::startAnalogOutputTask() {
+    if (analogOutputTaskRunning) {
+        return true;
+    }
+    
+    const size_t numChannels = analogOutputChannels.size();
     
     controlMessage->code = HelperControlMessage::REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES;
     controlMessage->analogSamples.timeout = 10.0;
@@ -219,38 +243,33 @@ bool NIDAQDevice::createAnalogOutputTask() {
         return false;
     }
     
+    controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_OUTPUT_TASK;
+    if (!sendHelperRequest()) {
+        return false;
+    }
+    
+    analogOutputTaskRunning = true;
+    
     return true;
 }
 
 
-bool NIDAQDevice::startDeviceIO() {
-    scoped_lock lock(controlMutex);
-    
-    bool success = true;
-    
-    if ((analogOutputChannels.size() > 0) && !analogOutputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_OUTPUT_TASK;
-        if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            analogOutputTaskRunning = true;
-        }
-    }
-    
-    if ((analogInputChannels.size() > 0) && !analogInputTaskRunning) {
+bool NIDAQDevice::startAnalogInputTask() {
+    if (!analogInputTaskRunning) {
         controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_INPUT_TASK;
         if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            HelperControlMessage::unsigned_int systemBaseTimeNS = Clock::instance()->getSystemBaseTimeNS();
-            analogInputStartTime = MWTime((controlMessage->taskStartTime - systemBaseTimeNS)
-                                          / HelperControlMessage::unsigned_int(1000));  // ns to us
-            totalNumAnalogInputSamplesAcquired = 0;
-            analogInputTaskRunning = true;
+            return false;
         }
+        
+        HelperControlMessage::unsigned_int systemBaseTimeNS = Clock::instance()->getSystemBaseTimeNS();
+        analogInputStartTime = MWTime((controlMessage->taskStartTime - systemBaseTimeNS)
+                                      / HelperControlMessage::unsigned_int(1000));  // ns to us
+        totalNumAnalogInputSamplesAcquired = 0;
+        
+        analogInputTaskRunning = true;
     }
     
-    if (analogInputTaskRunning && !analogInputScheduleTask) {
+    if (!analogInputScheduleTask) {
         boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
         analogInputScheduleTask = Scheduler::instance()->scheduleUS(FILELINE,
                                                                     0,
@@ -261,6 +280,38 @@ bool NIDAQDevice::startDeviceIO() {
                                                                     M_DEFAULT_IODEVICE_WARN_SLOP_US,
                                                                     M_DEFAULT_IODEVICE_FAIL_SLOP_US,
                                                                     M_MISSED_EXECUTION_DROP);
+    }
+    
+    return true;
+}
+
+
+bool NIDAQDevice::stopDeviceIO() {
+    scoped_lock lock(controlMutex);
+    
+    bool success = true;
+    
+    if (analogInputScheduleTask) {
+        analogInputScheduleTask->cancel();
+        analogInputScheduleTask.reset();
+    }
+    
+    if (analogInputTaskRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_INPUT_TASK;
+        if (!sendHelperRequest()) {
+            success = false;
+        } else {
+            analogInputTaskRunning = false;
+        }
+    }
+    
+    if (analogOutputTaskRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_OUTPUT_TASK;
+        if (!sendHelperRequest()) {
+            success = false;
+        } else {
+            analogOutputTaskRunning = false;
+        }
     }
     
     return success;
@@ -325,38 +376,6 @@ void* NIDAQDevice::readAnalogInput() {
     }
     
     return NULL;
-}
-
-
-bool NIDAQDevice::stopDeviceIO() {
-    scoped_lock lock(controlMutex);
-    
-    bool success = true;
-    
-    if (analogInputScheduleTask) {
-        analogInputScheduleTask->cancel();
-        analogInputScheduleTask.reset();
-    }
-    
-    if (analogInputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_INPUT_TASK;
-        if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            analogInputTaskRunning = false;
-        }
-    }
-    
-    if (analogOutputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_OUTPUT_TASK;
-        if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            analogOutputTaskRunning = false;
-        }
-    }
-    
-    return success;
 }
 
 

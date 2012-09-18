@@ -49,9 +49,14 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
+    bool haveAnalogInputChannels() const { return !(analogInputChannels.empty()); }
     bool createAnalogInputTask();
-    bool createAnalogOutputTask();
+    bool startAnalogInputTask();
     void* readAnalogInput();
+    
+    bool haveAnalogOutputChannels() const { return !(analogOutputChannels.empty()); }
+    bool createAnalogOutputTask();
+    bool startAnalogOutputTask();
     
     void spawnHelper();
     void reapHelper();
