@@ -44,7 +44,11 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
 
 static std::string generateUniqueID() {
     boost::uint64_t uniqueID;
-    if (RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID)) < 0) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    int status = RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID));
+#pragma clang diagnostic pop
+    if (status < 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
                               "Internal error: Unable to generate unique identifier for NIDAQ device IPC resource");
     }
