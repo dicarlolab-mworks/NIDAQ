@@ -37,6 +37,8 @@
 		E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E105A22415E68597007F9F38 /* MWorksCore.framework */; };
 		E13DEB6515F7DCA600AC7480 /* NIDAQAnalogChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E13DEB6315F7DCA600AC7480 /* NIDAQAnalogChannel.cpp */; };
 		E157464015F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */; };
+		E15D0B2616C2C31F00F331B1 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E15D0B2516C2C31F00F331B1 /* libcrypto.dylib */; };
+		E15D0B2816C2C37700F331B1 /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E15D0B2716C2C37700F331B1 /* libboost_system.a */; };
 		E15E883315FE32DD0077757B /* MachError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E15E883115FE32DD0077757B /* MachError.cpp */; };
 		E15E883415FE32DD0077757B /* MachError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E15E883115FE32DD0077757B /* MachError.cpp */; };
 		E15E883815FE32F60077757B /* MachClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E15E883615FE32F60077757B /* MachClock.cpp */; };
@@ -54,7 +56,6 @@
 		E196C53115E2AD3200059BF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C53015E2AD3200059BF2 /* main.cpp */; };
 		E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
-		E1A7226C15EE606B006671AD /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1A7226B15EE606B006671AD /* libcrypto.dylib */; };
 		E1A7227515EEA72C006671AD /* NIDAQPluginHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */; };
 		E1CA0DDE15EBCB0700EB6B60 /* Device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* Device.cpp */; };
 		E1CA0DDF15EBCB0800EB6B60 /* Error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54715E2C13200059BF2 /* Error.cpp */; };
@@ -139,6 +140,8 @@
 		E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputVoltageChannel.cpp; sourceTree = "<group>"; };
 		E157463F15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputVoltageChannel.h; sourceTree = "<group>"; };
 		E157464615F50AAE0014089E /* NIDAQPluginHelperError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQPluginHelperError.h; sourceTree = "<group>"; };
+		E15D0B2516C2C31F00F331B1 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = usr/lib/libcrypto.dylib; sourceTree = SDKROOT; };
+		E15D0B2716C2C37700F331B1 /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = "/Library/Application Support/MWorks/Developer/lib/libboost_system.a"; sourceTree = "<absolute>"; };
 		E15E883115FE32DD0077757B /* MachError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachError.cpp; sourceTree = "<group>"; };
 		E15E883215FE32DD0077757B /* MachError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachError.h; sourceTree = "<group>"; };
 		E15E883615FE32F60077757B /* MachClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachClock.cpp; sourceTree = "<group>"; };
@@ -169,7 +172,6 @@
 		E196C54815E2C13200059BF2 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
 		E1A081EB15FF84DA005D8094 /* MachTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachTimer.h; sourceTree = "<group>"; };
 		E1A7226915EE4BD6006671AD /* HelperControlMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelperControlMessage.h; sourceTree = "<group>"; };
-		E1A7226B15EE606B006671AD /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
 		E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQPluginHelper.cpp; sourceTree = "<group>"; };
 		E1A7227415EEA72C006671AD /* NIDAQPluginHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQPluginHelper.h; sourceTree = "<group>"; };
 		E1B3C55F15E3DFFA000B0F8E /* Task.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Task.cpp; sourceTree = "<group>"; };
@@ -187,7 +189,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */,
-				E1A7226C15EE606B006671AD /* libcrypto.dylib in Frameworks */,
+				E15D0B2616C2C31F00F331B1 /* libcrypto.dylib in Frameworks */,
+				E15D0B2816C2C37700F331B1 /* libboost_system.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,7 +358,8 @@
 				E105A22415E68597007F9F38 /* MWorksCore.framework */,
 				E196C53915E2B19200059BF2 /* nidaqmxbase.framework */,
 				E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */,
-				E1A7226B15EE606B006671AD /* libcrypto.dylib */,
+				E15D0B2516C2C31F00F331B1 /* libcrypto.dylib */,
+				E15D0B2716C2C37700F331B1 /* libboost_system.a */,
 			);
 			name = "Frameworks & Libraries";
 			sourceTree = "<group>";
@@ -618,10 +622,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "nidaqpluginhelper/nidaqpluginhelper-Prefix.pch";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				PRODUCT_NAME = MWNIDAQPluginHelper;
 			};
 			name = Development;
@@ -642,8 +644,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Development;
