@@ -235,6 +235,45 @@ static void simpleDigitalIO(const nidaq::Device &device) {
 }
 
 
+static void testDigitalIOLatency(const nidaq::Device &device) {
+    nidaq::DigitalOutputTask doTask(device);
+    doTask.addChannel(0);
+    
+    nidaq::DigitalInputTask diTask(device);
+    diTask.addChannel(1);
+    
+    boost::array<uint32_t, 1> outSamples, inSamples;
+    const double timeout = 10.0;
+    
+    doTask.start();
+    diTask.start();
+    
+    const size_t numRepeats = 100;
+    boost::array<double, numRepeats> times;
+    outSamples[0] = 0;
+    MachTimer timer;
+    
+    for (size_t i = 0; i < numRepeats; i++) {
+        assertNumSamples(1, doTask.write(outSamples, timeout));
+        assertNumSamples(1, diTask.read(inSamples, timeout));
+        times[i] = timer.intervalMilli();
+        
+        if (inSamples[0] != outSamples[0]) {
+            std::cout << "Sent " << outSamples[0] << " but received " << inSamples[0] << std::endl;
+        }
+        
+        outSamples[0] = !outSamples[0];
+    }
+    
+    diTask.stop();
+    doTask.stop();
+    
+    for (size_t i = 0; i < numRepeats; i++) {
+        std::cout << "Elapsed time: " << times[i] << " ms" << std::endl;
+    }
+}
+
+
 int main(int argc, const char * argv[])
 {
     try {
@@ -249,7 +288,8 @@ int main(int argc, const char * argv[])
         //acquireNScans(device);
         //analogRepeater(device);
         //testTiming(device);
-        simpleDigitalIO(device);
+        //simpleDigitalIO(device);
+        testDigitalIOLatency(device);
         
         std::cout << "Done!" << std::endl;
         

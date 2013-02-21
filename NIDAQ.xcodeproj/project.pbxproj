@@ -108,7 +108,7 @@
 		E1690E8815E69678007DFCEF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PLUGINS_DIR)";
+			dstPath = "$(MW_PLUGINS_DIR)";
 			dstSubfolderSpec = 0;
 			files = (
 				E1690E8915E69688007DFCEF /* NIDAQPlugin.bundle in CopyFiles */,
