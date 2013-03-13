@@ -73,7 +73,9 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     analogInputTaskRunning(false),
     analogOutputDataInterval(parameters[ANALOG_OUTPUT_DATA_INTERVAL]),
     analogOutputSampleBufferSize(0),
-    analogOutputTaskRunning(false)
+    analogOutputTaskRunning(false),
+    digitalInputSampleBufferSize(0),
+    digitalInputTaskRunning(false)
 {
     if (updateInterval <= 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid update interval");
@@ -119,6 +121,12 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
         return;
     }
     
+    boost::shared_ptr<NIDAQDigitalInputChannel> diChannel = boost::dynamic_pointer_cast<NIDAQDigitalInputChannel>(child);
+    if (diChannel) {
+        digitalInputChannels.push_back(diChannel);
+        return;
+    }
+    
     throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid channel type for NIDAQ device");
 }
 
@@ -131,9 +139,11 @@ bool NIDAQDevice::initialize() {
     analogInputSampleBufferSize = (size_t(updateInterval / analogInputDataInterval) *
                                    analogInputChannels.size());
     analogOutputSampleBufferSize *= analogOutputChannels.size();
+    digitalInputSampleBufferSize = digitalInputChannels.size();
     
     sharedMemory.setSize(HelperControlMessage::sizeWithSamples(std::max(analogInputSampleBufferSize,
-                                                                        analogOutputSampleBufferSize)));
+                                                                        analogOutputSampleBufferSize),
+                                                               digitalInputSampleBufferSize));
     controlMessage = sharedMemory.getMessagePtr();
     
     spawnHelper();
@@ -154,7 +164,7 @@ bool NIDAQDevice::initialize() {
 
 
 bool NIDAQDevice::createAnalogInputTask() {
-    BOOST_FOREACH(boost::shared_ptr<NIDAQAnalogInputVoltageChannel> channel, analogInputChannels) {
+    BOOST_FOREACH(const boost::shared_ptr<NIDAQAnalogInputVoltageChannel> &channel, analogInputChannels) {
         controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL;
         
         controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
@@ -179,7 +189,7 @@ bool NIDAQDevice::createAnalogInputTask() {
 
 
 bool NIDAQDevice::createAnalogOutputTask() {
-    BOOST_FOREACH(boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> channel, analogOutputChannels) {
+    BOOST_FOREACH(const boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> &channel, analogOutputChannels) {
         controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL;
         
         controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
@@ -197,6 +207,20 @@ bool NIDAQDevice::createAnalogOutputTask() {
                                                                     analogOutputChannels.size());
     if (!sendHelperRequest()) {
         return false;
+    }
+    
+    return true;
+}
+
+
+bool NIDAQDevice::createDigitalInputTask() {
+    BOOST_FOREACH(const boost::shared_ptr<NIDAQDigitalInputChannel> &channel, digitalInputChannels) {
+        controlMessage->code = HelperControlMessage::REQUEST_CREATE_DIGITAL_INPUT_CHANNEL;
+        controlMessage->digitalChannel.portNumber = channel->getPortNumber();
+        
+        if (!sendHelperRequest()) {
+            return false;
+        }
     }
     
     return true;

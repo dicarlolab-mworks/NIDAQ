@@ -105,6 +105,22 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             writeAnalogOutputSamples();
             break;
             
+        case HelperControlMessage::REQUEST_CREATE_DIGITAL_INPUT_CHANNEL:
+            createDigitalInputChannel();
+            break;
+            
+        case HelperControlMessage::REQUEST_START_DIGITAL_INPUT_TASK:
+            startDigitalInputTask();
+            break;
+            
+        case HelperControlMessage::REQUEST_STOP_DIGITAL_INPUT_TASK:
+            stopDigitalInputTask();
+            break;
+            
+        case HelperControlMessage::REQUEST_READ_DIGITAL_INPUT_SAMPLES:
+            readDigitalInputSamples();
+            break;
+            
         case HelperControlMessage::REQUEST_SHUTDOWN:
             done = true;
             break;
@@ -211,6 +227,44 @@ void NIDAQPluginHelper::writeAnalogOutputSamples() {
                                                        true);  // Group samples by scan number
     
     m.analogSamples.samples.numSamples = numSamplesWritten;
+}
+
+
+void NIDAQPluginHelper::requireDigitalInputTask() {
+    if (!digitalInputTask) {
+        digitalInputTask.reset(new nidaq::DigitalInputTask(device));
+    }
+}
+
+
+void NIDAQPluginHelper::createDigitalInputChannel() {
+    requireDigitalInputTask();
+    digitalInputTask->addChannel(m.digitalChannel.portNumber);
+}
+
+
+void NIDAQPluginHelper::startDigitalInputTask() {
+    requireDigitalInputTask();
+    digitalInputTask->start();
+}
+
+
+void NIDAQPluginHelper::stopDigitalInputTask() {
+    requireDigitalInputTask();
+    digitalInputTask->stop();
+}
+
+
+void NIDAQPluginHelper::readDigitalInputSamples() {
+    requireDigitalInputTask();
+    if (!(digitalInputTask->isRunning())) {
+        throw NIDAQPluginHelperError("Digital input task is not running");
+    }
+    
+    size_t numSamplesRead = digitalInputTask->read(m.digitalSamples.samples,
+                                                   m.digitalSamples.timeout,
+                                                   true);  // Group samples by scan number
+    m.digitalSamples.samples.numSamples = numSamplesRead;
 }
 
 

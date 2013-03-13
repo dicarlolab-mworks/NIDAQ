@@ -21,6 +21,7 @@
 
 #include "NIDAQAnalogInputVoltageChannel.h"
 #include "NIDAQAnalogOutputVoltageWaveformChannel.h"
+#include "NIDAQDigitalInputChannel.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -58,6 +59,9 @@ private:
     bool createAnalogOutputTask();
     bool startAnalogOutputTask();
     
+    bool haveDigitalInputChannels() const { return !(digitalInputChannels.empty()); }
+    bool createDigitalInputTask();
+    
     void spawnHelper();
     void reapHelper();
     bool sendHelperRequest();
@@ -91,6 +95,10 @@ private:
     std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> > analogOutputChannels;
     size_t analogOutputSampleBufferSize;
     bool analogOutputTaskRunning;
+    
+    std::vector< boost::shared_ptr<NIDAQDigitalInputChannel> > digitalInputChannels;
+    size_t digitalInputSampleBufferSize;
+    bool digitalInputTaskRunning;
     
 };
 

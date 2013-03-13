@@ -103,6 +103,11 @@ struct HelperControlMessage {
         REQUEST_STOP_ANALOG_OUTPUT_TASK,
         REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES,
         
+        REQUEST_CREATE_DIGITAL_INPUT_CHANNEL,
+        REQUEST_START_DIGITAL_INPUT_TASK,
+        REQUEST_STOP_DIGITAL_INPUT_TASK,
+        REQUEST_READ_DIGITAL_INPUT_SAMPLES,
+        
         REQUEST_SHUTDOWN,
         REQUEST_PING,
         
@@ -138,6 +143,10 @@ struct HelperControlMessage {
             unsigned_int samplesPerChannelToAcquire;
         } sampleClockTiming;
         
+        struct {
+            unsigned_int portNumber;
+        } digitalChannel;
+        
         //
         // Request/response data
         //
@@ -146,6 +155,11 @@ struct HelperControlMessage {
             double timeout;
             samples_buffer<double> samples;
         } analogSamples;
+        
+        struct {
+            double timeout;
+            samples_buffer<boost::uint32_t> samples;
+        } digitalSamples;
         
         //
         // Response data
@@ -171,12 +185,13 @@ struct HelperControlMessage {
     // Utility methods
     //
     
-    static size_t sizeWithSamples(size_t numAnalogSamples) {
+    static size_t sizeWithSamples(size_t numAnalogSamples, size_t numDigitalSamples) {
         HelperControlMessage m;
         size_t size = sizeof(m);
         char * const startAddress = reinterpret_cast<char *>(&m);
         
         size = std::max(size, sizeWithBuffer(startAddress, m.analogSamples.samples, numAnalogSamples));
+        size = std::max(size, sizeWithBuffer(startAddress, m.digitalSamples.samples, numDigitalSamples));
         
         return size;
     }
