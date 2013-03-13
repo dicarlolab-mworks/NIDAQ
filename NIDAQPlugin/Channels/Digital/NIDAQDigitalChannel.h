@@ -18,6 +18,7 @@ BEGIN_NAMESPACE_MW
 class NIDAQDigitalChannel : public Component {
     
 public:
+    static const std::size_t maxNumLines = 32;
     static const std::string PORT_NUMBER;
     
     static void describeComponent(ComponentInfo &info);
@@ -25,15 +26,16 @@ public:
     explicit NIDAQDigitalChannel(const ParameterValueMap &parameters);
     
     int getPortNumber() const { return portNumber; }
-    VariablePtr getLineVariable(std::size_t lineNumber) const { return lineVariables.at(lineNumber); }
+    
+protected:
+    typedef boost::array<VariablePtr, maxNumLines> LineVariablesArray;
+    const LineVariablesArray& getLineVariables() const { return lineVariables; }
     
 private:
-    static const std::size_t maxNumLines = 32;
-    
     static std::string getLineParameterName(std::size_t lineNumber);
     
-    int portNumber;
-    boost::array<VariablePtr, maxNumLines> lineVariables;
+    const int portNumber;
+    LineVariablesArray lineVariables;
     
 };
 

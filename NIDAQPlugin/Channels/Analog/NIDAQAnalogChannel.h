@@ -29,8 +29,9 @@ public:
     double getRangeMax() const { return rangeMax; }
     
 private:
-    int channelNumber;
-    double rangeMin, rangeMax;
+    const int channelNumber;
+    const double rangeMin;
+    const double rangeMax;
     
 };
 

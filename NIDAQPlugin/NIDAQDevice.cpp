@@ -376,7 +376,7 @@ void* NIDAQDevice::readAnalogInput() {
             sampleTime += analogInputDataInterval * (i / numChannels);
         }
         
-        analogInputChannels[i % numChannels]->getVariable()->setValue(sample, sampleTime);
+        analogInputChannels[i % numChannels]->postSample(sample, sampleTime);
     }
     
     return NULL;

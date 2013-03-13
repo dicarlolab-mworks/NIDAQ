@@ -24,10 +24,12 @@ public:
     
     explicit NIDAQAnalogInputVoltageChannel(const ParameterValueMap &parameters);
     
-    VariablePtr getVariable() const { return variable; }
+    void postSample(double value, MWTime time) const {
+        variable->setValue(value, time);
+    }
     
 private:
-    VariablePtr variable;
+    const VariablePtr variable;
     
 };
 
