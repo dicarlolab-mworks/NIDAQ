@@ -30,8 +30,8 @@ class NIDAQDevice : public IODevice, boost::noncopyable {
     
 public:
     static const std::string NAME;
+    static const std::string UPDATE_INTERVAL;
     static const std::string ANALOG_INPUT_DATA_INTERVAL;
-    static const std::string ANALOG_INPUT_UPDATE_INTERVAL;
     static const std::string ANALOG_OUTPUT_DATA_INTERVAL;
     static const std::string ASSUME_MULTIPLEXED_ADC;
     
@@ -76,8 +76,9 @@ private:
     typedef boost::mutex::scoped_lock scoped_lock;
     boost::mutex controlMutex;
     
+    MWTime updateInterval;
+    
     MWTime analogInputDataInterval;
-    MWTime analogInputUpdateInterval;
     const bool assumeMultiplexedADC;
     std::vector< boost::shared_ptr<NIDAQAnalogInputVoltageChannel> > analogInputChannels;
     size_t analogInputSampleBufferSize;

@@ -23,8 +23,8 @@ BEGIN_NAMESPACE_MW
 
 
 const std::string NIDAQDevice::NAME("name");
+const std::string NIDAQDevice::UPDATE_INTERVAL("update_interval");
 const std::string NIDAQDevice::ANALOG_INPUT_DATA_INTERVAL("analog_input_data_interval");
-const std::string NIDAQDevice::ANALOG_INPUT_UPDATE_INTERVAL("analog_input_update_interval");
 const std::string NIDAQDevice::ANALOG_OUTPUT_DATA_INTERVAL("analog_output_data_interval");
 const std::string NIDAQDevice::ASSUME_MULTIPLEXED_ADC("assume_multiplexed_adc");
 
@@ -35,8 +35,8 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
     info.setSignature("iodevice/nidaq");
     
     info.addParameter(NAME, true, "Dev1");
+    info.addParameter(UPDATE_INTERVAL, true, "3ms");
     info.addParameter(ANALOG_INPUT_DATA_INTERVAL, true, "1ms");
-    info.addParameter(ANALOG_INPUT_UPDATE_INTERVAL, true, "3ms");
     info.addParameter(ANALOG_OUTPUT_DATA_INTERVAL, true, "1ms");
     info.addParameter(ASSUME_MULTIPLEXED_ADC, "1");
 }
@@ -66,8 +66,8 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     sharedMemory(boost::interprocess::create_only, sharedMemoryName),
     controlMessage(NULL),
     helperPID(-1),
+    updateInterval(parameters[UPDATE_INTERVAL]),
     analogInputDataInterval(parameters[ANALOG_INPUT_DATA_INTERVAL]),
-    analogInputUpdateInterval(parameters[ANALOG_INPUT_UPDATE_INTERVAL]),
     assumeMultiplexedADC(parameters[ASSUME_MULTIPLEXED_ADC]),
     analogInputSampleBufferSize(0),
     analogInputTaskRunning(false),
@@ -75,15 +75,16 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     analogOutputSampleBufferSize(0),
     analogOutputTaskRunning(false)
 {
+    if (updateInterval <= 0) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid update interval");
+    }
+    
     if (analogInputDataInterval <= 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid analog input data interval");
     }
-    if (analogInputUpdateInterval <= 0) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid analog input update interval");
-    }
-    if (analogInputUpdateInterval % analogInputDataInterval != 0) {
+    if (updateInterval % analogInputDataInterval != 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
-                              "Analog input update interval must be an integer multiple of analog input data interval");
+                              "Update interval must be an integer multiple of analog input data interval");
     }
     
     if (analogOutputDataInterval <= 0) {
@@ -127,7 +128,7 @@ bool NIDAQDevice::initialize() {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device must have at least one channel");
     }
     
-    analogInputSampleBufferSize = (size_t(analogInputUpdateInterval / analogInputDataInterval) *
+    analogInputSampleBufferSize = (size_t(updateInterval / analogInputDataInterval) *
                                    analogInputChannels.size());
     analogOutputSampleBufferSize *= analogOutputChannels.size();
     
@@ -167,7 +168,7 @@ bool NIDAQDevice::createAnalogInputTask() {
     
     controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_INPUT_SAMPLE_CLOCK_TIMING;
     controlMessage->sampleClockTiming.samplingRate = 1.0 / (analogInputDataInterval / 1e6);  // us to s
-    controlMessage->sampleClockTiming.samplesPerChannelToAcquire = (analogInputUpdateInterval /
+    controlMessage->sampleClockTiming.samplesPerChannelToAcquire = (updateInterval /
                                                                     analogInputDataInterval);
     if (!sendHelperRequest()) {
         return false;
@@ -277,7 +278,7 @@ bool NIDAQDevice::startAnalogInputTask() {
         boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
         analogInputScheduleTask = Scheduler::instance()->scheduleUS(FILELINE,
                                                                     0,
-                                                                    analogInputUpdateInterval,
+                                                                    updateInterval,
                                                                     M_REPEAT_INDEFINITELY,
                                                                     boost::bind(&NIDAQDevice::readAnalogInput, sharedThis),
                                                                     M_DEFAULT_IODEVICE_PRIORITY,
@@ -331,7 +332,7 @@ void* NIDAQDevice::readAnalogInput() {
     }
     
     controlMessage->code = HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES;
-    controlMessage->analogSamples.timeout = double(analogInputUpdateInterval) / 1e6;  // us to s
+    controlMessage->analogSamples.timeout = double(updateInterval) / 1e6;  // us to s
     controlMessage->analogSamples.samples.numSamples = analogInputSampleBufferSize;
     
     if (!sendHelperRequest()) {
