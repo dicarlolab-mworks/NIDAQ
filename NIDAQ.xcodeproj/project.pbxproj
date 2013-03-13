@@ -34,6 +34,7 @@
 
 /* Begin PBXBuildFile section */
 		E100C59816F0CE0800B463A4 /* NIDAQDigitalChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E100C59616F0CE0700B463A4 /* NIDAQDigitalChannel.cpp */; };
+		E100C59F16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E100C59D16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp */; };
 		E105A22015E6835A007F9F38 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E105A21E15E6835A007F9F38 /* InfoPlist.strings */; };
 		E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E105A22415E68597007F9F38 /* MWorksCore.framework */; };
 		E13DEB6515F7DCA600AC7480 /* NIDAQAnalogChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E13DEB6315F7DCA600AC7480 /* NIDAQAnalogChannel.cpp */; };
@@ -131,6 +132,8 @@
 /* Begin PBXFileReference section */
 		E100C59616F0CE0700B463A4 /* NIDAQDigitalChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDigitalChannel.cpp; sourceTree = "<group>"; };
 		E100C59716F0CE0700B463A4 /* NIDAQDigitalChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDigitalChannel.h; sourceTree = "<group>"; };
+		E100C59D16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDigitalInputChannel.cpp; sourceTree = "<group>"; };
+		E100C59E16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDigitalInputChannel.h; sourceTree = "<group>"; };
 		E105A21215E67FEB007F9F38 /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
 		E105A21315E67FEB007F9F38 /* WARNING.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WARNING.txt; sourceTree = "<group>"; };
 		E105A21815E6835A007F9F38 /* NIDAQPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NIDAQPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -245,6 +248,8 @@
 			children = (
 				E100C59716F0CE0700B463A4 /* NIDAQDigitalChannel.h */,
 				E100C59616F0CE0700B463A4 /* NIDAQDigitalChannel.cpp */,
+				E100C59E16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.h */,
+				E100C59D16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp */,
 			);
 			path = Digital;
 			sourceTree = "<group>";
@@ -529,6 +534,7 @@
 				E13DEB6515F7DCA600AC7480 /* NIDAQAnalogChannel.cpp in Sources */,
 				E15EB1EC16026B6700D6A9D6 /* NIDAQAnalogOutputVoltageWaveformChannel.cpp in Sources */,
 				E100C59816F0CE0800B463A4 /* NIDAQDigitalChannel.cpp in Sources */,
+				E100C59F16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
