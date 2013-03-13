@@ -227,6 +227,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E100C59B16F0E00B00B463A4 /* Analog */ = {
+			isa = PBXGroup;
+			children = (
+				E13DEB6415F7DCA600AC7480 /* NIDAQAnalogChannel.h */,
+				E13DEB6315F7DCA600AC7480 /* NIDAQAnalogChannel.cpp */,
+				E157463F15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.h */,
+				E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */,
+				E15EB1EB16026B6600D6A9D6 /* NIDAQAnalogOutputVoltageWaveformChannel.h */,
+				E15EB1EA16026B6600D6A9D6 /* NIDAQAnalogOutputVoltageWaveformChannel.cpp */,
+			);
+			path = Analog;
+			sourceTree = "<group>";
+		};
+		E100C59C16F0E01200B463A4 /* Digital */ = {
+			isa = PBXGroup;
+			children = (
+				E100C59716F0CE0700B463A4 /* NIDAQDigitalChannel.h */,
+				E100C59616F0CE0700B463A4 /* NIDAQDigitalChannel.cpp */,
+			);
+			path = Digital;
+			sourceTree = "<group>";
+		};
 		E105A21115E67F73007F9F38 /* External Config */ = {
 			isa = PBXGroup;
 			children = (
@@ -262,14 +284,8 @@
 		E157464215F4F8210014089E /* Channels */ = {
 			isa = PBXGroup;
 			children = (
-				E13DEB6415F7DCA600AC7480 /* NIDAQAnalogChannel.h */,
-				E13DEB6315F7DCA600AC7480 /* NIDAQAnalogChannel.cpp */,
-				E157463F15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.h */,
-				E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */,
-				E15EB1EB16026B6600D6A9D6 /* NIDAQAnalogOutputVoltageWaveformChannel.h */,
-				E15EB1EA16026B6600D6A9D6 /* NIDAQAnalogOutputVoltageWaveformChannel.cpp */,
-				E100C59716F0CE0700B463A4 /* NIDAQDigitalChannel.h */,
-				E100C59616F0CE0700B463A4 /* NIDAQDigitalChannel.cpp */,
+				E100C59B16F0E00B00B463A4 /* Analog */,
+				E100C59C16F0E01200B463A4 /* Digital */,
 			);
 			path = Channels;
 			sourceTree = "<group>";
