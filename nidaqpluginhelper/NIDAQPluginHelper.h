@@ -16,6 +16,7 @@
 #include "AnalogInputTask.h"
 #include "AnalogOutputTask.h"
 #include "DigitalInputTask.h"
+#include "DigitalOutputTask.h"
 
 #include "MachClock.h"
 
@@ -57,6 +58,12 @@ private:
     void readDigitalInputSamples();
     void clearDigitalInputTask();
     
+    void requireDigitalOutputTask();
+    void createDigitalOutputChannel();
+    void startDigitalOutputTask();
+    void writeDigitalOutputSamples();
+    void clearDigitalOutputTask();
+    
     IPCRequestResponse &ipc;
     HelperControlMessage &m;
     
@@ -64,6 +71,7 @@ private:
     boost::scoped_ptr<nidaq::AnalogInputTask> analogInputTask;
     boost::scoped_ptr<nidaq::AnalogOutputTask> analogOutputTask;
     boost::scoped_ptr<nidaq::DigitalInputTask> digitalInputTask;
+    boost::scoped_ptr<nidaq::DigitalOutputTask> digitalOutputTask;
     
     MachClock clock;
     

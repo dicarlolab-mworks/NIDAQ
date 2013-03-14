@@ -121,6 +121,22 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             clearDigitalInputTask();
             break;
             
+        case HelperControlMessage::REQUEST_CREATE_DIGITAL_OUTPUT_CHANNEL:
+            createDigitalOutputChannel();
+            break;
+            
+        case HelperControlMessage::REQUEST_START_DIGITAL_OUTPUT_TASK:
+            startDigitalOutputTask();
+            break;
+            
+        case HelperControlMessage::REQUEST_WRITE_DIGITAL_OUTPUT_SAMPLES:
+            writeDigitalOutputSamples();
+            break;
+            
+        case HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASK:
+            clearDigitalOutputTask();
+            break;
+            
         case HelperControlMessage::REQUEST_SHUTDOWN:
             done = true;
             break;
@@ -270,6 +286,44 @@ void NIDAQPluginHelper::clearDigitalInputTask() {
     if (digitalInputTask) {
         digitalInputTask->stop();
         digitalInputTask.reset();
+    }
+}
+
+
+void NIDAQPluginHelper::requireDigitalOutputTask() {
+    if (!digitalOutputTask) {
+        digitalOutputTask.reset(new nidaq::DigitalOutputTask(device));
+    }
+}
+
+
+void NIDAQPluginHelper::createDigitalOutputChannel() {
+    requireDigitalOutputTask();
+    digitalOutputTask->addChannel(m.digitalChannel.portNumber);
+}
+
+
+void NIDAQPluginHelper::startDigitalOutputTask() {
+    requireDigitalOutputTask();
+    digitalOutputTask->start();
+}
+
+
+void NIDAQPluginHelper::writeDigitalOutputSamples() {
+    requireDigitalOutputTask();
+    
+    size_t numSamplesWritten = digitalOutputTask->write(m.digitalSamples.samples,
+                                                        m.digitalSamples.timeout,
+                                                        true);  // Group samples by scan number
+    
+    m.digitalSamples.samples.numSamples = numSamplesWritten;
+}
+
+
+void NIDAQPluginHelper::clearDigitalOutputTask() {
+    if (digitalOutputTask) {
+        digitalOutputTask->stop();
+        digitalOutputTask.reset();
     }
 }
 
