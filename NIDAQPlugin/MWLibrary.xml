@@ -1,0 +1,98 @@
+<MWElements>
+  
+  <MWElement name="NIDAQ Device">
+    <match_signature>iodevice[@type="nidaq"]</match_signature>
+    
+    <isa>IODevice</isa>
+
+    <icon>smallIOFolder</icon>
+    
+    <description>
+Interface to a National Instruments data acquisition (DAQ) device
+    </description>
+    
+    <code>
+      <iodevice type="nidaq"
+                tag="NIDAQ Device"
+                name="Dev1"
+                update_interval="3ms"
+                analog_input_data_interval="1ms"
+                analog_output_data_interval="1ms"
+                assume_multiplexed_adc="YES"
+                />
+    </code>
+  </MWElement>
+  
+  <MWElement name="NIDAQ Analog Input Voltage Channel">
+    <match_signature>iochannel[@type="nidaq_analog_input_voltage"]</match_signature>
+    
+    <isa>IOChannel</isa>
+    <allowed_parent>NIDAQ Device</allowed_parent>
+
+    <icon>smallIOFolder</icon>
+    
+    <description>
+Analog input voltage channel on a NIDAQ device
+    </description>
+    
+    <code>
+      <iochannel type="nidaq_analog_input_voltage"
+                 tag="NIDAQ Analog Input Voltage Channel"
+                 channel_number="0"
+                 range_min="-10.0"
+                 range_max="10.0"
+                 variable=""
+             />
+    </code>
+  </MWElement>
+  
+  <MWElement name="NIDAQ Analog Output Voltage Waveform Channel">
+    <match_signature>iochannel[@type="nidaq_analog_output_voltage_waveform"]</match_signature>
+    
+    <isa>IOChannel</isa>
+    <allowed_parent>NIDAQ Device</allowed_parent>
+
+    <icon>smallIOFolder</icon>
+    
+    <description>
+Generates a periodic analog output voltage signal on a NIDAQ device.  Supported waveform types are "sinusoid", "square", "triangle", and "sawtooth".
+    </description>
+    
+    <code>
+      <iochannel type="nidaq_analog_output_voltage_waveform"
+                 tag="NIDAQ Analog Output Voltage Waveform Channel"
+                 channel_number="0"
+                 range_min="-10.0"
+                 range_max="10.0"
+                 waveform="sinusoid"
+                 period="500ms"
+                 offset="0ms"
+             />
+    </code>
+  </MWElement>
+  
+  <MWElement name="NIDAQ Digital Input Channel">
+    <match_signature>iochannel[@type="nidaq_digital_input"]</match_signature>
+    
+    <isa>IOChannel</isa>
+    <allowed_parent>NIDAQ Device</allowed_parent>
+
+    <icon>smallIOFolder</icon>
+    
+    <description>
+Digital input channel on a NIDAQ device.  Supports up to 32 lines per port.
+    </description>
+    
+    <code>
+      <iochannel type="nidaq_digital_input"
+                 tag="NIDAQ Digital Input Channel"
+                 port_number="0"
+                 line0=""  line1=""  line2=""  line3=""  line4=""  line5=""  line6=""  line7=""
+                 line8=""  line9=""  line10="" line11="" line12="" line13="" line14="" line15=""
+                 line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23=""
+                 line24="" line25="" line26="" line27="" line28="" line29="" line30="" line31=""
+             />
+    </code>
+  </MWElement>
+  
+</MWElements>

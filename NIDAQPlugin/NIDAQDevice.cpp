@@ -132,7 +132,7 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
 
 
 bool NIDAQDevice::initialize() {
-    if (analogInputChannels.empty() && analogOutputChannels.empty()) {
+    if (analogInputChannels.empty() && analogOutputChannels.empty() && digitalInputChannels.empty()) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device must have at least one channel");
     }
     
@@ -154,6 +154,9 @@ bool NIDAQDevice::initialize() {
         return false;
     }
     if (haveAnalogOutputChannels() && !createAnalogOutputTask()) {
+        return false;
+    }
+    if (haveDigitalInputChannels() && !createDigitalInputTask()) {
         return false;
     }
     
@@ -236,6 +239,22 @@ bool NIDAQDevice::startDeviceIO() {
     if (haveAnalogInputChannels() && !startAnalogInputTask()) {
         return false;
     }
+    if (haveDigitalInputChannels() && !startDigitalInputTask()) {
+        return false;
+    }
+    
+    if ((haveAnalogInputChannels() || haveDigitalInputChannels()) && !readInputScheduleTask) {
+        boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
+        readInputScheduleTask = Scheduler::instance()->scheduleUS(FILELINE,
+                                                                  0,
+                                                                  updateInterval,
+                                                                  M_REPEAT_INDEFINITELY,
+                                                                  boost::bind(&NIDAQDevice::readInput, sharedThis),
+                                                                  M_DEFAULT_IODEVICE_PRIORITY,
+                                                                  M_DEFAULT_IODEVICE_WARN_SLOP_US,
+                                                                  M_DEFAULT_IODEVICE_FAIL_SLOP_US,
+                                                                  M_MISSED_EXECUTION_DROP);
+    }
     
     return true;
 }
@@ -298,17 +317,18 @@ bool NIDAQDevice::startAnalogInputTask() {
         analogInputTaskRunning = true;
     }
     
-    if (!analogInputScheduleTask) {
-        boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
-        analogInputScheduleTask = Scheduler::instance()->scheduleUS(FILELINE,
-                                                                    0,
-                                                                    updateInterval,
-                                                                    M_REPEAT_INDEFINITELY,
-                                                                    boost::bind(&NIDAQDevice::readAnalogInput, sharedThis),
-                                                                    M_DEFAULT_IODEVICE_PRIORITY,
-                                                                    M_DEFAULT_IODEVICE_WARN_SLOP_US,
-                                                                    M_DEFAULT_IODEVICE_FAIL_SLOP_US,
-                                                                    M_MISSED_EXECUTION_DROP);
+    return true;
+}
+
+
+bool NIDAQDevice::startDigitalInputTask() {
+    if (!digitalInputTaskRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_START_DIGITAL_INPUT_TASK;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        digitalInputTaskRunning = true;
     }
     
     return true;
@@ -320,9 +340,18 @@ bool NIDAQDevice::stopDeviceIO() {
     
     bool success = true;
     
-    if (analogInputScheduleTask) {
-        analogInputScheduleTask->cancel();
-        analogInputScheduleTask.reset();
+    if (readInputScheduleTask) {
+        readInputScheduleTask->cancel();
+        readInputScheduleTask.reset();
+    }
+    
+    if (digitalInputTaskRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_STOP_DIGITAL_INPUT_TASK;
+        if (!sendHelperRequest()) {
+            success = false;
+        } else {
+            digitalInputTaskRunning = false;
+        }
     }
     
     if (analogInputTaskRunning) {
@@ -347,20 +376,35 @@ bool NIDAQDevice::stopDeviceIO() {
 }
 
 
-void* NIDAQDevice::readAnalogInput() {
+void* NIDAQDevice::readInput() {
     scoped_lock lock(controlMutex);
     
-    if (!analogInputScheduleTask) {
+    if (!readInputScheduleTask) {
         // If we've already been canceled, don't try to read more data
         return NULL;
     }
     
+    // Read digital input first, since analog input read may block until the requested number of
+    // samples are available
+    if (haveDigitalInputChannels()) {
+        readDigitalInput();
+    }
+    
+    if (haveAnalogInputChannels()) {
+        readAnalogInput();
+    }
+    
+    return NULL;
+}
+
+
+void NIDAQDevice::readAnalogInput() {
     controlMessage->code = HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES;
     controlMessage->analogSamples.timeout = double(updateInterval) / 1e6;  // us to s
     controlMessage->analogSamples.samples.numSamples = analogInputSampleBufferSize;
     
     if (!sendHelperRequest()) {
-        return NULL;
+        return;
     }
     
     const size_t numSamplesRead = controlMessage->analogSamples.samples.numSamples;
@@ -403,8 +447,33 @@ void* NIDAQDevice::readAnalogInput() {
         
         analogInputChannels[i % numChannels]->postSample(sample, sampleTime);
     }
+}
+
+
+void NIDAQDevice::readDigitalInput() {
+    controlMessage->code = HelperControlMessage::REQUEST_READ_DIGITAL_INPUT_SAMPLES;
+    controlMessage->digitalSamples.timeout = double(updateInterval) / 1e6;  // us to s
+    controlMessage->digitalSamples.samples.numSamples = digitalInputSampleBufferSize;
     
-    return NULL;
+    if (!sendHelperRequest()) {
+        return;
+    }
+    
+    const size_t numSamplesRead = controlMessage->digitalSamples.samples.numSamples;
+    const size_t numChannels = digitalInputChannels.size();
+    const MWTime sampleTime = Clock::instance()->getCurrentTimeUS();
+    
+    if (numSamplesRead != digitalInputSampleBufferSize) {
+        mwarning(M_IODEVICE_MESSAGE_DOMAIN,
+                 "NIDAQ device requested %u digital samples but got only %u",
+                 digitalInputSampleBufferSize,
+                 numSamplesRead);
+    }
+    
+    for (size_t i = 0; i < numSamplesRead; i++) {
+        boost::uint32_t sample = controlMessage->digitalSamples.samples[i];
+        digitalInputChannels[i % numChannels]->postSample(sample, sampleTime);
+    }
 }
 
 

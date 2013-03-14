@@ -50,10 +50,12 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
+    void* readInput();
+    
     bool haveAnalogInputChannels() const { return !(analogInputChannels.empty()); }
     bool createAnalogInputTask();
     bool startAnalogInputTask();
-    void* readAnalogInput();
+    void readAnalogInput();
     
     bool haveAnalogOutputChannels() const { return !(analogOutputChannels.empty()); }
     bool createAnalogOutputTask();
@@ -61,6 +63,8 @@ private:
     
     bool haveDigitalInputChannels() const { return !(digitalInputChannels.empty()); }
     bool createDigitalInputTask();
+    bool startDigitalInputTask();
+    void readDigitalInput();
     
     void spawnHelper();
     void reapHelper();
@@ -81,6 +85,7 @@ private:
     boost::mutex controlMutex;
     
     MWTime updateInterval;
+    shared_ptr<ScheduleTask> readInputScheduleTask;
     
     MWTime analogInputDataInterval;
     const bool assumeMultiplexedADC;
@@ -89,7 +94,6 @@ private:
     MWTime analogInputStartTime;
     boost::uint64_t totalNumAnalogInputSamplesAcquired;
     bool analogInputTaskRunning;
-    shared_ptr<ScheduleTask> analogInputScheduleTask;
     
     MWTime analogOutputDataInterval;
     std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> > analogOutputChannels;

@@ -33,11 +33,17 @@ NIDAQDigitalChannel::NIDAQDigitalChannel(const ParameterValueMap &parameters) :
     if (portNumber < 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid port number");
     }
+    
+    bool foundLineParameter = false;
     for (std::size_t i = 0; i < maxNumLines; i++) {
         const ParameterValue &lineParameter = parameters[getLineParameterName(i)];
         if (!lineParameter.empty()) {
             lineVariables.at(i) = VariablePtr(lineParameter);
+            foundLineParameter = true;
         }
+    }
+    if (!foundLineParameter) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Digital channel must supply a value for at least one line");
     }
 }
 
