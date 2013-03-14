@@ -10,6 +10,7 @@
 #include "NIDAQAnalogInputVoltageChannel.h"
 #include "NIDAQAnalogOutputVoltageWaveformChannel.h"
 #include "NIDAQDigitalInputChannel.h"
+#include "NIDAQDigitalOutputChannel.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -21,6 +22,7 @@ class NIDAQPlugin : public Plugin {
         registry->registerFactory<StandardComponentFactory, NIDAQAnalogInputVoltageChannel>();
         registry->registerFactory<StandardComponentFactory, NIDAQAnalogOutputVoltageWaveformChannel>();
         registry->registerFactory<StandardComponentFactory, NIDAQDigitalInputChannel>();
+        registry->registerFactory<StandardComponentFactory, NIDAQDigitalOutputChannel>();
     }
 };
 
