@@ -41,21 +41,21 @@ private:
     void createAnalogInputVoltageChannel();
     void setAnalogInputSampleClockTiming();
     void startAnalogInputTask();
-    void stopAnalogInputTask();
     void readAnalogInputSamples();
+    void clearAnalogInputTask();
     
     void requireAnalogOutputTask();
     void createAnalogOutputVoltageChannel();
     void setAnalogOutputSampleClockTiming();
     void startAnalogOutputTask();
-    void stopAnalogOutputTask();
     void writeAnalogOutputSamples();
+    void clearAnalogOutputTask();
     
     void requireDigitalInputTask();
     void createDigitalInputChannel();
     void startDigitalInputTask();
-    void stopDigitalInputTask();
     void readDigitalInputSamples();
+    void clearDigitalInputTask();
     
     IPCRequestResponse &ipc;
     HelperControlMessage &m;

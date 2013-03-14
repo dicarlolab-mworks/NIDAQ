@@ -150,6 +150,17 @@ bool NIDAQDevice::initialize() {
     
     mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Configuring NIDAQ device \"%s\"...", deviceName.c_str());
     
+    if (!createTasks()) {
+        return false;
+    }
+    
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device \"%s\" is ready", deviceName.c_str());
+    
+    return true;
+}
+
+
+bool NIDAQDevice::createTasks() {
     if (haveAnalogInputChannels() && !createAnalogInputTask()) {
         return false;
     }
@@ -159,8 +170,6 @@ bool NIDAQDevice::initialize() {
     if (haveDigitalInputChannels() && !createDigitalInputTask()) {
         return false;
     }
-    
-    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device \"%s\" is ready", deviceName.c_str());
     
     return true;
 }
@@ -346,7 +355,7 @@ bool NIDAQDevice::stopDeviceIO() {
     }
     
     if (digitalInputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_STOP_DIGITAL_INPUT_TASK;
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_INPUT_TASK;
         if (!sendHelperRequest()) {
             success = false;
         } else {
@@ -355,7 +364,7 @@ bool NIDAQDevice::stopDeviceIO() {
     }
     
     if (analogInputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_INPUT_TASK;
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_ANALOG_INPUT_TASK;
         if (!sendHelperRequest()) {
             success = false;
         } else {
@@ -364,7 +373,7 @@ bool NIDAQDevice::stopDeviceIO() {
     }
     
     if (analogOutputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_STOP_ANALOG_OUTPUT_TASK;
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_ANALOG_OUTPUT_TASK;
         if (!sendHelperRequest()) {
             success = false;
         } else {
@@ -372,7 +381,16 @@ bool NIDAQDevice::stopDeviceIO() {
         }
     }
     
-    return success;
+    if (!success) {
+        return false;
+    }
+    
+    // Recreate the tasks so they're ready to go if startDeviceIO is called again
+    if (!createTasks()) {
+        return false;
+    }
+    
+    return true;
 }
 
 

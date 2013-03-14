@@ -50,6 +50,7 @@ public:
     bool stopDeviceIO() MW_OVERRIDE;
     
 private:
+    bool createTasks();
     void* readInput();
     
     bool haveAnalogInputChannels() const { return !(analogInputChannels.empty()); }

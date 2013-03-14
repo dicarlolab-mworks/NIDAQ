@@ -77,12 +77,12 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             startAnalogInputTask();
             break;
             
-        case HelperControlMessage::REQUEST_STOP_ANALOG_INPUT_TASK:
-            stopAnalogInputTask();
-            break;
-            
         case HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES:
             readAnalogInputSamples();
+            break;
+            
+        case HelperControlMessage::REQUEST_CLEAR_ANALOG_INPUT_TASK:
+            clearAnalogInputTask();
             break;
             
         case HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL:
@@ -97,12 +97,12 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             startAnalogOutputTask();
             break;
             
-        case HelperControlMessage::REQUEST_STOP_ANALOG_OUTPUT_TASK:
-            stopAnalogOutputTask();
-            break;
-            
         case HelperControlMessage::REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES:
             writeAnalogOutputSamples();
+            break;
+            
+        case HelperControlMessage::REQUEST_CLEAR_ANALOG_OUTPUT_TASK:
+            clearAnalogOutputTask();
             break;
             
         case HelperControlMessage::REQUEST_CREATE_DIGITAL_INPUT_CHANNEL:
@@ -113,12 +113,12 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             startDigitalInputTask();
             break;
             
-        case HelperControlMessage::REQUEST_STOP_DIGITAL_INPUT_TASK:
-            stopDigitalInputTask();
-            break;
-            
         case HelperControlMessage::REQUEST_READ_DIGITAL_INPUT_SAMPLES:
             readDigitalInputSamples();
+            break;
+            
+        case HelperControlMessage::REQUEST_CLEAR_DIGITAL_INPUT_TASK:
+            clearDigitalInputTask();
             break;
             
         case HelperControlMessage::REQUEST_SHUTDOWN:
@@ -166,12 +166,6 @@ void NIDAQPluginHelper::startAnalogInputTask() {
 }
 
 
-void NIDAQPluginHelper::stopAnalogInputTask() {
-    requireAnalogInputTask();
-    analogInputTask->stop();
-}
-
-
 void NIDAQPluginHelper::readAnalogInputSamples() {
     requireAnalogInputTask();
     if (!(analogInputTask->isRunning())) {
@@ -182,6 +176,14 @@ void NIDAQPluginHelper::readAnalogInputSamples() {
                                                   m.analogSamples.timeout,
                                                   true);  // Group samples by scan number
     m.analogSamples.samples.numSamples = numSamplesRead;
+}
+
+
+void NIDAQPluginHelper::clearAnalogInputTask() {
+    if (analogInputTask) {
+        analogInputTask->stop();
+        analogInputTask.reset();
+    }
 }
 
 
@@ -213,12 +215,6 @@ void NIDAQPluginHelper::startAnalogOutputTask() {
 }
 
 
-void NIDAQPluginHelper::stopAnalogOutputTask() {
-    requireAnalogOutputTask();
-    analogOutputTask->stop();
-}
-
-
 void NIDAQPluginHelper::writeAnalogOutputSamples() {
     requireAnalogOutputTask();
     
@@ -227,6 +223,14 @@ void NIDAQPluginHelper::writeAnalogOutputSamples() {
                                                        true);  // Group samples by scan number
     
     m.analogSamples.samples.numSamples = numSamplesWritten;
+}
+
+
+void NIDAQPluginHelper::clearAnalogOutputTask() {
+    if (analogOutputTask) {
+        analogOutputTask->stop();
+        analogOutputTask.reset();
+    }
 }
 
 
@@ -249,12 +253,6 @@ void NIDAQPluginHelper::startDigitalInputTask() {
 }
 
 
-void NIDAQPluginHelper::stopDigitalInputTask() {
-    requireDigitalInputTask();
-    digitalInputTask->stop();
-}
-
-
 void NIDAQPluginHelper::readDigitalInputSamples() {
     requireDigitalInputTask();
     if (!(digitalInputTask->isRunning())) {
@@ -265,6 +263,14 @@ void NIDAQPluginHelper::readDigitalInputSamples() {
                                                    m.digitalSamples.timeout,
                                                    true);  // Group samples by scan number
     m.digitalSamples.samples.numSamples = numSamplesRead;
+}
+
+
+void NIDAQPluginHelper::clearDigitalInputTask() {
+    if (digitalInputTask) {
+        digitalInputTask->stop();
+        digitalInputTask.reset();
+    }
 }
 
 
