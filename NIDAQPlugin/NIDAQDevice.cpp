@@ -379,12 +379,16 @@ bool NIDAQDevice::startDigitalInputTask() {
 bool NIDAQDevice::stopDeviceIO() {
     scoped_lock lock(controlMutex);
     
-    bool success = true;
-    
     if (readInputScheduleTask) {
         readInputScheduleTask->cancel();
         readInputScheduleTask.reset();
     }
+    
+    if (!(digitalInputTaskRunning || digitalOutputTaskRunning || analogInputTaskRunning || analogOutputTaskRunning)) {
+        return true;
+    }
+    
+    bool success = true;
     
     if (digitalInputTaskRunning) {
         controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_INPUT_TASK;
