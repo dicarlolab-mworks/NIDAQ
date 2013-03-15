@@ -712,7 +712,9 @@ void NIDAQDevice::DigitalOutputSampleNotification::notify(const Datum &data, MWT
     boost::shared_ptr<NIDAQDevice> nidaqDevice = nidaqDeviceWeak.lock();
     if (nidaqDevice) {
         scoped_lock lock(nidaqDevice->controlMutex);
-        nidaqDevice->writeDigitalOutput();
+        if (nidaqDevice->digitalOutputTaskRunning) {
+            nidaqDevice->writeDigitalOutput();
+        }
     }
 }
 
