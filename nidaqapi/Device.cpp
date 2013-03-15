@@ -22,4 +22,9 @@ uint32_t Device::getSerialNumber() const {
 }
 
 
+void Device::reset() const {
+    Error::throwIfFailed(  DAQmxBaseResetDevice(name.c_str())  );
+}
+
+
 END_NAMESPACE_NIDAQ

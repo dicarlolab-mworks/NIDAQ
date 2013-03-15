@@ -29,6 +29,7 @@ public:
     }
     
     uint32_t getSerialNumber() const;
+    void reset() const;
     
 private:
     const std::string name;

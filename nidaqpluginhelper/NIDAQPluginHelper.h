@@ -64,6 +64,8 @@ private:
     void writeDigitalOutputSamples();
     void clearDigitalOutputTask();
     
+    void shutDown();
+    
     IPCRequestResponse &ipc;
     HelperControlMessage &m;
     

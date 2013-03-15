@@ -138,7 +138,8 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             break;
             
         case HelperControlMessage::REQUEST_SHUTDOWN:
-            done = true;
+            done = true;  // Set done first, so we'll quit even if shutDown throws
+            shutDown();
             break;
             
         case HelperControlMessage::REQUEST_PING:
@@ -325,6 +326,17 @@ void NIDAQPluginHelper::clearDigitalOutputTask() {
         digitalOutputTask->stop();
         digitalOutputTask.reset();
     }
+}
+
+
+void NIDAQPluginHelper::shutDown() {
+    // Resetting the device will invalidate all associated tasks, so make sure we've cleared them first
+    analogInputTask.reset();
+    analogOutputTask.reset();
+    digitalInputTask.reset();
+    digitalOutputTask.reset();
+    
+    device.reset();
 }
 
 
