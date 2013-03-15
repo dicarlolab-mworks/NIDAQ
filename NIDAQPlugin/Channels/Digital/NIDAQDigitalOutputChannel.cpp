@@ -25,6 +25,15 @@ NIDAQDigitalOutputChannel::NIDAQDigitalOutputChannel(const ParameterValueMap &pa
 { }
 
 
+void NIDAQDigitalOutputChannel::addNewSampleNotification(const boost::shared_ptr<VariableNotification> &vn) const {
+    BOOST_FOREACH(const VariablePtr &variable, getLineVariables()) {
+        if (variable) {
+            variable->addNotification(vn);
+        }
+    }
+}
+
+
 boost::uint32_t NIDAQDigitalOutputChannel::getSample() const {
     boost::uint32_t value = 0;
     
@@ -40,3 +49,30 @@ boost::uint32_t NIDAQDigitalOutputChannel::getSample() const {
 
 
 END_NAMESPACE_MW
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

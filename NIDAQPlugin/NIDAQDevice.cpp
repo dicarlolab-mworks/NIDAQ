@@ -75,7 +75,9 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     analogOutputSampleBufferSize(0),
     analogOutputTaskRunning(false),
     digitalInputSampleBufferSize(0),
-    digitalInputTaskRunning(false)
+    digitalInputTaskRunning(false),
+    digitalOutputSampleBufferSize(0),
+    digitalOutputTaskRunning(false)
 {
     if (updateInterval <= 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid update interval");
@@ -127,12 +129,26 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
         return;
     }
     
+    boost::shared_ptr<NIDAQDigitalOutputChannel> doChannel = boost::dynamic_pointer_cast<NIDAQDigitalOutputChannel>(child);
+    if (doChannel) {
+        boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
+        boost::shared_ptr<DigitalOutputSampleNotification> notification(new DigitalOutputSampleNotification(sharedThis));
+        doChannel->addNewSampleNotification(notification);
+        
+        digitalOutputChannels.push_back(doChannel);
+        return;
+    }
+    
     throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid channel type for NIDAQ device");
 }
 
 
 bool NIDAQDevice::initialize() {
-    if (analogInputChannels.empty() && analogOutputChannels.empty() && digitalInputChannels.empty()) {
+    if (analogInputChannels.empty() &&
+        analogOutputChannels.empty() &&
+        digitalInputChannels.empty() &&
+        digitalOutputChannels.empty())
+    {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device must have at least one channel");
     }
     
@@ -140,10 +156,12 @@ bool NIDAQDevice::initialize() {
                                    analogInputChannels.size());
     analogOutputSampleBufferSize *= analogOutputChannels.size();
     digitalInputSampleBufferSize = digitalInputChannels.size();
+    digitalOutputSampleBufferSize = digitalOutputChannels.size();
     
     sharedMemory.setSize(HelperControlMessage::sizeWithSamples(std::max(analogInputSampleBufferSize,
                                                                         analogOutputSampleBufferSize),
-                                                               digitalInputSampleBufferSize));
+                                                               std::max(digitalInputSampleBufferSize,
+                                                                        digitalOutputSampleBufferSize)));
     controlMessage = sharedMemory.getMessagePtr();
     
     spawnHelper();
@@ -168,6 +186,9 @@ bool NIDAQDevice::createTasks() {
         return false;
     }
     if (haveDigitalInputChannels() && !createDigitalInputTask()) {
+        return false;
+    }
+    if (haveDigitalOutputChannels() && !createDigitalOutputTask()) {
         return false;
     }
     
@@ -239,6 +260,20 @@ bool NIDAQDevice::createDigitalInputTask() {
 }
 
 
+bool NIDAQDevice::createDigitalOutputTask() {
+    BOOST_FOREACH(const boost::shared_ptr<NIDAQDigitalOutputChannel> &channel, digitalOutputChannels) {
+        controlMessage->code = HelperControlMessage::REQUEST_CREATE_DIGITAL_OUTPUT_CHANNEL;
+        controlMessage->digitalChannel.portNumber = channel->getPortNumber();
+        
+        if (!sendHelperRequest()) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
 bool NIDAQDevice::startDeviceIO() {
     scoped_lock lock(controlMutex);
     
@@ -246,6 +281,9 @@ bool NIDAQDevice::startDeviceIO() {
         return false;
     }
     if (haveAnalogInputChannels() && !startAnalogInputTask()) {
+        return false;
+    }
+    if (haveDigitalOutputChannels() && !startDigitalOutputTask()) {
         return false;
     }
     if (haveDigitalInputChannels() && !startDigitalInputTask()) {
@@ -270,43 +308,19 @@ bool NIDAQDevice::startDeviceIO() {
 
 
 bool NIDAQDevice::startAnalogOutputTask() {
-    if (analogOutputTaskRunning) {
-        return true;
+    if (!analogOutputTaskRunning) {
+        if (!writeAnalogOutput()) {
+            return false;
+        }
+        
+        controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_OUTPUT_TASK;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        analogOutputTaskRunning = true;
     }
-    
-    const size_t numChannels = analogOutputChannels.size();
-    
-    controlMessage->code = HelperControlMessage::REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES;
-    controlMessage->analogSamples.timeout = 10.0;
-    controlMessage->analogSamples.samples.numSamples = analogOutputSampleBufferSize;
-    
-    for (size_t i = 0; i < analogOutputSampleBufferSize; i++) {
-        double &sample = controlMessage->analogSamples.samples[i];
-        MWTime sampleTime = analogOutputDataInterval * (i / numChannels);
-        sample = analogOutputChannels[i % numChannels]->getSampleForTime(sampleTime);
-    }
-    
-    if (!sendHelperRequest()) {
-        return false;
-    }
-    
-    const size_t numSamplesWritten = controlMessage->analogSamples.samples.numSamples;
-    
-    if (numSamplesWritten != analogOutputSampleBufferSize) {
-        merror(M_IODEVICE_MESSAGE_DOMAIN,
-               "Wrote only %u of %u analog output samples to NIDAQ device",
-               numSamplesWritten,
-               analogOutputSampleBufferSize);
-        return false;
-    }
-    
-    controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_OUTPUT_TASK;
-    if (!sendHelperRequest()) {
-        return false;
-    }
-    
-    analogOutputTaskRunning = true;
-    
+
     return true;
 }
 
@@ -324,6 +338,24 @@ bool NIDAQDevice::startAnalogInputTask() {
         totalNumAnalogInputSamplesAcquired = 0;
         
         analogInputTaskRunning = true;
+    }
+    
+    return true;
+}
+
+
+bool NIDAQDevice::startDigitalOutputTask() {
+    if (!digitalOutputTaskRunning) {
+        if (!writeDigitalOutput()) {
+            return false;
+        }
+        
+        controlMessage->code = HelperControlMessage::REQUEST_START_DIGITAL_OUTPUT_TASK;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        digitalOutputTaskRunning = true;
     }
     
     return true;
@@ -360,6 +392,15 @@ bool NIDAQDevice::stopDeviceIO() {
             success = false;
         } else {
             digitalInputTaskRunning = false;
+        }
+    }
+    
+    if (digitalOutputTaskRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASK;
+        if (!sendHelperRequest()) {
+            success = false;
+        } else {
+            digitalOutputTaskRunning = false;
         }
     }
     
@@ -468,6 +509,37 @@ void NIDAQDevice::readAnalogInput() {
 }
 
 
+bool NIDAQDevice::writeAnalogOutput() {
+    const size_t numChannels = analogOutputChannels.size();
+    
+    controlMessage->code = HelperControlMessage::REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES;
+    controlMessage->analogSamples.timeout = 10.0;
+    controlMessage->analogSamples.samples.numSamples = analogOutputSampleBufferSize;
+    
+    for (size_t i = 0; i < analogOutputSampleBufferSize; i++) {
+        double &sample = controlMessage->analogSamples.samples[i];
+        MWTime sampleTime = analogOutputDataInterval * (i / numChannels);
+        sample = analogOutputChannels[i % numChannels]->getSampleForTime(sampleTime);
+    }
+    
+    if (!sendHelperRequest()) {
+        return false;
+    }
+    
+    const size_t numSamplesWritten = controlMessage->analogSamples.samples.numSamples;
+    
+    if (numSamplesWritten != analogOutputSampleBufferSize) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN,
+               "Wrote only %u of %u analog output samples to NIDAQ device",
+               numSamplesWritten,
+               analogOutputSampleBufferSize);
+        return false;
+    }
+    
+    return true;
+}
+
+
 void NIDAQDevice::readDigitalInput() {
     controlMessage->code = HelperControlMessage::REQUEST_READ_DIGITAL_INPUT_SAMPLES;
     controlMessage->digitalSamples.timeout = double(updateInterval) / 1e6;  // us to s
@@ -492,6 +564,36 @@ void NIDAQDevice::readDigitalInput() {
         boost::uint32_t sample = controlMessage->digitalSamples.samples[i];
         digitalInputChannels[i % numChannels]->postSample(sample, sampleTime);
     }
+}
+
+
+bool NIDAQDevice::writeDigitalOutput() {
+    const size_t numChannels = digitalOutputChannels.size();
+    
+    controlMessage->code = HelperControlMessage::REQUEST_WRITE_DIGITAL_OUTPUT_SAMPLES;
+    controlMessage->digitalSamples.timeout = double(updateInterval) / 1e6;  // us to s
+    controlMessage->digitalSamples.samples.numSamples = digitalOutputSampleBufferSize;
+    
+    for (size_t i = 0; i < digitalOutputSampleBufferSize; i++) {
+        boost::uint32_t &sample = controlMessage->digitalSamples.samples[i];
+        sample = digitalOutputChannels[i % numChannels]->getSample();
+    }
+    
+    if (!sendHelperRequest()) {
+        return false;
+    }
+    
+    const size_t numSamplesWritten = controlMessage->digitalSamples.samples.numSamples;
+    
+    if (numSamplesWritten != digitalOutputSampleBufferSize) {
+        mwarning(M_IODEVICE_MESSAGE_DOMAIN,
+                 "Wrote only %u of %u digital output samples to NIDAQ device",
+                 numSamplesWritten,
+                 digitalOutputSampleBufferSize);
+        return false;
+    }
+    
+    return true;
 }
 
 
@@ -599,6 +701,15 @@ bool NIDAQDevice::sendHelperRequest() {
     }
     
     return (responseCode == HelperControlMessage::RESPONSE_OK);
+}
+
+
+void NIDAQDevice::DigitalOutputSampleNotification::notify(const Datum &data, MWTime time) {
+    boost::shared_ptr<NIDAQDevice> nidaqDevice = nidaqDeviceWeak.lock();
+    if (nidaqDevice) {
+        scoped_lock lock(nidaqDevice->controlMutex);
+        nidaqDevice->writeDigitalOutput();
+    }
 }
 
 

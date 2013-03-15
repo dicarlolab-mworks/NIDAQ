@@ -22,6 +22,7 @@
 #include "NIDAQAnalogInputVoltageChannel.h"
 #include "NIDAQAnalogOutputVoltageWaveformChannel.h"
 #include "NIDAQDigitalInputChannel.h"
+#include "NIDAQDigitalOutputChannel.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -61,11 +62,17 @@ private:
     bool haveAnalogOutputChannels() const { return !(analogOutputChannels.empty()); }
     bool createAnalogOutputTask();
     bool startAnalogOutputTask();
+    bool writeAnalogOutput();
     
     bool haveDigitalInputChannels() const { return !(digitalInputChannels.empty()); }
     bool createDigitalInputTask();
     bool startDigitalInputTask();
     void readDigitalInput();
+    
+    bool haveDigitalOutputChannels() const { return !(digitalOutputChannels.empty()); }
+    bool createDigitalOutputTask();
+    bool startDigitalOutputTask();
+    bool writeDigitalOutput();
     
     void spawnHelper();
     void reapHelper();
@@ -86,7 +93,7 @@ private:
     boost::mutex controlMutex;
     
     MWTime updateInterval;
-    shared_ptr<ScheduleTask> readInputScheduleTask;
+    boost::shared_ptr<ScheduleTask> readInputScheduleTask;
     
     MWTime analogInputDataInterval;
     const bool assumeMultiplexedADC;
@@ -104,6 +111,23 @@ private:
     std::vector< boost::shared_ptr<NIDAQDigitalInputChannel> > digitalInputChannels;
     size_t digitalInputSampleBufferSize;
     bool digitalInputTaskRunning;
+    
+    std::vector< boost::shared_ptr<NIDAQDigitalOutputChannel> > digitalOutputChannels;
+    size_t digitalOutputSampleBufferSize;
+    bool digitalOutputTaskRunning;
+    
+    
+    class DigitalOutputSampleNotification : public VariableNotification {
+    public:
+        explicit DigitalOutputSampleNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice) :
+            nidaqDeviceWeak(nidaqDevice)
+        { }
+        
+        void notify(const Datum &data, MWTime time) MW_OVERRIDE;
+        
+    private:
+        boost::weak_ptr<NIDAQDevice> nidaqDeviceWeak;
+    };
     
 };
 

@@ -24,6 +24,7 @@ public:
     
     explicit NIDAQDigitalOutputChannel(const ParameterValueMap &parameters);
     
+    void addNewSampleNotification(const boost::shared_ptr<VariableNotification> &vn) const;
     boost::uint32_t getSample() const;
     
 };
