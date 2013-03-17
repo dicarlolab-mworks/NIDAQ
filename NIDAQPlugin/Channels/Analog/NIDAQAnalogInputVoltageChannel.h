@@ -18,18 +18,18 @@ BEGIN_NAMESPACE_MW
 class NIDAQAnalogInputVoltageChannel : public NIDAQAnalogChannel {
     
 public:
-    static const std::string VARIABLE;
+    static const std::string VOLTAGE;
     
     static void describeComponent(ComponentInfo &info);
     
     explicit NIDAQAnalogInputVoltageChannel(const ParameterValueMap &parameters);
     
     void postSample(double value, MWTime time) const {
-        variable->setValue(value, time);
+        voltage->setValue(value, time);
     }
     
 private:
-    const VariablePtr variable;
+    const VariablePtr voltage;
     
 };
 

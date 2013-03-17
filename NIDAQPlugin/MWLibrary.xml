@@ -41,7 +41,7 @@ Analog input voltage channel on a NIDAQ device
                  channel_number="0"
                  range_min="-10.0"
                  range_max="10.0"
-                 variable=""
+                 voltage=""
              />
     </code>
   </MWElement>
@@ -87,6 +87,7 @@ Digital input channel on a NIDAQ device.  Supports up to 32 lines on a single po
       <iochannel type="nidaq_digital_input"
                  tag="NIDAQ Digital Input Channel"
                  port_number="0"
+                 num_lines_in_port="8"
                  line0=""  line1=""  line2=""  line3=""  line4=""  line5=""  line6=""  line7=""
                  line8=""  line9=""  line10="" line11="" line12="" line13="" line14="" line15=""
                  line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23=""
@@ -111,6 +112,7 @@ Digital output channel on a NIDAQ device.  Supports up to 32 lines on a single p
       <iochannel type="nidaq_digital_output"
                  tag="NIDAQ Digital output Channel"
                  port_number="0"
+                 num_lines_in_port="8"
                  line0=""  line1=""  line2=""  line3=""  line4=""  line5=""  line6=""  line7=""
                  line8=""  line9=""  line10="" line11="" line12="" line13="" line14="" line15=""
                  line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23=""

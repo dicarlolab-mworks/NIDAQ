@@ -8,8 +8,6 @@
 
 #include "NIDAQDigitalOutputChannel.h"
 
-#include <boost/foreach.hpp>
-
 
 BEGIN_NAMESPACE_MW
 
@@ -25,26 +23,22 @@ NIDAQDigitalOutputChannel::NIDAQDigitalOutputChannel(const ParameterValueMap &pa
 { }
 
 
-void NIDAQDigitalOutputChannel::addNewSampleNotification(const boost::shared_ptr<VariableNotification> &vn) const {
-    BOOST_FOREACH(const VariablePtr &variable, getLineVariables()) {
-        if (variable) {
-            variable->addNotification(vn);
-        }
+void NIDAQDigitalOutputChannel::addNewLineStateNotification(std::size_t lineNumber,
+                                                            const boost::shared_ptr<VariableNotification> &vn) const
+{
+    const VariablePtr &variable = getLineVariable(lineNumber);
+    if (variable) {
+        variable->addNotification(vn);
     }
 }
 
 
-boost::uint32_t NIDAQDigitalOutputChannel::getSample() const {
-    boost::uint32_t value = 0;
-    
-    BOOST_REVERSE_FOREACH(const VariablePtr &variable, getLineVariables()) {
-        value <<= 1;
-        if (variable && variable->getValue().getBool()) {
-            value |= 1u;
-        }
+bool NIDAQDigitalOutputChannel::getLineState(std::size_t lineNumber) const {
+    const VariablePtr &variable = getLineVariable(lineNumber);
+    if (variable) {
+        return variable->getValue().getBool();
     }
-    
-    return value;
+    return false;
 }
 
 

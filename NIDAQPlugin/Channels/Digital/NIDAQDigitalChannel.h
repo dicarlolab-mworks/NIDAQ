@@ -20,22 +20,24 @@ class NIDAQDigitalChannel : public Component {
 public:
     static const std::size_t maxNumLines = 32;
     static const std::string PORT_NUMBER;
+    static const std::string NUM_LINES_IN_PORT;
     
     static void describeComponent(ComponentInfo &info);
     
     explicit NIDAQDigitalChannel(const ParameterValueMap &parameters);
     
     int getPortNumber() const { return portNumber; }
+    int getNumLinesInPort() const { return numLinesInPort; }
     
 protected:
-    typedef boost::array<VariablePtr, maxNumLines> LineVariablesArray;
-    const LineVariablesArray& getLineVariables() const { return lineVariables; }
+    const VariablePtr& getLineVariable(std::size_t lineNumber) const { return lineVariables.at(lineNumber); }
     
 private:
     static std::string getLineParameterName(std::size_t lineNumber);
     
     const int portNumber;
-    LineVariablesArray lineVariables;
+    const int numLinesInPort;
+    boost::array<VariablePtr, maxNumLines> lineVariables;
     
 };
 

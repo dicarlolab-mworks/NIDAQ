@@ -132,8 +132,11 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
     boost::shared_ptr<NIDAQDigitalOutputChannel> doChannel = boost::dynamic_pointer_cast<NIDAQDigitalOutputChannel>(child);
     if (doChannel) {
         boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
-        boost::shared_ptr<DigitalOutputSampleNotification> notification(new DigitalOutputSampleNotification(sharedThis));
-        doChannel->addNewSampleNotification(notification);
+        boost::shared_ptr<DigitalOutputLineStateNotification> notification(new DigitalOutputLineStateNotification(sharedThis));
+        
+        for (size_t lineNumber = 0; lineNumber < NIDAQDigitalOutputChannel::maxNumLines; lineNumber++) {
+            doChannel->addNewLineStateNotification(lineNumber, notification);
+        }
         
         digitalOutputChannels.push_back(doChannel);
         return;
@@ -564,9 +567,24 @@ void NIDAQDevice::readDigitalInput() {
                  numSamplesRead);
     }
     
-    for (size_t i = 0; i < numSamplesRead; i++) {
-        boost::uint32_t sample = controlMessage->digitalSamples.samples[i];
-        digitalInputChannels[i % numChannels]->postSample(sample, sampleTime);
+    size_t channelNumber = 0;
+    size_t channelLineNumber = 0;
+    
+    for (size_t sampleNumber = 0; sampleNumber < numSamplesRead; sampleNumber++) {
+        for (size_t sampleBitNumber = 0; sampleBitNumber < NIDAQDigitalInputChannel::maxNumLines; sampleBitNumber++) {
+            bool lineState = bool(controlMessage->digitalSamples.samples[sampleNumber] & (1u << sampleBitNumber));
+            
+            digitalInputChannels[channelNumber]->postLineState(channelLineNumber, lineState, sampleTime);
+            channelLineNumber++;
+            
+            if (channelLineNumber >= digitalInputChannels[channelNumber]->getNumLinesInPort()) {
+                channelNumber++;
+                if (channelNumber >= numChannels) {
+                    return;
+                }
+                channelLineNumber = 0;
+            }
+        }
     }
 }
 
@@ -578,9 +596,27 @@ bool NIDAQDevice::writeDigitalOutput() {
     controlMessage->digitalSamples.timeout = double(updateInterval) / 1e6;  // us to s
     controlMessage->digitalSamples.samples.numSamples = digitalOutputSampleBufferSize;
     
-    for (size_t i = 0; i < digitalOutputSampleBufferSize; i++) {
-        boost::uint32_t &sample = controlMessage->digitalSamples.samples[i];
-        sample = digitalOutputChannels[i % numChannels]->getSample();
+    size_t channelNumber = 0;
+    size_t channelLineNumber = 0;
+    
+    for (size_t sampleNumber = 0; sampleNumber < digitalOutputSampleBufferSize; sampleNumber++) {
+        boost::uint32_t &sample = controlMessage->digitalSamples.samples[sampleNumber];
+        sample = 0;
+        
+        for (size_t sampleBitNumber = 0; sampleBitNumber < NIDAQDigitalOutputChannel::maxNumLines; sampleBitNumber++) {
+            if (channelNumber >= numChannels) {
+                break;
+            }
+            
+            bool lineState = digitalOutputChannels[channelNumber]->getLineState(channelLineNumber);
+            sample |= (boost::uint32_t(lineState) << sampleBitNumber);
+            channelLineNumber++;
+            
+            if (channelLineNumber >= digitalOutputChannels[channelNumber]->getNumLinesInPort()) {
+                channelNumber++;
+                channelLineNumber = 0;
+            }
+        }
     }
     
     if (!sendHelperRequest()) {
@@ -708,7 +744,7 @@ bool NIDAQDevice::sendHelperRequest() {
 }
 
 
-void NIDAQDevice::DigitalOutputSampleNotification::notify(const Datum &data, MWTime time) {
+void NIDAQDevice::DigitalOutputLineStateNotification::notify(const Datum &data, MWTime time) {
     boost::shared_ptr<NIDAQDevice> nidaqDevice = nidaqDeviceWeak.lock();
     if (nidaqDevice) {
         scoped_lock lock(nidaqDevice->controlMutex);

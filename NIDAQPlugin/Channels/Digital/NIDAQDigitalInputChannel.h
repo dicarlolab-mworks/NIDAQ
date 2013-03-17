@@ -24,7 +24,7 @@ public:
     
     explicit NIDAQDigitalInputChannel(const ParameterValueMap &parameters);
     
-    void postSample(boost::uint32_t value, MWTime time) const;
+    void postLineState(std::size_t lineNumber, bool state, MWTime time) const;
     
 };
 

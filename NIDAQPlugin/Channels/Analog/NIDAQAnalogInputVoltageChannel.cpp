@@ -12,19 +12,19 @@
 BEGIN_NAMESPACE_MW
 
 
-const std::string NIDAQAnalogInputVoltageChannel::VARIABLE("variable");
+const std::string NIDAQAnalogInputVoltageChannel::VOLTAGE("voltage");
 
 
 void NIDAQAnalogInputVoltageChannel::describeComponent(ComponentInfo &info) {
     NIDAQAnalogChannel::describeComponent(info);
     info.setSignature("iochannel/nidaq_analog_input_voltage");
-    info.addParameter(VARIABLE);
+    info.addParameter(VOLTAGE);
 }
 
 
 NIDAQAnalogInputVoltageChannel::NIDAQAnalogInputVoltageChannel(const ParameterValueMap &parameters) :
     NIDAQAnalogChannel(parameters),
-    variable(parameters[VARIABLE])
+    voltage(parameters[VOLTAGE])
 { }
 
 

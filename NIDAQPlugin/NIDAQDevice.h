@@ -117,9 +117,9 @@ private:
     bool digitalOutputTaskRunning;
     
     
-    class DigitalOutputSampleNotification : public VariableNotification {
+    class DigitalOutputLineStateNotification : public VariableNotification {
     public:
-        explicit DigitalOutputSampleNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice) :
+        explicit DigitalOutputLineStateNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice) :
             nidaqDeviceWeak(nidaqDevice)
         { }
         

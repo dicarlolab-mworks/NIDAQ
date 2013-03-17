@@ -8,8 +8,6 @@
 
 #include "NIDAQDigitalInputChannel.h"
 
-#include <boost/foreach.hpp>
-
 
 BEGIN_NAMESPACE_MW
 
@@ -25,15 +23,10 @@ NIDAQDigitalInputChannel::NIDAQDigitalInputChannel(const ParameterValueMap &para
 { }
 
 
-void NIDAQDigitalInputChannel::postSample(boost::uint32_t value, MWTime time) const {
-    BOOST_FOREACH(const VariablePtr &variable, getLineVariables()) {
-        if (variable) {
-            long newVal = long(value & 1u);
-            if (variable->getValue().getInteger() != newVal) {
-                variable->setValue(newVal, time);
-            }
-        }
-        value >>= 1;
+void NIDAQDigitalInputChannel::postLineState(std::size_t lineNumber, bool state, MWTime time) const {
+    const VariablePtr &variable = getLineVariable(lineNumber);
+    if (variable && (variable->getValue().getBool() != state)) {
+        variable->setValue(long(state), time);
     }
 }
 
