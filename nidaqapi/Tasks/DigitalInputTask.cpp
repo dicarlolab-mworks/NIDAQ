@@ -24,9 +24,9 @@ void Device::DigitalInputTask::addChannel(unsigned int portNumber) {
     std::string lines = getChannelName("port", portNumber);
     
     std::int32_t error = DAQmxBaseCreateDIChan(getHandle(),
-                                          lines.c_str(),
-                                          NULL,
-                                          DAQmx_Val_ChanForAllLines);
+                                               lines.c_str(),
+                                               NULL,
+                                               DAQmx_Val_ChanForAllLines);
     Error::throwIfFailed(error);
     
     Task::addChannel(lines);
@@ -34,21 +34,21 @@ void Device::DigitalInputTask::addChannel(unsigned int portNumber) {
 
 
 std::size_t Device::DigitalInputTask::read(std::uint32_t &firstSample,
-                              std::size_t numSamples,
-                              double timeout,
-                              bool interleaved)
+                                           std::size_t numSamples,
+                                           double timeout,
+                                           bool interleaved)
 {
     std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanRead = 0;
     
     std::int32_t error = DAQmxBaseReadDigitalU32(getHandle(),
-                                            numSampsPerChan,
-                                            timeout,
-                                            (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
-                                            reinterpret_cast<nidaqmxbase::uint32_t *>(&firstSample),
-                                            numSamples,
-                                            &sampsPerChanRead,
-                                            NULL);
+                                                 numSampsPerChan,
+                                                 timeout,
+                                                 (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
+                                                 reinterpret_cast<nidaqmxbase::uint32_t *>(&firstSample),
+                                                 numSamples,
+                                                 &sampsPerChanRead,
+                                                 NULL);
     
     // Don't throw if we did a partial read (not sure this ever happens, but just to be safe ...)
     if ((error != DAQmxErrorSamplesNotYetAvailable) || (sampsPerChanRead == 0)) {

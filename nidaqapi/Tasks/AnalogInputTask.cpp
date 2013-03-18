@@ -21,20 +21,20 @@ Device::AnalogInputTask::AnalogInputTask(Device &device) :
 
 
 void Device::AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
-                                        double minVal,
-                                        double maxVal,
-                                        TerminalConfig termConfig)
+                                                double minVal,
+                                                double maxVal,
+                                                TerminalConfig termConfig)
 {
     std::string physicalChannel = getChannelName("ai", channelNumber);
     
     std::int32_t error = DAQmxBaseCreateAIVoltageChan(getHandle(),
-                                                 physicalChannel.c_str(),
-                                                 NULL,
-                                                 getTerminalConfigValue(termConfig),
-                                                 minVal,
-                                                 maxVal,
-                                                 DAQmx_Val_Volts,
-                                                 NULL);
+                                                      physicalChannel.c_str(),
+                                                      NULL,
+                                                      getTerminalConfigValue(termConfig),
+                                                      minVal,
+                                                      maxVal,
+                                                      DAQmx_Val_Volts,
+                                                      NULL);
     Error::throwIfFailed(error);
     
     Task::addChannel(physicalChannel);
@@ -49,21 +49,21 @@ std::size_t Device::AnalogInputTask::getNumSamplesAvailable() const {
 
 
 std::size_t Device::AnalogInputTask::read(double &firstSample,
-                             std::size_t numSamples,
-                             double timeout,
-                             bool interleaved)
+                                          std::size_t numSamples,
+                                          double timeout,
+                                          bool interleaved)
 {
     std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanRead = 0;
     
     std::int32_t error = DAQmxBaseReadAnalogF64(getHandle(),
-                                           numSampsPerChan,
-                                           timeout,
-                                           (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
-                                           &firstSample,
-                                           numSamples,
-                                           &sampsPerChanRead,
-                                           NULL);
+                                                numSampsPerChan,
+                                                timeout,
+                                                (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
+                                                &firstSample,
+                                                numSamples,
+                                                &sampsPerChanRead,
+                                                NULL);
     
     // Don't throw if we did a partial read (not sure this ever happens, but just to be safe ...)
     if ((error != DAQmxErrorSamplesNotYetAvailable) || (sampsPerChanRead == 0)) {

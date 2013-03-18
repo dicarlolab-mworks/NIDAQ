@@ -27,18 +27,18 @@ void Device::AnalogOutputTask::setAllowRegeneration(bool allowRegen) {
 
 
 void Device::AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
-                                         double minVal,
-                                         double maxVal)
+                                                 double minVal,
+                                                 double maxVal)
 {
     std::string physicalChannel = getChannelName("ao", channelNumber);
     
     std::int32_t error = DAQmxBaseCreateAOVoltageChan(getHandle(),
-                                                 physicalChannel.c_str(),
-                                                 NULL,
-                                                 minVal,
-                                                 maxVal,
-                                                 DAQmx_Val_Volts,
-                                                 NULL);
+                                                      physicalChannel.c_str(),
+                                                      NULL,
+                                                      minVal,
+                                                      maxVal,
+                                                      DAQmx_Val_Volts,
+                                                      NULL);
     Error::throwIfFailed(error);
     
     Task::addChannel(physicalChannel);
@@ -46,21 +46,21 @@ void Device::AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
 
 
 std::size_t Device::AnalogOutputTask::write(const double &firstSample,
-                               std::size_t numSamples,
-                               double timeout,
-                               bool interleaved)
+                                            std::size_t numSamples,
+                                            double timeout,
+                                            bool interleaved)
 {
     std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanWritten;
     
     std::int32_t error = DAQmxBaseWriteAnalogF64(getHandle(),
-                                            numSampsPerChan,
-                                            FALSE,
-                                            timeout,
-                                            (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
-                                            const_cast<double *>(&firstSample),
-                                            &sampsPerChanWritten,
-                                            NULL);
+                                                 numSampsPerChan,
+                                                 FALSE,
+                                                 timeout,
+                                                 (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
+                                                 const_cast<double *>(&firstSample),
+                                                 &sampsPerChanWritten,
+                                                 NULL);
     Error::throwIfFailed(error);
     
     return std::size_t(sampsPerChanWritten) * getNumChannels();

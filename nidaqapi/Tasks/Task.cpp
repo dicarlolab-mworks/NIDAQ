@@ -36,17 +36,17 @@ Device::Task::~Task() {
 
 
 void Device::Task::setSampleClockTiming(double samplingRate,
-                                std::uint64_t samplesPerChannelToAcquire,
-                                bool continous,
-                                const std::string &clockSourceTerminal,
-                                bool acquireOnRisingEdge)
+                                        std::uint64_t samplesPerChannelToAcquire,
+                                        bool continous,
+                                        const std::string &clockSourceTerminal,
+                                        bool acquireOnRisingEdge)
 {
     std::int32_t error = DAQmxBaseCfgSampClkTiming(getHandle(),
-                                              clockSourceTerminal.c_str(),
-                                              samplingRate,
-                                              (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
-                                              (continous ? DAQmx_Val_ContSamps : DAQmx_Val_FiniteSamps),
-                                              samplesPerChannelToAcquire);
+                                                   clockSourceTerminal.c_str(),
+                                                   samplingRate,
+                                                   (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
+                                                   (continous ? DAQmx_Val_ContSamps : DAQmx_Val_FiniteSamps),
+                                                   samplesPerChannelToAcquire);
     Error::throwIfFailed(error);
 }
 
