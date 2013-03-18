@@ -18,17 +18,19 @@ BEGIN_NAMESPACE_NIDAQ
 class Device::DigitalOutputTask : public Device::Task {
     
 public:
-    explicit DigitalOutputTask(Device &device);
+    DigitalOutputTask(Device &device, unsigned int portNumber);
     
-    void addChannel(unsigned int portNumber);
+    std::size_t write(std::uint32_t sample, double timeout) {
+        return write(sample, 1, timeout);
+    }
     
     template <typename UInt32ArrayType>
-    std::size_t write(const UInt32ArrayType &samples, double timeout, bool interleaved = false) {
-        return write(samples[0], samples.size(), timeout, interleaved);
+    std::size_t write(const UInt32ArrayType &samples, double timeout) {
+        return write(samples[0], samples.size(), timeout);
     }
     
 private:
-    std::size_t write(const std::uint32_t &firstSample, std::size_t numSamples, double timeout, bool interleaved);
+    std::size_t write(const std::uint32_t &firstSample, std::size_t numSamples, double timeout);
     
 };
 

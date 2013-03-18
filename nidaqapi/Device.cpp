@@ -27,7 +27,7 @@ Device::~Device() {
 
 
 std::uint32_t Device::getSerialNumber(const std::string &deviceName) {
-    nidaqmxbase::uint32_t serialNumber;
+    nidaqmxbase::uint32_t serialNumber = 0;
     Error::throwIfFailed(  DAQmxBaseGetDevSerialNum(deviceName.c_str(), &serialNumber)  );
     return serialNumber;
 }

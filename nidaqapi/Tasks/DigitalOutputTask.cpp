@@ -15,12 +15,9 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-Device::DigitalOutputTask::DigitalOutputTask(Device &device) :
+Device::DigitalOutputTask::DigitalOutputTask(Device &device, unsigned int portNumber) :
     Task(device)
-{ }
-
-
-void Device::DigitalOutputTask::addChannel(unsigned int portNumber) {
+{
     std::string lines = getChannelName("port", portNumber);
     
     std::int32_t error = DAQmxBaseCreateDOChan(getHandle(),
@@ -35,23 +32,21 @@ void Device::DigitalOutputTask::addChannel(unsigned int portNumber) {
 
 std::size_t Device::DigitalOutputTask::write(const std::uint32_t &firstSample,
                                              std::size_t numSamples,
-                                             double timeout,
-                                             bool interleaved)
+                                             double timeout)
 {
-    std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanWritten;
     
     std::int32_t error = DAQmxBaseWriteDigitalU32(getHandle(),
-                                                  numSampsPerChan,
+                                                  numSamples,
                                                   FALSE,
                                                   timeout,
-                                                  (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
+                                                  DAQmx_Val_GroupByChannel,
                                                   reinterpret_cast<nidaqmxbase::uint32_t *>(const_cast<std::uint32_t *>(&firstSample)),
                                                   &sampsPerChanWritten,
                                                   NULL);
     Error::throwIfFailed(error);
     
-    return std::size_t(sampsPerChanWritten) * getNumChannels();
+    return std::size_t(sampsPerChanWritten);
 }
 
 
