@@ -98,22 +98,22 @@ private:
     MWTime analogInputDataInterval;
     const bool assumeMultiplexedADC;
     std::vector< boost::shared_ptr<NIDAQAnalogInputVoltageChannel> > analogInputChannels;
-    size_t analogInputSampleBufferSize;
+    std::size_t analogInputSampleBufferSize;
     MWTime analogInputStartTime;
-    boost::uint64_t totalNumAnalogInputSamplesAcquired;
+    std::uint64_t totalNumAnalogInputSamplesAcquired;
     bool analogInputTaskRunning;
     
     MWTime analogOutputDataInterval;
     std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> > analogOutputChannels;
-    size_t analogOutputSampleBufferSize;
+    std::size_t analogOutputSampleBufferSize;
     bool analogOutputTaskRunning;
     
     std::vector< boost::shared_ptr<NIDAQDigitalInputChannel> > digitalInputChannels;
-    size_t digitalInputSampleBufferSize;
+    std::size_t digitalInputSampleBufferSize;
     bool digitalInputTaskRunning;
     
     std::vector< boost::shared_ptr<NIDAQDigitalOutputChannel> > digitalOutputChannels;
-    size_t digitalOutputSampleBufferSize;
+    std::size_t digitalOutputSampleBufferSize;
     bool digitalOutputTaskRunning;
     
     

@@ -27,7 +27,7 @@ void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
 {
     std::string physicalChannel = getChannelName("ai", channelNumber);
     
-    int32_t error = DAQmxBaseCreateAIVoltageChan(getHandle(),
+    std::int32_t error = DAQmxBaseCreateAIVoltageChan(getHandle(),
                                                  physicalChannel.c_str(),
                                                  NULL,
                                                  getTerminalConfigValue(termConfig),
@@ -41,22 +41,22 @@ void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
-size_t AnalogInputTask::getNumSamplesAvailable() const {
+std::size_t AnalogInputTask::getNumSamplesAvailable() const {
     nidaqmxbase::uint32_t sampsPerChanAvail;
     Error::throwIfFailed(  DAQmxBaseGetReadAttribute(getHandle(), DAQmx_Read_AvailSampPerChan, &sampsPerChanAvail)  );
-    return size_t(sampsPerChanAvail) * getNumChannels();
+    return std::size_t(sampsPerChanAvail) * getNumChannels();
 }
 
 
-size_t AnalogInputTask::read(double &firstSample,
-                             size_t numSamples,
+std::size_t AnalogInputTask::read(double &firstSample,
+                             std::size_t numSamples,
                              double timeout,
                              bool interleaved)
 {
-    int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
+    std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanRead = 0;
     
-    int32_t error = DAQmxBaseReadAnalogF64(getHandle(),
+    std::int32_t error = DAQmxBaseReadAnalogF64(getHandle(),
                                            numSampsPerChan,
                                            timeout,
                                            (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
@@ -70,11 +70,11 @@ size_t AnalogInputTask::read(double &firstSample,
         Error::throwIfFailed(error);
     }
     
-    return size_t(sampsPerChanRead) * getNumChannels();
+    return std::size_t(sampsPerChanRead) * getNumChannels();
 }
 
 
-int32_t AnalogInputTask::getTerminalConfigValue(TerminalConfig termConfig) {
+std::int32_t AnalogInputTask::getTerminalConfigValue(TerminalConfig termConfig) {
     switch (termConfig) {
         case TerminalConfigRSE:
             return DAQmx_Val_RSE;

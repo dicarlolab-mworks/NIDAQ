@@ -9,15 +9,15 @@
 #ifndef __NIDAQ__MachClock__
 #define __NIDAQ__MachClock__
 
-#include <mach/mach_time.h>
+#include <cstdint>
 
-#include <boost/cstdint.hpp>
+#include <mach/mach_time.h>
 
 
 class MachClock {
     
 public:
-    typedef boost::uint64_t time_type;
+    typedef std::uint64_t time_type;
     
     static time_type absoluteTime() {
         return time_type(mach_absolute_time());

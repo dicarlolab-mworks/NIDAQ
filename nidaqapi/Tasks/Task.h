@@ -26,7 +26,7 @@ public:
     ~Task();
     
     void setSampleClockTiming(double samplingRate,
-                              uint64_t samplesPerChannelToAcquire,
+                              std::uint64_t samplesPerChannelToAcquire,
                               bool continuous = true,
                               const std::string &clockSourceTerminal = "",
                               bool acquireOnRisingEdge = true);
@@ -54,11 +54,11 @@ protected:
     std::string getChannelName(const std::string &type, unsigned int number) const;
     void addChannel(const std::string &name);
     
-    size_t getNumChannels() const {
+    std::size_t getNumChannels() const {
         return channelNames.size();
     }
     
-    int32_t getNumSamplesPerChannel(size_t numSamples) const;
+    std::int32_t getNumSamplesPerChannel(std::size_t numSamples) const;
     
 private:
     static std::set<std::string> allTaskNames;

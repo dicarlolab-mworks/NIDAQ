@@ -189,7 +189,7 @@ void NIDAQPluginHelper::readAnalogInputSamples() {
         throw NIDAQPluginHelperError("Analog input task is not running");
     }
     
-    size_t numSamplesRead = analogInputTask->read(m.analogSamples.samples,
+    std::size_t numSamplesRead = analogInputTask->read(m.analogSamples.samples,
                                                   m.analogSamples.timeout,
                                                   true);  // Group samples by scan number
     m.analogSamples.samples.numSamples = numSamplesRead;
@@ -235,7 +235,7 @@ void NIDAQPluginHelper::startAnalogOutputTask() {
 void NIDAQPluginHelper::writeAnalogOutputSamples() {
     requireAnalogOutputTask();
     
-    size_t numSamplesWritten = analogOutputTask->write(m.analogSamples.samples,
+    std::size_t numSamplesWritten = analogOutputTask->write(m.analogSamples.samples,
                                                        m.analogSamples.timeout,
                                                        true);  // Group samples by scan number
     
@@ -276,7 +276,7 @@ void NIDAQPluginHelper::readDigitalInputSamples() {
         throw NIDAQPluginHelperError("Digital input task is not running");
     }
     
-    size_t numSamplesRead = digitalInputTask->read(m.digitalSamples.samples,
+    std::size_t numSamplesRead = digitalInputTask->read(m.digitalSamples.samples,
                                                    m.digitalSamples.timeout,
                                                    true);  // Group samples by scan number
     m.digitalSamples.samples.numSamples = numSamplesRead;
@@ -313,7 +313,7 @@ void NIDAQPluginHelper::startDigitalOutputTask() {
 void NIDAQPluginHelper::writeDigitalOutputSamples() {
     requireDigitalOutputTask();
     
-    size_t numSamplesWritten = digitalOutputTask->write(m.digitalSamples.samples,
+    std::size_t numSamplesWritten = digitalOutputTask->write(m.digitalSamples.samples,
                                                         m.digitalSamples.timeout,
                                                         true);  // Group samples by scan number
     

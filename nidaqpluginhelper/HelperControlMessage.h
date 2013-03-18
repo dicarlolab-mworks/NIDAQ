@@ -14,10 +14,8 @@
 #include <string>
 
 #include <boost/array.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <boost/format.hpp>
-
-using std::size_t;
 
 
 struct HelperControlMessage {
@@ -26,20 +24,20 @@ struct HelperControlMessage {
     // Type definitions (portable between x86_64 and i386)
     //
     
-    typedef boost::int64_t signed_int;
-    typedef boost::uint64_t unsigned_int;
+    typedef std::int64_t signed_int;
+    typedef std::uint64_t unsigned_int;
     
     template <typename SampleType>
     struct samples_buffer {
-        size_t size() const {
-            return size_t(numSamples);
+        std::size_t size() const {
+            return std::size_t(numSamples);
         }
         
-        const SampleType& operator[](size_t i) const {
+        const SampleType& operator[](std::size_t i) const {
             return *(&firstSample + i);
         }
         
-        SampleType& operator[](size_t i) {
+        SampleType& operator[](std::size_t i) {
             return const_cast<SampleType &>(static_cast<const samples_buffer &>(*this)[i]);
         }
         
@@ -49,7 +47,7 @@ struct HelperControlMessage {
         SampleType firstSample;
     };
     
-    template <size_t bufferSize>
+    template <std::size_t bufferSize>
     class string_buffer {
     public:
         string_buffer& operator=(const char *str) {
@@ -163,7 +161,7 @@ struct HelperControlMessage {
         
         struct {
             double timeout;
-            samples_buffer<boost::uint32_t> samples;
+            samples_buffer<std::uint32_t> samples;
         } digitalSamples;
         
         //
@@ -190,9 +188,9 @@ struct HelperControlMessage {
     // Utility methods
     //
     
-    static size_t sizeWithSamples(size_t numAnalogSamples, size_t numDigitalSamples) {
+    static std::size_t sizeWithSamples(std::size_t numAnalogSamples, std::size_t numDigitalSamples) {
         HelperControlMessage m;
-        size_t size = sizeof(m);
+        std::size_t size = sizeof(m);
         char * const startAddress = reinterpret_cast<char *>(&m);
         
         size = std::max(size, sizeWithBuffer(startAddress, m.analogSamples.samples, numAnalogSamples));
@@ -203,12 +201,12 @@ struct HelperControlMessage {
     
 private:
     template <typename SampleType>
-    static size_t sizeWithBuffer(char * const startAddress,
+    static std::size_t sizeWithBuffer(char * const startAddress,
                                  samples_buffer<SampleType> &samples,
-                                 size_t numSamples)
+                                 std::size_t numSamples)
     {
         char * const endAddress = reinterpret_cast<char *>(&(samples[0]) + numSamples);
-        return size_t(endAddress - startAddress);
+        return std::size_t(endAddress - startAddress);
     }
     
 } __attribute__((aligned (8)));;

@@ -28,7 +28,7 @@ public:
         return name;
     }
     
-    uint32_t getSerialNumber() const;
+    std::uint32_t getSerialNumber() const;
     void reset() const;
     
 private:

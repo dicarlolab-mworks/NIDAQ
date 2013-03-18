@@ -23,7 +23,7 @@ DigitalInputTask::DigitalInputTask(const Device &device) :
 void DigitalInputTask::addChannel(unsigned int portNumber) {
     std::string lines = getChannelName("port", portNumber);
     
-    int32_t error = DAQmxBaseCreateDIChan(getHandle(),
+    std::int32_t error = DAQmxBaseCreateDIChan(getHandle(),
                                           lines.c_str(),
                                           NULL,
                                           DAQmx_Val_ChanForAllLines);
@@ -33,15 +33,15 @@ void DigitalInputTask::addChannel(unsigned int portNumber) {
 }
 
 
-size_t DigitalInputTask::read(uint32_t &firstSample,
-                              size_t numSamples,
+std::size_t DigitalInputTask::read(std::uint32_t &firstSample,
+                              std::size_t numSamples,
                               double timeout,
                               bool interleaved)
 {
-    int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
+    std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanRead = 0;
     
-    int32_t error = DAQmxBaseReadDigitalU32(getHandle(),
+    std::int32_t error = DAQmxBaseReadDigitalU32(getHandle(),
                                             numSampsPerChan,
                                             timeout,
                                             (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
@@ -55,7 +55,7 @@ size_t DigitalInputTask::read(uint32_t &firstSample,
         Error::throwIfFailed(error);
     }
     
-    return size_t(sampsPerChanRead) * getNumChannels();
+    return std::size_t(sampsPerChanRead) * getNumChannels();
 }
 
 

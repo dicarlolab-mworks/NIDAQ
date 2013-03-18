@@ -43,7 +43,7 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
 
 
 static std::string generateUniqueID() {
-    boost::uint64_t uniqueID;
+    std::uint64_t uniqueID;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     int status = RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID));
@@ -117,7 +117,7 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
         
         // This is the per-channel buffer size.  We'll multiply by the number of channels in initialize().
         analogOutputSampleBufferSize = std::max(analogOutputSampleBufferSize,
-                                                size_t(period / analogOutputDataInterval));
+                                                std::size_t(period / analogOutputDataInterval));
         
         analogOutputChannels.push_back(aoChannel);
         return;
@@ -134,7 +134,7 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
         boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
         boost::shared_ptr<DigitalOutputLineStateNotification> notification(new DigitalOutputLineStateNotification(sharedThis));
         
-        for (size_t lineNumber = 0; lineNumber < NIDAQDigitalOutputChannel::maxNumLines; lineNumber++) {
+        for (std::size_t lineNumber = 0; lineNumber < NIDAQDigitalOutputChannel::maxNumLines; lineNumber++) {
             doChannel->addNewLineStateNotification(lineNumber, notification);
         }
         
@@ -155,7 +155,7 @@ bool NIDAQDevice::initialize() {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device must have at least one channel");
     }
     
-    analogInputSampleBufferSize = (size_t(updateInterval / analogInputDataInterval) *
+    analogInputSampleBufferSize = (std::size_t(updateInterval / analogInputDataInterval) *
                                    analogInputChannels.size());
     analogOutputSampleBufferSize *= analogOutputChannels.size();
     digitalInputSampleBufferSize = digitalInputChannels.size();
@@ -473,8 +473,8 @@ void NIDAQDevice::readAnalogInput() {
         return;
     }
     
-    const size_t numSamplesRead = controlMessage->analogSamples.samples.numSamples;
-    const size_t numChannels = analogInputChannels.size();
+    const std::size_t numSamplesRead = controlMessage->analogSamples.samples.numSamples;
+    const std::size_t numChannels = analogInputChannels.size();
     const MWTime firstSampleTime = analogInputStartTime + (totalNumAnalogInputSamplesAcquired / numChannels *
                                                            analogInputDataInterval);
     
@@ -488,7 +488,7 @@ void NIDAQDevice::readAnalogInput() {
                  numSamplesRead);
     }
     
-    for (size_t i = 0; i < numSamplesRead; i++) {
+    for (std::size_t i = 0; i < numSamplesRead; i++) {
         double sample = controlMessage->analogSamples.samples[i];
         MWTime sampleTime = firstSampleTime;
         
@@ -517,13 +517,13 @@ void NIDAQDevice::readAnalogInput() {
 
 
 bool NIDAQDevice::writeAnalogOutput() {
-    const size_t numChannels = analogOutputChannels.size();
+    const std::size_t numChannels = analogOutputChannels.size();
     
     controlMessage->code = HelperControlMessage::REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES;
     controlMessage->analogSamples.timeout = 10.0;
     controlMessage->analogSamples.samples.numSamples = analogOutputSampleBufferSize;
     
-    for (size_t i = 0; i < analogOutputSampleBufferSize; i++) {
+    for (std::size_t i = 0; i < analogOutputSampleBufferSize; i++) {
         double &sample = controlMessage->analogSamples.samples[i];
         MWTime sampleTime = analogOutputDataInterval * (i / numChannels);
         sample = analogOutputChannels[i % numChannels]->getSampleForTime(sampleTime);
@@ -533,7 +533,7 @@ bool NIDAQDevice::writeAnalogOutput() {
         return false;
     }
     
-    const size_t numSamplesWritten = controlMessage->analogSamples.samples.numSamples;
+    const std::size_t numSamplesWritten = controlMessage->analogSamples.samples.numSamples;
     
     if (numSamplesWritten != analogOutputSampleBufferSize) {
         merror(M_IODEVICE_MESSAGE_DOMAIN,
@@ -556,8 +556,8 @@ void NIDAQDevice::readDigitalInput() {
         return;
     }
     
-    const size_t numSamplesRead = controlMessage->digitalSamples.samples.numSamples;
-    const size_t numChannels = digitalInputChannels.size();
+    const std::size_t numSamplesRead = controlMessage->digitalSamples.samples.numSamples;
+    const std::size_t numChannels = digitalInputChannels.size();
     const MWTime sampleTime = Clock::instance()->getCurrentTimeUS();
     
     if (numSamplesRead != digitalInputSampleBufferSize) {
@@ -567,11 +567,11 @@ void NIDAQDevice::readDigitalInput() {
                  numSamplesRead);
     }
     
-    size_t channelNumber = 0;
-    size_t channelLineNumber = 0;
+    std::size_t channelNumber = 0;
+    std::size_t channelLineNumber = 0;
     
-    for (size_t sampleNumber = 0; sampleNumber < numSamplesRead; sampleNumber++) {
-        for (size_t sampleBitNumber = 0; sampleBitNumber < NIDAQDigitalInputChannel::maxNumLines; sampleBitNumber++) {
+    for (std::size_t sampleNumber = 0; sampleNumber < numSamplesRead; sampleNumber++) {
+        for (std::size_t sampleBitNumber = 0; sampleBitNumber < NIDAQDigitalInputChannel::maxNumLines; sampleBitNumber++) {
             bool lineState = bool(controlMessage->digitalSamples.samples[sampleNumber] & (1u << sampleBitNumber));
             
             digitalInputChannels[channelNumber]->postLineState(channelLineNumber, lineState, sampleTime);
@@ -590,26 +590,26 @@ void NIDAQDevice::readDigitalInput() {
 
 
 bool NIDAQDevice::writeDigitalOutput() {
-    const size_t numChannels = digitalOutputChannels.size();
+    const std::size_t numChannels = digitalOutputChannels.size();
     
     controlMessage->code = HelperControlMessage::REQUEST_WRITE_DIGITAL_OUTPUT_SAMPLES;
     controlMessage->digitalSamples.timeout = double(updateInterval) / 1e6;  // us to s
     controlMessage->digitalSamples.samples.numSamples = digitalOutputSampleBufferSize;
     
-    size_t channelNumber = 0;
-    size_t channelLineNumber = 0;
+    std::size_t channelNumber = 0;
+    std::size_t channelLineNumber = 0;
     
-    for (size_t sampleNumber = 0; sampleNumber < digitalOutputSampleBufferSize; sampleNumber++) {
-        boost::uint32_t &sample = controlMessage->digitalSamples.samples[sampleNumber];
+    for (std::size_t sampleNumber = 0; sampleNumber < digitalOutputSampleBufferSize; sampleNumber++) {
+        std::uint32_t &sample = controlMessage->digitalSamples.samples[sampleNumber];
         sample = 0;
         
-        for (size_t sampleBitNumber = 0; sampleBitNumber < NIDAQDigitalOutputChannel::maxNumLines; sampleBitNumber++) {
+        for (std::size_t sampleBitNumber = 0; sampleBitNumber < NIDAQDigitalOutputChannel::maxNumLines; sampleBitNumber++) {
             if (channelNumber >= numChannels) {
                 break;
             }
             
             bool lineState = digitalOutputChannels[channelNumber]->getLineState(channelLineNumber);
-            sample |= (boost::uint32_t(lineState) << sampleBitNumber);
+            sample |= (std::uint32_t(lineState) << sampleBitNumber);
             channelLineNumber++;
             
             if (channelLineNumber >= digitalOutputChannels[channelNumber]->getNumLinesInPort()) {
@@ -623,7 +623,7 @@ bool NIDAQDevice::writeDigitalOutput() {
         return false;
     }
     
-    const size_t numSamplesWritten = controlMessage->digitalSamples.samples.numSamples;
+    const std::size_t numSamplesWritten = controlMessage->digitalSamples.samples.numSamples;
     
     if (numSamplesWritten != digitalOutputSampleBufferSize) {
         mwarning(M_IODEVICE_MESSAGE_DOMAIN,

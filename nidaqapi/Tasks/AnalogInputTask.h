@@ -32,17 +32,17 @@ public:
                            double maxVal,
                            TerminalConfig termConfig = TerminalConfigDefault);
     
-    size_t getNumSamplesAvailable() const;
+    std::size_t getNumSamplesAvailable() const;
     
     template <typename DoubleArrayType>
-    size_t read(DoubleArrayType &samples, double timeout, bool interleaved = false) {
+    std::size_t read(DoubleArrayType &samples, double timeout, bool interleaved = false) {
         return read(samples[0], samples.size(), timeout, interleaved);
     }
     
 private:
-    static int32_t getTerminalConfigValue(TerminalConfig termConfig);
+    static std::int32_t getTerminalConfigValue(TerminalConfig termConfig);
     
-    size_t read(double &firstSample, size_t numSamples, double timeout, bool interleaved);
+    std::size_t read(double &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     
 };
 

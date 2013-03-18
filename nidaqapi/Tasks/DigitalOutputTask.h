@@ -23,12 +23,12 @@ public:
     void addChannel(unsigned int portNumber);
     
     template <typename UInt32ArrayType>
-    size_t write(const UInt32ArrayType &samples, double timeout, bool interleaved = false) {
+    std::size_t write(const UInt32ArrayType &samples, double timeout, bool interleaved = false) {
         return write(samples[0], samples.size(), timeout, interleaved);
     }
     
 private:
-    size_t write(const uint32_t &firstSample, size_t numSamples, double timeout, bool interleaved);
+    std::size_t write(const std::uint32_t &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     
 };
 

@@ -15,7 +15,7 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-uint32_t Device::getSerialNumber() const {
+std::uint32_t Device::getSerialNumber() const {
     nidaqmxbase::uint32_t serialNumber;
     Error::throwIfFailed(  DAQmxBaseGetDevSerialNum(name.c_str(), &serialNumber)  );
     return serialNumber;

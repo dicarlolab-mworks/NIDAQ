@@ -21,7 +21,7 @@ AnalogOutputTask::AnalogOutputTask(const Device &device) :
 
 
 void AnalogOutputTask::setAllowRegeneration(bool allowRegen) {
-    int32_t value = (allowRegen ? DAQmx_Val_AllowRegen : DAQmx_Val_DoNotAllowRegen);
+    std::int32_t value = (allowRegen ? DAQmx_Val_AllowRegen : DAQmx_Val_DoNotAllowRegen);
     Error::throwIfFailed(  DAQmxBaseSetWriteAttribute(getHandle(), DAQmx_Write_RegenMode, value)  );
 }
 
@@ -32,7 +32,7 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
 {
     std::string physicalChannel = getChannelName("ao", channelNumber);
     
-    int32_t error = DAQmxBaseCreateAOVoltageChan(getHandle(),
+    std::int32_t error = DAQmxBaseCreateAOVoltageChan(getHandle(),
                                                  physicalChannel.c_str(),
                                                  NULL,
                                                  minVal,
@@ -45,15 +45,15 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
-size_t AnalogOutputTask::write(const double &firstSample,
-                               size_t numSamples,
+std::size_t AnalogOutputTask::write(const double &firstSample,
+                               std::size_t numSamples,
                                double timeout,
                                bool interleaved)
 {
-    int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
+    std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanWritten;
     
-    int32_t error = DAQmxBaseWriteAnalogF64(getHandle(),
+    std::int32_t error = DAQmxBaseWriteAnalogF64(getHandle(),
                                             numSampsPerChan,
                                             FALSE,
                                             timeout,
@@ -63,7 +63,7 @@ size_t AnalogOutputTask::write(const double &firstSample,
                                             NULL);
     Error::throwIfFailed(error);
     
-    return size_t(sampsPerChanWritten) * getNumChannels();
+    return std::size_t(sampsPerChanWritten) * getNumChannels();
 }
 
 

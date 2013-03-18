@@ -49,12 +49,12 @@ Task::~Task() {
 
 
 void Task::setSampleClockTiming(double samplingRate,
-                                uint64_t samplesPerChannelToAcquire,
+                                std::uint64_t samplesPerChannelToAcquire,
                                 bool continous,
                                 const std::string &clockSourceTerminal,
                                 bool acquireOnRisingEdge)
 {
-    int32_t error = DAQmxBaseCfgSampClkTiming(getHandle(),
+    std::int32_t error = DAQmxBaseCfgSampClkTiming(getHandle(),
                                               clockSourceTerminal.c_str(),
                                               samplingRate,
                                               (acquireOnRisingEdge ? DAQmx_Val_Rising : DAQmx_Val_Falling),
@@ -93,8 +93,8 @@ void Task::addChannel(const std::string &name) {
 }
 
 
-int32_t Task::getNumSamplesPerChannel(size_t numSamples) const {
-    size_t numChannels = getNumChannels();
+std::int32_t Task::getNumSamplesPerChannel(std::size_t numSamples) const {
+    std::size_t numChannels = getNumChannels();
     if ((numChannels == 0) || (numSamples % numChannels != 0))
     {
         throw std::invalid_argument("Invalid number of samples");

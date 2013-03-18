@@ -23,7 +23,7 @@ DigitalOutputTask::DigitalOutputTask(const Device &device) :
 void DigitalOutputTask::addChannel(unsigned int portNumber) {
     std::string lines = getChannelName("port", portNumber);
     
-    int32_t error = DAQmxBaseCreateDOChan(getHandle(),
+    std::int32_t error = DAQmxBaseCreateDOChan(getHandle(),
                                           lines.c_str(),
                                           NULL,
                                           DAQmx_Val_ChanForAllLines);
@@ -33,25 +33,25 @@ void DigitalOutputTask::addChannel(unsigned int portNumber) {
 }
 
 
-size_t DigitalOutputTask::write(const uint32_t &firstSample,
-                                size_t numSamples,
+std::size_t DigitalOutputTask::write(const std::uint32_t &firstSample,
+                                std::size_t numSamples,
                                 double timeout,
                                 bool interleaved)
 {
-    int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
+    std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanWritten;
     
-    int32_t error = DAQmxBaseWriteDigitalU32(getHandle(),
+    std::int32_t error = DAQmxBaseWriteDigitalU32(getHandle(),
                                              numSampsPerChan,
                                              FALSE,
                                              timeout,
                                              (interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel),
-                                             reinterpret_cast<nidaqmxbase::uint32_t *>(const_cast<uint32_t *>(&firstSample)),
+                                             reinterpret_cast<nidaqmxbase::uint32_t *>(const_cast<std::uint32_t *>(&firstSample)),
                                              &sampsPerChanWritten,
                                              NULL);
     Error::throwIfFailed(error);
     
-    return size_t(sampsPerChanWritten) * getNumChannels();
+    return std::size_t(sampsPerChanWritten) * getNumChannels();
 }
 
 

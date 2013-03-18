@@ -21,17 +21,17 @@ BEGIN_NAMESPACE_NIDAQ
 class Error : public std::runtime_error {
     
 public:
-    static bool failed(int32_t errorCode) {
+    static bool failed(std::int32_t errorCode) {
         return (errorCode != 0);
     }
     
-    static void throwIfFailed(int32_t errorCode) {
+    static void throwIfFailed(std::int32_t errorCode) {
         if (failed(errorCode)) {
             throw Error(getExtendedErrorInfo(), errorCode);
         }
     }
     
-    static void logIfFailed(int32_t errorCode) {
+    static void logIfFailed(std::int32_t errorCode) {
         if (failed(errorCode)) {
             logErrorMessage(getExtendedErrorInfo(), errorCode);
         }
@@ -39,23 +39,23 @@ public:
     
     ~Error() throw() /*override*/ { }
     
-    Error(const std::string &message, int32_t code = 0);
+    Error(const std::string &message, std::int32_t code = 0);
     
     const std::string& getMessage() const {
         return message;
     }
     
-    int32_t getCode() const {
+    std::int32_t getCode() const {
         return code;
     }
     
 private:
     static std::string getExtendedErrorInfo();
-    static std::string formatErrorMessage(const std::string &message, int32_t code);
-    static void logErrorMessage(const std::string &message, int32_t code);
+    static std::string formatErrorMessage(const std::string &message, std::int32_t code);
+    static void logErrorMessage(const std::string &message, std::int32_t code);
     
     const std::string message;
-    const int32_t code;
+    const std::int32_t code;
     
 };
 

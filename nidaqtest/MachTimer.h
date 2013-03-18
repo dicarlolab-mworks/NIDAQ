@@ -52,7 +52,7 @@ private:
         return value / 1e6;
     }
     
-    double convertAbsoluteToNano(uint64_t value) const {
+    double convertAbsoluteToNano(std::uint64_t value) const {
         return double(value) * absoluteToNano;
     }
     

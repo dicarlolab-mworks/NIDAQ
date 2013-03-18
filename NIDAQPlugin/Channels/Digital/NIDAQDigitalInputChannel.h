@@ -9,7 +9,7 @@
 #ifndef __NIDAQ__NIDAQDigitalInputChannel__
 #define __NIDAQ__NIDAQDigitalInputChannel__
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include "NIDAQDigitalChannel.h"
 

@@ -32,9 +32,9 @@ static void generateSineWaves(const nidaq::Device &device) {
     std::cout << "Creating second analog output channel" << std::endl;
     task.addVoltageChannel(1, -1.0, 1.0);
     
-    const size_t samplesPerChan = 512;
+    const std::size_t samplesPerChan = 512;
     std::vector<double> data(2*samplesPerChan, 0.0);
-    for (size_t i = 0; i < samplesPerChan; i++) {
+    for (std::size_t i = 0; i < samplesPerChan; i++) {
         data[i] = 9.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
         data[i+samplesPerChan] = 0.95 * std::sin(double(i) * 2.0 * M_PI / double(samplesPerChan));
     }
@@ -43,7 +43,7 @@ static void generateSineWaves(const nidaq::Device &device) {
     task.setSampleClockTiming(10000.0, samplesPerChan);
     
     std::cout << "Writing samples" << std::endl;
-    size_t samplesWritten = task.write(data, 10.0);
+    std::size_t samplesWritten = task.write(data, 10.0);
     std::cout << "Wrote " << samplesWritten << " of " << data.size() << " samples" << std::endl;
     
     task.start();
@@ -67,7 +67,7 @@ static void acquireNScans(const nidaq::Device &device) {
     task.start();
     
     std::cout << "Reading samples" << std::endl;
-    size_t samplesRead = task.read(data, 10.0);
+    std::size_t samplesRead = task.read(data, 10.0);
     std::cout << "Read " << samplesRead << " of " << data.size() << " samples" << std::endl;
     
     task.stop();
@@ -102,16 +102,16 @@ static void analogRepeater(const nidaq::Device &device) {
     
     aiTask.start();
     
-    const size_t numIterations = size_t(sampleRate * runTime) / samples.size();
-    for (size_t i = 0; i < numIterations; i++) {
+    const std::size_t numIterations = std::size_t(sampleRate * runTime) / samples.size();
+    for (std::size_t i = 0; i < numIterations; i++) {
         // Read input
-        size_t samplesRead = aiTask.read(samples, timeout);
+        std::size_t samplesRead = aiTask.read(samples, timeout);
         if (samplesRead != samples.size()) {
             std::cout << "Read only " << samplesRead << " of " << samples.size() << " samples!" << std::endl;
         }
         
         // Write output
-        size_t samplesWritten = aoTask.write(samples, timeout);
+        std::size_t samplesWritten = aoTask.write(samples, timeout);
         if (samplesWritten != samples.size()) {
             std::cout << "Wrote only " << samplesWritten << " of " << samples.size() << " samples!" << std::endl;
         }
@@ -138,12 +138,12 @@ static void testTiming(const nidaq::Device &device) {
     aoTask.addVoltageChannel(0, minVal, maxVal);
     
     boost::array<double, 100> aoSamples;
-    for (size_t i = 0; i < aoSamples.size(); i++) {
+    for (std::size_t i = 0; i < aoSamples.size(); i++) {
         aoSamples[i] = 0.995 * maxVal * std::sin(double(i) * 2.0 * M_PI / double(aoSamples.size()));
     }
     
     aoTask.setSampleClockTiming(samplingRate, aoSamples.size());
-    size_t samplesWritten = aoTask.write(aoSamples, timeout);
+    std::size_t samplesWritten = aoTask.write(aoSamples, timeout);
     if (samplesWritten != aoSamples.size()) {
         std::cout << "Wrote only " << samplesWritten << " of " << aoSamples.size() << " samples!" << std::endl;
         std::cout << "Aborting test" << std::endl;
@@ -165,9 +165,9 @@ static void testTiming(const nidaq::Device &device) {
     MachTimer timer;
     aiTask.start();
     double startElapsed = timer.intervalMilli();
-    size_t samplesRead = aiTask.read(aiSamples, timeout);
+    std::size_t samplesRead = aiTask.read(aiSamples, timeout);
     double readElapsed = timer.intervalMilli();
-    size_t samplesAvailable = aiTask.getNumSamplesAvailable();
+    std::size_t samplesAvailable = aiTask.getNumSamplesAvailable();
     
     aiTask.stop();
     aoTask.stop();
@@ -180,7 +180,7 @@ static void testTiming(const nidaq::Device &device) {
         return;
     }
     
-    for (size_t i = 0; i < 100; i++) {
+    for (std::size_t i = 0; i < 100; i++) {
         std::cout << "aiSamples[" << i << "] = " << aiSamples[i] << std::endl;
     }
     
@@ -195,7 +195,7 @@ static void testTiming(const nidaq::Device &device) {
 }
 
 
-static inline void assertNumSamples(size_t expected, size_t actual) {
+static inline void assertNumSamples(std::size_t expected, std::size_t actual) {
     if (actual != expected) {
         throw std::runtime_error("Wrong number of samples read or written");
     }
@@ -209,7 +209,7 @@ static void simpleDigitalIO(const nidaq::Device &device) {
     nidaq::DigitalInputTask diTask(device);
     diTask.addChannel(1);
     
-    boost::array<uint32_t, 1> outSamples, inSamples;
+    boost::array<std::uint32_t, 1> outSamples, inSamples;
     const double timeout = 10.0;
     
     doTask.start();
@@ -242,18 +242,18 @@ static void testDigitalIOLatency(const nidaq::Device &device) {
     nidaq::DigitalInputTask diTask(device);
     diTask.addChannel(1);
     
-    boost::array<uint32_t, 1> outSamples, inSamples;
+    boost::array<std::uint32_t, 1> outSamples, inSamples;
     const double timeout = 10.0;
     
     doTask.start();
     diTask.start();
     
-    const size_t numRepeats = 100;
+    const std::size_t numRepeats = 100;
     boost::array<double, numRepeats> times;
     outSamples[0] = 0;
     MachTimer timer;
     
-    for (size_t i = 0; i < numRepeats; i++) {
+    for (std::size_t i = 0; i < numRepeats; i++) {
         assertNumSamples(1, doTask.write(outSamples, timeout));
         assertNumSamples(1, diTask.read(inSamples, timeout));
         times[i] = timer.intervalMilli();
@@ -268,7 +268,7 @@ static void testDigitalIOLatency(const nidaq::Device &device) {
     diTask.stop();
     doTask.stop();
     
-    for (size_t i = 0; i < numRepeats; i++) {
+    for (std::size_t i = 0; i < numRepeats; i++) {
         std::cout << "Elapsed time: " << times[i] << " ms" << std::endl;
     }
 }
@@ -281,7 +281,7 @@ int main(int argc, const char * argv[])
         nidaq::Device device("Dev1");
         
         std::cout << "Fetching serial number of device " << device.getName() << std::endl;
-        uint32_t serialNumber = device.getSerialNumber();
+        std::uint32_t serialNumber = device.getSerialNumber();
         std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
         
         //generateSineWaves(device);

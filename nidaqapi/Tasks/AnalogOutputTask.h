@@ -25,12 +25,12 @@ public:
     void addVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
     
     template <typename DoubleArrayType>
-    size_t write(const DoubleArrayType &samples, double timeout, bool interleaved = false) {
+    std::size_t write(const DoubleArrayType &samples, double timeout, bool interleaved = false) {
         return write(samples[0], samples.size(), timeout, interleaved);
     }
     
 private:
-    size_t write(const double &firstSample, size_t numSamples, double timeout, bool interleaved);
+    std::size_t write(const double &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     
 };
 
