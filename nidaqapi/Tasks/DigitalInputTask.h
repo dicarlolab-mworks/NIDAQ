@@ -18,7 +18,7 @@ BEGIN_NAMESPACE_NIDAQ
 class Device::DigitalInputTask : public Device::Task {
     
 public:
-    explicit DigitalInputTask(const Device &device);
+    explicit DigitalInputTask(Device &device);
     
     void addChannel(unsigned int portNumber);
     

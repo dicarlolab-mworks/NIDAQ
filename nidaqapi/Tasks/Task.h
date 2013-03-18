@@ -9,7 +9,6 @@
 #ifndef __NIDAQ__Task__
 #define __NIDAQ__Task__
 
-#include <set>
 #include <string>
 
 #include <boost/noncopyable.hpp>
@@ -41,33 +40,25 @@ public:
 protected:
     typedef unsigned long * TaskHandle;
     
-    Task(const Device &device, const std::string &taskType);
+    explicit Task(Device &device);
     
     TaskHandle getHandle() const {
         return handle;
-    }
-    
-    const std::string& getDeviceName() const {
-        return deviceName;
     }
     
     std::string getChannelName(const std::string &type, unsigned int number) const;
     void addChannel(const std::string &name);
     
     std::size_t getNumChannels() const {
-        return channelNames.size();
+        return numChannels;
     }
     
     std::int32_t getNumSamplesPerChannel(std::size_t numSamples) const;
     
 private:
-    static std::set<std::string> allTaskNames;
-    static std::set<std::string> allChannelNames;
-    
+    Device &device;
     TaskHandle handle;
-    const std::string deviceName;
-    const std::string taskName;
-    std::set<std::string> channelNames;
+    std::size_t numChannels;
     bool running;
     
 };

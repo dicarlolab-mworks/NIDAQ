@@ -34,3 +34,30 @@ std::uint32_t Device::getSerialNumber(const std::string &deviceName) {
 
 
 END_NAMESPACE_NIDAQ
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

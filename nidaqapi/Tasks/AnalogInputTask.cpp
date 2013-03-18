@@ -15,8 +15,8 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-Device::AnalogInputTask::AnalogInputTask(const Device &device) :
-    Task(device, "analog input")
+Device::AnalogInputTask::AnalogInputTask(Device &device) :
+    Task(device)
 { }
 
 

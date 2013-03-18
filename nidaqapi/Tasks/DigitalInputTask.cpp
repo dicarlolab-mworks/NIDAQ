@@ -15,8 +15,8 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-Device::DigitalInputTask::DigitalInputTask(const Device &device) :
-    Task(device, "digital input")
+Device::DigitalInputTask::DigitalInputTask(Device &device) :
+    Task(device)
 { }
 
 

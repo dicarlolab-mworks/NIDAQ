@@ -9,6 +9,7 @@
 #ifndef __NIDAQ__Device__
 #define __NIDAQ__Device__
 
+#include <set>
 #include <string>
 
 #include <boost/noncopyable.hpp>
@@ -44,6 +45,7 @@ private:
     
     const std::string name;
     const std::uint32_t serialNumber;
+    std::set<std::string> channelNames;
     
 };
 

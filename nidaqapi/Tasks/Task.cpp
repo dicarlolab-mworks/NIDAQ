@@ -8,7 +8,6 @@
 
 #include "Task.h"
 
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
 #include "NIDAQmxBaseAPI.h"
@@ -18,19 +17,13 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-std::set<std::string> Device::Task::allTaskNames;
-std::set<std::string> Device::Task::allChannelNames;
-
-
-Device::Task::Task(const Device &device, const std::string &taskType) :
-    deviceName(device.getName()),
-    taskName(deviceName + " " + taskType),
+Device::Task::Task(Device &device) :
+    device(device),
+    handle(NULL),
+    numChannels(0),
     running(false)
 {
-    if (!(allTaskNames.insert(taskName).second)) {
-        throw Error("Cannot create more than one " + taskType + " task for device " + deviceName);
-    }
-    Error::throwIfFailed(  DAQmxBaseCreateTask(taskName.c_str(), &handle)  );
+    Error::throwIfFailed(  DAQmxBaseCreateTask("", &handle)  );
 }
 
 
@@ -39,12 +32,6 @@ Device::Task::~Task() {
         Error::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
     }
     Error::logIfFailed(  DAQmxBaseClearTask(getHandle())  );
-    
-    BOOST_FOREACH(const std::string &name, channelNames) {
-        allChannelNames.erase(name);
-    }
-    
-    allTaskNames.erase(taskName);
 }
 
 
@@ -81,20 +68,19 @@ void Device::Task::stop() {
 
 
 std::string Device::Task::getChannelName(const std::string &type, unsigned int number) const {
-    return (boost::format("%s/%s%u") % getDeviceName() % type % number).str();
+    return (boost::format("%s/%s%u") % device.getName() % type % number).str();
 }
 
 
 void Device::Task::addChannel(const std::string &name) {
-    if (!(allChannelNames.insert(name).second)) {
+    if (!(device.channelNames.insert(name).second)) {
         throw Error("Channel " + name + " is already in use");
     }
-    channelNames.insert(name);
+    numChannels++;
 }
 
 
 std::int32_t Device::Task::getNumSamplesPerChannel(std::size_t numSamples) const {
-    std::size_t numChannels = getNumChannels();
     if ((numChannels == 0) || (numSamples % numChannels != 0))
     {
         throw std::invalid_argument("Invalid number of samples");
