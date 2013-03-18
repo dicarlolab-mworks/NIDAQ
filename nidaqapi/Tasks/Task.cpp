@@ -18,11 +18,11 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-std::set<std::string> Task::allTaskNames;
-std::set<std::string> Task::allChannelNames;
+std::set<std::string> Device::Task::allTaskNames;
+std::set<std::string> Device::Task::allChannelNames;
 
 
-Task::Task(const Device &device, const std::string &taskType) :
+Device::Task::Task(const Device &device, const std::string &taskType) :
     deviceName(device.getName()),
     taskName(deviceName + " " + taskType),
     running(false)
@@ -34,7 +34,7 @@ Task::Task(const Device &device, const std::string &taskType) :
 }
 
 
-Task::~Task() {
+Device::Task::~Task() {
     if (running) {
         Error::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
     }
@@ -48,7 +48,7 @@ Task::~Task() {
 }
 
 
-void Task::setSampleClockTiming(double samplingRate,
+void Device::Task::setSampleClockTiming(double samplingRate,
                                 std::uint64_t samplesPerChannelToAcquire,
                                 bool continous,
                                 const std::string &clockSourceTerminal,
@@ -64,7 +64,7 @@ void Task::setSampleClockTiming(double samplingRate,
 }
 
 
-void Task::start() {
+void Device::Task::start() {
     if (!running) {
         Error::throwIfFailed(  DAQmxBaseStartTask(getHandle())  );
         running = true;
@@ -72,7 +72,7 @@ void Task::start() {
 }
 
 
-void Task::stop() {
+void Device::Task::stop() {
     if (running) {
         Error::throwIfFailed(  DAQmxBaseStopTask(getHandle())  );
         running = false;
@@ -80,12 +80,12 @@ void Task::stop() {
 }
 
 
-std::string Task::getChannelName(const std::string &type, unsigned int number) const {
+std::string Device::Task::getChannelName(const std::string &type, unsigned int number) const {
     return (boost::format("%s/%s%u") % getDeviceName() % type % number).str();
 }
 
 
-void Task::addChannel(const std::string &name) {
+void Device::Task::addChannel(const std::string &name) {
     if (!(allChannelNames.insert(name).second)) {
         throw Error("Channel " + name + " is already in use");
     }
@@ -93,7 +93,7 @@ void Task::addChannel(const std::string &name) {
 }
 
 
-std::int32_t Task::getNumSamplesPerChannel(std::size_t numSamples) const {
+std::int32_t Device::Task::getNumSamplesPerChannel(std::size_t numSamples) const {
     std::size_t numChannels = getNumChannels();
     if ((numChannels == 0) || (numSamples % numChannels != 0))
     {

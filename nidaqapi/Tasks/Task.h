@@ -20,7 +20,7 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-class Task : boost::noncopyable {
+class Device::Task : boost::noncopyable {
     
 public:
     ~Task();

@@ -15,7 +15,7 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-class AnalogInputTask : public Task {
+class Device::AnalogInputTask : public Device::Task {
     
 public:
     typedef enum {

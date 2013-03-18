@@ -15,7 +15,7 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-class DigitalOutputTask : public Task {
+class Device::DigitalOutputTask : public Device::Task {
     
 public:
     explicit DigitalOutputTask(const Device &device);

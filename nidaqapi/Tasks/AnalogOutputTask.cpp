@@ -15,18 +15,18 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-AnalogOutputTask::AnalogOutputTask(const Device &device) :
+Device::AnalogOutputTask::AnalogOutputTask(const Device &device) :
     Task(device, "analog output")
 { }
 
 
-void AnalogOutputTask::setAllowRegeneration(bool allowRegen) {
+void Device::AnalogOutputTask::setAllowRegeneration(bool allowRegen) {
     std::int32_t value = (allowRegen ? DAQmx_Val_AllowRegen : DAQmx_Val_DoNotAllowRegen);
     Error::throwIfFailed(  DAQmxBaseSetWriteAttribute(getHandle(), DAQmx_Write_RegenMode, value)  );
 }
 
 
-void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
+void Device::AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
                                          double minVal,
                                          double maxVal)
 {
@@ -45,7 +45,7 @@ void AnalogOutputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
-std::size_t AnalogOutputTask::write(const double &firstSample,
+std::size_t Device::AnalogOutputTask::write(const double &firstSample,
                                std::size_t numSamples,
                                double timeout,
                                bool interleaved)

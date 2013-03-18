@@ -15,15 +15,21 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-std::uint32_t Device::getSerialNumber() const {
-    nidaqmxbase::uint32_t serialNumber;
-    Error::throwIfFailed(  DAQmxBaseGetDevSerialNum(name.c_str(), &serialNumber)  );
-    return serialNumber;
+Device::Device(const std::string &name) :
+    name(name),
+    serialNumber(getSerialNumber(name))
+{ }
+
+
+Device::~Device() {
+    Error::logIfFailed(  DAQmxBaseResetDevice(name.c_str())  );
 }
 
 
-void Device::reset() const {
-    Error::throwIfFailed(  DAQmxBaseResetDevice(name.c_str())  );
+std::uint32_t Device::getSerialNumber(const std::string &deviceName) {
+    nidaqmxbase::uint32_t serialNumber;
+    Error::throwIfFailed(  DAQmxBaseGetDevSerialNum(deviceName.c_str(), &serialNumber)  );
+    return serialNumber;
 }
 
 

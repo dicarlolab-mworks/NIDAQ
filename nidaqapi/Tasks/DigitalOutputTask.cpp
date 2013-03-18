@@ -15,12 +15,12 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-DigitalOutputTask::DigitalOutputTask(const Device &device) :
+Device::DigitalOutputTask::DigitalOutputTask(const Device &device) :
     Task(device, "digital output")
 { }
 
 
-void DigitalOutputTask::addChannel(unsigned int portNumber) {
+void Device::DigitalOutputTask::addChannel(unsigned int portNumber) {
     std::string lines = getChannelName("port", portNumber);
     
     std::int32_t error = DAQmxBaseCreateDOChan(getHandle(),
@@ -33,7 +33,7 @@ void DigitalOutputTask::addChannel(unsigned int portNumber) {
 }
 
 
-std::size_t DigitalOutputTask::write(const std::uint32_t &firstSample,
+std::size_t Device::DigitalOutputTask::write(const std::uint32_t &firstSample,
                                 std::size_t numSamples,
                                 double timeout,
                                 bool interleaved)

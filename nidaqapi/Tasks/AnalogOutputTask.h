@@ -15,7 +15,7 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-class AnalogOutputTask : public Task {
+class Device::AnalogOutputTask : public Device::Task {
     
 public:
     explicit AnalogOutputTask(const Device &device);
