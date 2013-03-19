@@ -15,17 +15,13 @@
 
 #include "Error.h"
 #include "Device.h"
-#include "AnalogInputTask.h"
-#include "AnalogOutputTask.h"
-#include "DigitalInputTask.h"
-#include "DigitalOutputTask.h"
 
 #include "MachTimer.h"
 
 
-static void generateSineWaves(const nidaq::Device &device) {
+static void generateSineWaves(nidaq::Device &device) {
     std::cout << "Creating analog output task" << std::endl;
-    nidaq::AnalogOutputTask task(device);
+    nidaq::AnalogOutputTask &task = device.getAnalogOutputTask();
     
     std::cout << "Creating first analog output channel" << std::endl;
     task.addVoltageChannel(0, -10.0, 10.0);
@@ -52,9 +48,9 @@ static void generateSineWaves(const nidaq::Device &device) {
 }
 
 
-static void acquireNScans(const nidaq::Device &device) {
+static void acquireNScans(nidaq::Device &device) {
     std::cout << "Creating analog input task" << std::endl;
-    nidaq::AnalogInputTask task(device);
+    nidaq::AnalogInputTask &task = device.getAnalogInputTask();
 
     std::cout << "Creating analog input channel" << std::endl;
     task.addVoltageChannel(0, -10.0, 10.0);
@@ -78,7 +74,7 @@ static void acquireNScans(const nidaq::Device &device) {
 }
 
 
-static void analogRepeater(const nidaq::Device &device) {
+static void analogRepeater(nidaq::Device &device) {
     const double sampleRate = 10000.0;
     const double minVal = -10.0;
     const double maxVal = 10.0;
@@ -89,13 +85,13 @@ static void analogRepeater(const nidaq::Device &device) {
     
     // Analog input task
     std::cout << "Creating analog input task" << std::endl;
-    nidaq::AnalogInputTask aiTask(device);
+    nidaq::AnalogInputTask &aiTask = device.getAnalogInputTask();
     aiTask.addVoltageChannel(0, minVal, maxVal);
     aiTask.setSampleClockTiming(10000.0, samples.size());
     
     // Analog output task
     std::cout << "Creating analog output task" << std::endl;
-    nidaq::AnalogOutputTask aoTask(device);
+    nidaq::AnalogOutputTask &aoTask = device.getAnalogOutputTask();
     aoTask.addVoltageChannel(0, minVal, maxVal);
     aoTask.setSampleClockTiming(10000.0, samples.size());
     aoTask.setAllowRegeneration(false);
@@ -126,7 +122,7 @@ static void analogRepeater(const nidaq::Device &device) {
 }
 
 
-static void testTiming(const nidaq::Device &device) {
+static void testTiming(nidaq::Device &device) {
     const double samplingRate = 10000.0;
     const double minVal = -10.0;
     const double maxVal = 10.0;
@@ -134,7 +130,7 @@ static void testTiming(const nidaq::Device &device) {
     
     // Set up AO task
     
-    nidaq::AnalogOutputTask aoTask(device);
+    nidaq::AnalogOutputTask &aoTask = device.getAnalogOutputTask();
     aoTask.addVoltageChannel(0, minVal, maxVal);
     
     boost::array<double, 100> aoSamples;
@@ -152,7 +148,7 @@ static void testTiming(const nidaq::Device &device) {
     
     // Set up AI task
     
-    nidaq::AnalogInputTask aiTask(device);
+    nidaq::AnalogInputTask &aiTask = device.getAnalogInputTask();
     aiTask.addVoltageChannel(0, minVal, maxVal);
     
     boost::array<double, 1000> aiSamples;
@@ -202,11 +198,10 @@ static inline void assertNumSamples(std::size_t expected, std::size_t actual) {
 }
 
 
-static void simpleDigitalIO(const nidaq::Device &device) {
-    nidaq::DigitalOutputTask doTask(device);
-    doTask.addChannel(0);
+static void simpleDigitalIO(nidaq::Device &device) {
+    nidaq::DigitalOutputTask &doTask = device.getDigitalOutputTask(0);
     
-    nidaq::DigitalInputTask diTask(device);
+    nidaq::DigitalInputTask &diTask = device.getDigitalInputTask();
     diTask.addChannel(1);
     
     boost::array<std::uint32_t, 1> outSamples, inSamples;
@@ -235,11 +230,10 @@ static void simpleDigitalIO(const nidaq::Device &device) {
 }
 
 
-static void testDigitalIOLatency(const nidaq::Device &device) {
-    nidaq::DigitalOutputTask doTask(device);
-    doTask.addChannel(0);
+static void testDigitalIOLatency(nidaq::Device &device) {
+    nidaq::DigitalOutputTask &doTask = device.getDigitalOutputTask(0);
     
-    nidaq::DigitalInputTask diTask(device);
+    nidaq::DigitalInputTask &diTask = device.getDigitalInputTask();
     diTask.addChannel(1);
     
     boost::array<std::uint32_t, 1> outSamples, inSamples;
@@ -278,11 +272,11 @@ int main(int argc, const char * argv[])
 {
     try {
         
+        std::cout << "Connecting to device..." << std::endl;
         nidaq::Device device("Dev1");
         
-        std::cout << "Fetching serial number of device " << device.getName() << std::endl;
-        std::uint32_t serialNumber = device.getSerialNumber();
-        std::cout << "Serial number = " << std::hex << std::uppercase << serialNumber << std::dec << std::endl;
+        std::cout << "Connected to device " << device.getName() << " (serial number "
+                  << std::hex << std::uppercase << device.getSerialNumber() << std::dec <<  ")" << std::endl;
         
         //generateSineWaves(device);
         //acquireNScans(device);

@@ -9,6 +9,8 @@
 #ifndef NIDAQ_Types_h
 #define NIDAQ_Types_h
 
+#include <cstdint>
+
 
 #define BEGIN_NAMESPACE_NIDAQ   namespace nidaq {
 #define END_NAMESPACE_NIDAQ     }
