@@ -9,24 +9,19 @@
 #ifndef __NIDAQ__Device__
 #define __NIDAQ__Device__
 
+#include <memory>
 #include <set>
 #include <string>
 
 #include <boost/noncopyable.hpp>
 
-#include "Types.h"
+#include "AnalogInputTask.h"
 
 
 BEGIN_NAMESPACE_NIDAQ
 
 
 class Device : boost::noncopyable {
-    
-    class Task;
-    class AnalogInputTask;
-    class AnalogOutputTask;
-    class DigitalInputTask;
-    class DigitalOutputTask;
     
 public:
     explicit Device(const std::string &name);
@@ -45,7 +40,11 @@ private:
     
     const std::string name;
     const std::uint32_t serialNumber;
+    
     std::set<std::string> channelNames;
+    std::unique_ptr<AnalogInputTask> analogInputTask;
+    
+    friend class Task;
     
 };
 

@@ -325,9 +325,9 @@
 				E183169015E51F940028F623 /* Types.h */,
 				E196C54815E2C13200059BF2 /* Error.h */,
 				E196C54715E2C13200059BF2 /* Error.cpp */,
+				E183169315E52FB40028F623 /* Tasks */,
 				E196C54415E2BF7000059BF2 /* Device.h */,
 				E196C54315E2BF7000059BF2 /* Device.cpp */,
-				E183169315E52FB40028F623 /* Tasks */,
 			);
 			path = nidaqapi;
 			sourceTree = "<group>";

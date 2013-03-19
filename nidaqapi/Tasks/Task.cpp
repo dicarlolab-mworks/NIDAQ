@@ -12,12 +12,13 @@
 
 #include "NIDAQmxBaseAPI.h"
 #include "Error.h"
+#include "Device.h"
 
 
 BEGIN_NAMESPACE_NIDAQ
 
 
-Device::Task::Task(Device &device) :
+Task::Task(Device &device) :
     device(device),
     handle(NULL),
     numChannels(0),
@@ -27,7 +28,7 @@ Device::Task::Task(Device &device) :
 }
 
 
-Device::Task::~Task() {
+Task::~Task() {
     if (running) {
         Error::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
     }
@@ -35,11 +36,11 @@ Device::Task::~Task() {
 }
 
 
-void Device::Task::setSampleClockTiming(double samplingRate,
-                                        std::uint64_t samplesPerChannelToAcquire,
-                                        bool continous,
-                                        const std::string &clockSourceTerminal,
-                                        bool acquireOnRisingEdge)
+void Task::setSampleClockTiming(double samplingRate,
+                                std::uint64_t samplesPerChannelToAcquire,
+                                bool continous,
+                                const std::string &clockSourceTerminal,
+                                bool acquireOnRisingEdge)
 {
     std::int32_t error = DAQmxBaseCfgSampClkTiming(getHandle(),
                                                    clockSourceTerminal.c_str(),
@@ -51,7 +52,7 @@ void Device::Task::setSampleClockTiming(double samplingRate,
 }
 
 
-void Device::Task::start() {
+void Task::start() {
     if (!running) {
         Error::throwIfFailed(  DAQmxBaseStartTask(getHandle())  );
         running = true;
@@ -59,7 +60,7 @@ void Device::Task::start() {
 }
 
 
-void Device::Task::stop() {
+void Task::stop() {
     if (running) {
         Error::throwIfFailed(  DAQmxBaseStopTask(getHandle())  );
         running = false;
@@ -67,12 +68,12 @@ void Device::Task::stop() {
 }
 
 
-std::string Device::Task::getChannelName(const std::string &type, unsigned int number) const {
+std::string Task::getChannelName(const std::string &type, unsigned int number) const {
     return (boost::format("%s/%s%u") % device.getName() % type % number).str();
 }
 
 
-void Device::Task::addChannel(const std::string &name) {
+void Task::addChannel(const std::string &name) {
     if (!(device.channelNames.insert(name).second)) {
         throw Error("Channel " + name + " is already in use");
     }
@@ -80,7 +81,7 @@ void Device::Task::addChannel(const std::string &name) {
 }
 
 
-std::int32_t Device::Task::getNumSamplesPerChannel(std::size_t numSamples) const {
+std::int32_t Task::getNumSamplesPerChannel(std::size_t numSamples) const {
     if ((numChannels == 0) || (numSamples % numChannels != 0))
     {
         throw std::invalid_argument("Invalid number of samples");

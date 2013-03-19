@@ -15,11 +15,9 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-class Device::DigitalInputTask : public Device::Task {
+class DigitalInputTask : public Task {
     
 public:
-    explicit DigitalInputTask(Device &device);
-    
     void addChannel(unsigned int portNumber);
     
     template <typename UInt32ArrayType>
@@ -28,6 +26,8 @@ public:
     }
     
 private:
+    explicit DigitalInputTask(Device &device);
+    
     std::size_t read(std::uint32_t &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     
 };

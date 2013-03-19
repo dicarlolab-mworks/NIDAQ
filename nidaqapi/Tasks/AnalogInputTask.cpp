@@ -15,15 +15,15 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-Device::AnalogInputTask::AnalogInputTask(Device &device) :
+AnalogInputTask::AnalogInputTask(Device &device) :
     Task(device)
 { }
 
 
-void Device::AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
-                                                double minVal,
-                                                double maxVal,
-                                                TerminalConfig termConfig)
+void AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
+                                        double minVal,
+                                        double maxVal,
+                                        TerminalConfig termConfig)
 {
     std::string physicalChannel = getChannelName("ai", channelNumber);
     
@@ -41,17 +41,17 @@ void Device::AnalogInputTask::addVoltageChannel(unsigned int channelNumber,
 }
 
 
-std::size_t Device::AnalogInputTask::getNumSamplesAvailable() const {
+std::size_t AnalogInputTask::getNumSamplesAvailable() const {
     nidaqmxbase::uint32_t sampsPerChanAvail;
     Error::throwIfFailed(  DAQmxBaseGetReadAttribute(getHandle(), DAQmx_Read_AvailSampPerChan, &sampsPerChanAvail)  );
     return std::size_t(sampsPerChanAvail) * getNumChannels();
 }
 
 
-std::size_t Device::AnalogInputTask::read(double &firstSample,
-                                          std::size_t numSamples,
-                                          double timeout,
-                                          bool interleaved)
+std::size_t AnalogInputTask::read(double &firstSample,
+                                  std::size_t numSamples,
+                                  double timeout,
+                                  bool interleaved)
 {
     std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanRead = 0;
@@ -74,7 +74,7 @@ std::size_t Device::AnalogInputTask::read(double &firstSample,
 }
 
 
-std::int32_t Device::AnalogInputTask::getTerminalConfigValue(TerminalConfig termConfig) {
+std::int32_t AnalogInputTask::getTerminalConfigValue(TerminalConfig termConfig) {
     switch (termConfig) {
         case TerminalConfigRSE:
             return DAQmx_Val_RSE;

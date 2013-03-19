@@ -15,7 +15,7 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-Device::DigitalOutputTask::DigitalOutputTask(Device &device, unsigned int portNumber) :
+DigitalOutputTask::DigitalOutputTask(Device &device, unsigned int portNumber) :
     Task(device)
 {
     std::string lines = getChannelName("port", portNumber);
@@ -30,9 +30,9 @@ Device::DigitalOutputTask::DigitalOutputTask(Device &device, unsigned int portNu
 }
 
 
-std::size_t Device::DigitalOutputTask::write(const std::uint32_t &firstSample,
-                                             std::size_t numSamples,
-                                             double timeout)
+std::size_t DigitalOutputTask::write(const std::uint32_t &firstSample,
+                                     std::size_t numSamples,
+                                     double timeout)
 {
     nidaqmxbase::int32_t sampsPerChanWritten;
     

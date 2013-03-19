@@ -13,13 +13,16 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "Device.h"
+#include "Types.h"
 
 
 BEGIN_NAMESPACE_NIDAQ
 
 
-class Device::Task : boost::noncopyable {
+class Device;  // Forward declaration
+
+
+class Task : boost::noncopyable {
     
 public:
     ~Task();

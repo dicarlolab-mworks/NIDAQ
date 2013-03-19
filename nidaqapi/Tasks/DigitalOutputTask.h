@@ -15,11 +15,9 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-class Device::DigitalOutputTask : public Device::Task {
+class DigitalOutputTask : public Task {
     
 public:
-    DigitalOutputTask(Device &device, unsigned int portNumber);
-    
     std::size_t write(std::uint32_t sample, double timeout) {
         return write(sample, 1, timeout);
     }
@@ -30,6 +28,8 @@ public:
     }
     
 private:
+    DigitalOutputTask(Device &device, unsigned int portNumber);
+    
     std::size_t write(const std::uint32_t &firstSample, std::size_t numSamples, double timeout);
     
 };

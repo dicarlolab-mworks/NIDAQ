@@ -15,7 +15,7 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-class Device::AnalogInputTask : public Device::Task {
+class AnalogInputTask : public Task {
     
 public:
     typedef enum {
@@ -24,8 +24,6 @@ public:
         TerminalConfigNRSE,
         TerminalConfigDifferential
     } TerminalConfig;
-    
-    explicit AnalogInputTask(Device &device);
     
     void addVoltageChannel(unsigned int channelNumber,
                            double minVal,
@@ -41,6 +39,8 @@ public:
     
 private:
     static std::int32_t getTerminalConfigValue(TerminalConfig termConfig);
+    
+    explicit AnalogInputTask(Device &device);
     
     std::size_t read(double &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     

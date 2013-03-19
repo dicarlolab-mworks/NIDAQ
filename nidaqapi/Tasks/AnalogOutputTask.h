@@ -15,11 +15,9 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-class Device::AnalogOutputTask : public Device::Task {
+class AnalogOutputTask : public Task {
     
 public:
-    explicit AnalogOutputTask(Device &device);
-    
     void setAllowRegeneration(bool allowRegen);
     
     void addVoltageChannel(unsigned int channelNumber, double minVal, double maxVal);
@@ -30,6 +28,8 @@ public:
     }
     
 private:
+    explicit AnalogOutputTask(Device &device);
+    
     std::size_t write(const double &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     
 };

@@ -15,12 +15,12 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-Device::DigitalInputTask::DigitalInputTask(Device &device) :
+DigitalInputTask::DigitalInputTask(Device &device) :
     Task(device)
 { }
 
 
-void Device::DigitalInputTask::addChannel(unsigned int portNumber) {
+void DigitalInputTask::addChannel(unsigned int portNumber) {
     std::string lines = getChannelName("port", portNumber);
     
     std::int32_t error = DAQmxBaseCreateDIChan(getHandle(),
@@ -33,10 +33,10 @@ void Device::DigitalInputTask::addChannel(unsigned int portNumber) {
 }
 
 
-std::size_t Device::DigitalInputTask::read(std::uint32_t &firstSample,
-                                           std::size_t numSamples,
-                                           double timeout,
-                                           bool interleaved)
+std::size_t DigitalInputTask::read(std::uint32_t &firstSample,
+                                   std::size_t numSamples,
+                                   double timeout,
+                                   bool interleaved)
 {
     std::int32_t numSampsPerChan = getNumSamplesPerChannel(numSamples);
     nidaqmxbase::int32_t sampsPerChanRead = 0;
