@@ -44,6 +44,8 @@ private:
     
     std::size_t read(double &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     
+    friend class Device;
+    
 };
 
 

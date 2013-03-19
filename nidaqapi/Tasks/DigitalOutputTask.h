@@ -32,6 +32,8 @@ private:
     
     std::size_t write(const std::uint32_t &firstSample, std::size_t numSamples, double timeout);
     
+    friend class Device;
+    
 };
 
 

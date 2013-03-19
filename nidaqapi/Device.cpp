@@ -22,7 +22,46 @@ Device::Device(const std::string &name) :
 
 
 Device::~Device() {
+    // Destroy all tasks before resetting the device
+    analogInputTask.reset();
+    analogOutputTask.reset();
+    digitalInputTask.reset();
+    digitalOutputTasks.clear();
+    
     Error::logIfFailed(  DAQmxBaseResetDevice(name.c_str())  );
+}
+
+
+AnalogInputTask& Device::getAnalogInputTask() {
+    if (!analogInputTask) {
+        analogInputTask.reset(new AnalogInputTask(*this));
+    }
+    return *analogInputTask;
+}
+
+
+AnalogOutputTask& Device::getAnalogOutputTask() {
+    if (!analogOutputTask) {
+        analogOutputTask.reset(new AnalogOutputTask(*this));
+    }
+    return *analogOutputTask;
+}
+
+
+DigitalInputTask& Device::getDigitalInputTask() {
+    if (!digitalInputTask) {
+        digitalInputTask.reset(new DigitalInputTask(*this));
+    }
+    return *digitalInputTask;
+}
+
+
+DigitalOutputTask& Device::getDigitalOutputTask(unsigned int portNumber) {
+    std::unique_ptr<DigitalOutputTask> &task = digitalOutputTasks[portNumber];
+    if (!task) {
+        task.reset(new DigitalOutputTask(*this, portNumber));
+    }
+    return *task;
 }
 
 

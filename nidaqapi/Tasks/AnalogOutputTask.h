@@ -32,6 +32,8 @@ private:
     
     std::size_t write(const double &firstSample, std::size_t numSamples, double timeout, bool interleaved);
     
+    friend class Device;
+    
 };
 
 
