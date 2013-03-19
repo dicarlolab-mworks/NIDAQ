@@ -77,7 +77,7 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     digitalInputSampleBufferSize(0),
     digitalInputTaskRunning(false),
     digitalOutputSampleBufferSize(0),
-    digitalOutputTaskRunning(false)
+    digitalOutputTasksRunning(false)
 {
     if (updateInterval <= 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid update interval");
@@ -132,13 +132,14 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
     boost::shared_ptr<NIDAQDigitalOutputChannel> doChannel = boost::dynamic_pointer_cast<NIDAQDigitalOutputChannel>(child);
     if (doChannel) {
         boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
-        boost::shared_ptr<DigitalOutputLineStateNotification> notification(new DigitalOutputLineStateNotification(sharedThis));
+        const int portNumber = doChannel->getPortNumber();
         
-        for (std::size_t lineNumber = 0; lineNumber < NIDAQDigitalOutputChannel::maxNumLines; lineNumber++) {
+        for (std::size_t lineNumber = 0; lineNumber < doChannel->getNumLinesInPort(); lineNumber++) {
+            boost::shared_ptr<DigitalOutputLineStateNotification> notification(new DigitalOutputLineStateNotification(sharedThis, portNumber));
             doChannel->addNewLineStateNotification(lineNumber, notification);
         }
         
-        digitalOutputChannels.push_back(doChannel);
+        digitalOutputChannels[portNumber] = doChannel;
         return;
     }
     
@@ -159,7 +160,7 @@ bool NIDAQDevice::initialize() {
                                    analogInputChannels.size());
     analogOutputSampleBufferSize *= analogOutputChannels.size();
     digitalInputSampleBufferSize = digitalInputChannels.size();
-    digitalOutputSampleBufferSize = digitalOutputChannels.size();
+    digitalOutputSampleBufferSize = (digitalOutputChannels.empty() ? 0 : 1);
     
     sharedMemory.setSize(HelperControlMessage::sizeWithSamples(std::max(analogInputSampleBufferSize,
                                                                         analogOutputSampleBufferSize),
@@ -191,7 +192,7 @@ bool NIDAQDevice::createTasks() {
     if (haveDigitalInputChannels() && !createDigitalInputTask()) {
         return false;
     }
-    if (haveDigitalOutputChannels() && !createDigitalOutputTask()) {
+    if (haveDigitalOutputChannels() && !createDigitalOutputTasks()) {
         return false;
     }
     
@@ -263,10 +264,10 @@ bool NIDAQDevice::createDigitalInputTask() {
 }
 
 
-bool NIDAQDevice::createDigitalOutputTask() {
-    BOOST_FOREACH(const boost::shared_ptr<NIDAQDigitalOutputChannel> &channel, digitalOutputChannels) {
+bool NIDAQDevice::createDigitalOutputTasks() {
+    BOOST_FOREACH(const DigitalOutputChannelMap::value_type &value, digitalOutputChannels) {
         controlMessage->code = HelperControlMessage::REQUEST_CREATE_DIGITAL_OUTPUT_CHANNEL;
-        controlMessage->digitalChannel.portNumber = channel->getPortNumber();
+        controlMessage->digitalChannel.portNumber = value.first;
         
         if (!sendHelperRequest()) {
             return false;
@@ -286,7 +287,7 @@ bool NIDAQDevice::startDeviceIO() {
     if (haveAnalogInputChannels() && !startAnalogInputTask()) {
         return false;
     }
-    if (haveDigitalOutputChannels() && !startDigitalOutputTask()) {
+    if (haveDigitalOutputChannels() && !startDigitalOutputTasks()) {
         return false;
     }
     if (haveDigitalInputChannels() && !startDigitalInputTask()) {
@@ -347,18 +348,20 @@ bool NIDAQDevice::startAnalogInputTask() {
 }
 
 
-bool NIDAQDevice::startDigitalOutputTask() {
-    if (!digitalOutputTaskRunning) {
-        if (!writeDigitalOutput()) {
-            return false;
+bool NIDAQDevice::startDigitalOutputTasks() {
+    if (!digitalOutputTasksRunning) {
+        BOOST_FOREACH(const DigitalOutputChannelMap::value_type &value, digitalOutputChannels) {
+            if (!writeDigitalOutput(value.first)) {
+                return false;
+            }
         }
         
-        controlMessage->code = HelperControlMessage::REQUEST_START_DIGITAL_OUTPUT_TASK;
+        controlMessage->code = HelperControlMessage::REQUEST_START_DIGITAL_OUTPUT_TASKS;
         if (!sendHelperRequest()) {
             return false;
         }
         
-        digitalOutputTaskRunning = true;
+        digitalOutputTasksRunning = true;
     }
     
     return true;
@@ -387,7 +390,7 @@ bool NIDAQDevice::stopDeviceIO() {
         readInputScheduleTask.reset();
     }
     
-    if (!(digitalInputTaskRunning || digitalOutputTaskRunning || analogInputTaskRunning || analogOutputTaskRunning)) {
+    if (!(digitalInputTaskRunning || digitalOutputTasksRunning || analogInputTaskRunning || analogOutputTaskRunning)) {
         return true;
     }
     
@@ -402,12 +405,12 @@ bool NIDAQDevice::stopDeviceIO() {
         }
     }
     
-    if (digitalOutputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASK;
+    if (digitalOutputTasksRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASKS;
         if (!sendHelperRequest()) {
             success = false;
         } else {
-            digitalOutputTaskRunning = false;
+            digitalOutputTasksRunning = false;
         }
     }
     
@@ -589,33 +592,21 @@ void NIDAQDevice::readDigitalInput() {
 }
 
 
-bool NIDAQDevice::writeDigitalOutput() {
-    const std::size_t numChannels = digitalOutputChannels.size();
-    
+bool NIDAQDevice::writeDigitalOutput(int portNumber) {
     controlMessage->code = HelperControlMessage::REQUEST_WRITE_DIGITAL_OUTPUT_SAMPLES;
+    controlMessage->digitalSamples.portNumber = portNumber;
     controlMessage->digitalSamples.timeout = double(updateInterval) / 1e6;  // us to s
     controlMessage->digitalSamples.samples.numSamples = digitalOutputSampleBufferSize;
     
-    std::size_t channelNumber = 0;
-    std::size_t channelLineNumber = 0;
+    const boost::shared_ptr<NIDAQDigitalOutputChannel> &channel = digitalOutputChannels[portNumber];
     
     for (std::size_t sampleNumber = 0; sampleNumber < digitalOutputSampleBufferSize; sampleNumber++) {
         std::uint32_t &sample = controlMessage->digitalSamples.samples[sampleNumber];
         sample = 0;
         
-        for (std::size_t sampleBitNumber = 0; sampleBitNumber < NIDAQDigitalOutputChannel::maxNumLines; sampleBitNumber++) {
-            if (channelNumber >= numChannels) {
-                break;
-            }
-            
-            bool lineState = digitalOutputChannels[channelNumber]->getLineState(channelLineNumber);
-            sample |= (std::uint32_t(lineState) << sampleBitNumber);
-            channelLineNumber++;
-            
-            if (channelLineNumber >= digitalOutputChannels[channelNumber]->getNumLinesInPort()) {
-                channelNumber++;
-                channelLineNumber = 0;
-            }
+        for (std::size_t lineNumber = 0; lineNumber < channel->getNumLinesInPort(); lineNumber++) {
+            bool lineState = channel->getLineState(lineNumber);
+            sample |= (std::uint32_t(lineState) << lineNumber);
         }
     }
     
@@ -748,8 +739,8 @@ void NIDAQDevice::DigitalOutputLineStateNotification::notify(const Datum &data, 
     boost::shared_ptr<NIDAQDevice> nidaqDevice = nidaqDeviceWeak.lock();
     if (nidaqDevice) {
         scoped_lock lock(nidaqDevice->controlMutex);
-        if (nidaqDevice->digitalOutputTaskRunning) {
-            nidaqDevice->writeDigitalOutput();
+        if (nidaqDevice->digitalOutputTasksRunning) {
+            nidaqDevice->writeDigitalOutput(portNumber);
         }
     }
 }

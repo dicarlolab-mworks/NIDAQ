@@ -9,6 +9,7 @@
 #ifndef __NIDAQ__NIDAQDevice__
 #define __NIDAQ__NIDAQDevice__
 
+#include <map>
 #include <vector>
 
 #include <boost/interprocess/mapped_region.hpp>
@@ -70,9 +71,9 @@ private:
     void readDigitalInput();
     
     bool haveDigitalOutputChannels() const { return !(digitalOutputChannels.empty()); }
-    bool createDigitalOutputTask();
-    bool startDigitalOutputTask();
-    bool writeDigitalOutput();
+    bool createDigitalOutputTasks();
+    bool startDigitalOutputTasks();
+    bool writeDigitalOutput(int portNumber);
     
     void spawnHelper();
     void reapHelper();
@@ -112,21 +113,24 @@ private:
     std::size_t digitalInputSampleBufferSize;
     bool digitalInputTaskRunning;
     
-    std::vector< boost::shared_ptr<NIDAQDigitalOutputChannel> > digitalOutputChannels;
+    typedef std::map< int, boost::shared_ptr<NIDAQDigitalOutputChannel> > DigitalOutputChannelMap;
+    DigitalOutputChannelMap digitalOutputChannels;
     std::size_t digitalOutputSampleBufferSize;
-    bool digitalOutputTaskRunning;
+    bool digitalOutputTasksRunning;
     
     
     class DigitalOutputLineStateNotification : public VariableNotification {
     public:
-        explicit DigitalOutputLineStateNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice) :
-            nidaqDeviceWeak(nidaqDevice)
+        explicit DigitalOutputLineStateNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice, int portNumber) :
+            nidaqDeviceWeak(nidaqDevice),
+            portNumber(portNumber)
         { }
         
         void notify(const Datum &data, MWTime time) MW_OVERRIDE;
         
     private:
         boost::weak_ptr<NIDAQDevice> nidaqDeviceWeak;
+        const int portNumber;
     };
     
 };

@@ -48,15 +48,19 @@ NIDAQDigitalChannel::NIDAQDigitalChannel(const ParameterValueMap &parameters) :
     }
     
     bool foundLineParameter = false;
-    for (std::size_t i = 0; i < maxNumLines; i++) {
-        const ParameterValue &lineParameter = parameters[getLineParameterName(i)];
+    for (std::size_t lineNumber = 0; lineNumber < maxNumLines; lineNumber++) {
+        const ParameterValue &lineParameter = parameters[getLineParameterName(lineNumber)];
         if (!lineParameter.empty()) {
-            lineVariables.at(i) = VariablePtr(lineParameter);
+            if (lineNumber >= numLinesInPort) {
+                throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
+                                      "Requested line number exceeds number of lines in port");
+            }
+            lineVariables.at(lineNumber) = VariablePtr(lineParameter);
             foundLineParameter = true;
         }
     }
     if (!foundLineParameter) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Digital channel must supply a value for at least one line");
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Digital channel must use at least one line");
     }
 }
 

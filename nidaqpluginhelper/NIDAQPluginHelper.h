@@ -40,6 +40,8 @@ public:
 private:
     void handleRequest(bool &done);
     
+    nidaq::Device& getDevice();
+    
     void createAnalogInputVoltageChannel();
     void setAnalogInputSampleClockTiming();
     void startAnalogInputTask();
