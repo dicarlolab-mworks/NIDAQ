@@ -9,8 +9,10 @@
 #ifndef __NIDAQ__NIDAQPluginHelper__
 #define __NIDAQ__NIDAQPluginHelper__
 
+#include <memory>
+#include <set>
+
 #include <boost/noncopyable.hpp>
-#include <boost/scoped_ptr.hpp>
 
 #include "Device.h"
 #include "AnalogInputTask.h"
@@ -38,42 +40,34 @@ public:
 private:
     void handleRequest(bool &done);
     
-    void requireAnalogInputTask();
     void createAnalogInputVoltageChannel();
     void setAnalogInputSampleClockTiming();
     void startAnalogInputTask();
     void readAnalogInputSamples();
     void clearAnalogInputTask();
     
-    void requireAnalogOutputTask();
     void createAnalogOutputVoltageChannel();
     void setAnalogOutputSampleClockTiming();
     void startAnalogOutputTask();
     void writeAnalogOutputSamples();
     void clearAnalogOutputTask();
     
-    void requireDigitalInputTask();
     void createDigitalInputChannel();
     void startDigitalInputTask();
     void readDigitalInputSamples();
     void clearDigitalInputTask();
     
-    void requireDigitalOutputTask();
     void createDigitalOutputChannel();
-    void startDigitalOutputTask();
+    void startDigitalOutputTasks();
     void writeDigitalOutputSamples();
-    void clearDigitalOutputTask();
-    
-    void shutDown();
+    void clearDigitalOutputTasks();
     
     IPCRequestResponse &ipc;
     HelperControlMessage &m;
+    const std::string deviceName;
     
-    nidaq::Device device;
-    boost::scoped_ptr<nidaq::AnalogInputTask> analogInputTask;
-    boost::scoped_ptr<nidaq::AnalogOutputTask> analogOutputTask;
-    boost::scoped_ptr<nidaq::DigitalInputTask> digitalInputTask;
-    boost::scoped_ptr<nidaq::DigitalOutputTask> digitalOutputTask;
+    std::unique_ptr<nidaq::Device> device;
+    std::set<unsigned int> digitalOutputPortNumbers;
     
     MachClock clock;
     

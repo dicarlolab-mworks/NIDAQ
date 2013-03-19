@@ -8,6 +8,8 @@
 
 #include "NIDAQPluginHelper.h"
 
+#include <boost/foreach.hpp>
+
 #include "Error.h"
 
 
@@ -16,7 +18,7 @@ NIDAQPluginHelper::NIDAQPluginHelper(IPCRequestResponse &ipc,
                                      const std::string &deviceName) :
     ipc(ipc),
     m(message),
-    device(deviceName)
+    deviceName(deviceName)
 { }
 
 
@@ -30,6 +32,10 @@ bool NIDAQPluginHelper::handleRequests() {
         }
         
         try {
+            
+            if (!device) {
+                device.reset(new nidaq::Device(deviceName));
+            }
             
             handleRequest(done);
             
@@ -125,21 +131,20 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             createDigitalOutputChannel();
             break;
             
-        case HelperControlMessage::REQUEST_START_DIGITAL_OUTPUT_TASK:
-            startDigitalOutputTask();
+        case HelperControlMessage::REQUEST_START_DIGITAL_OUTPUT_TASKS:
+            startDigitalOutputTasks();
             break;
             
         case HelperControlMessage::REQUEST_WRITE_DIGITAL_OUTPUT_SAMPLES:
             writeDigitalOutputSamples();
             break;
             
-        case HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASK:
-            clearDigitalOutputTask();
+        case HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASKS:
+            clearDigitalOutputTasks();
             break;
             
         case HelperControlMessage::REQUEST_SHUTDOWN:
-            done = true;  // Set done first, so we'll quit even if shutDown throws
-            shutDown();
+            done = true;
             break;
             
         case HelperControlMessage::REQUEST_PING:
@@ -154,189 +159,129 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
 }
 
 
-void NIDAQPluginHelper::requireAnalogInputTask() {
-    if (!analogInputTask) {
-        analogInputTask.reset(new nidaq::AnalogInputTask(device));
-    }
-}
-
-
 void NIDAQPluginHelper::createAnalogInputVoltageChannel() {
-    requireAnalogInputTask();
-    analogInputTask->addVoltageChannel(m.analogVoltageChannel.channelNumber,
-                                       m.analogVoltageChannel.minVal,
-                                       m.analogVoltageChannel.maxVal);
+    device->getAnalogInputTask().addVoltageChannel(m.analogVoltageChannel.channelNumber,
+                                                   m.analogVoltageChannel.minVal,
+                                                   m.analogVoltageChannel.maxVal);
 }
 
 
 void NIDAQPluginHelper::setAnalogInputSampleClockTiming() {
-    requireAnalogInputTask();
-    analogInputTask->setSampleClockTiming(m.sampleClockTiming.samplingRate,
-                                          m.sampleClockTiming.samplesPerChannelToAcquire);
+    device->getAnalogInputTask().setSampleClockTiming(m.sampleClockTiming.samplingRate,
+                                                      m.sampleClockTiming.samplesPerChannelToAcquire);
 }
 
 
 void NIDAQPluginHelper::startAnalogInputTask() {
-    requireAnalogInputTask();
-    analogInputTask->start();
+    device->getAnalogInputTask().start();
     m.taskStartTime = clock.nanoTime();
 }
 
 
 void NIDAQPluginHelper::readAnalogInputSamples() {
-    requireAnalogInputTask();
-    if (!(analogInputTask->isRunning())) {
+    if (!(device->getAnalogInputTask().isRunning())) {
         throw NIDAQPluginHelperError("Analog input task is not running");
     }
     
-    std::size_t numSamplesRead = analogInputTask->read(m.analogSamples.samples,
-                                                  m.analogSamples.timeout,
-                                                  true);  // Group samples by scan number
+    std::size_t numSamplesRead = device->getAnalogInputTask().read(m.analogSamples.samples,
+                                                                   m.analogSamples.timeout,
+                                                                   true);  // Group samples by scan number
     m.analogSamples.samples.numSamples = numSamplesRead;
 }
 
 
 void NIDAQPluginHelper::clearAnalogInputTask() {
-    if (analogInputTask) {
-        analogInputTask->stop();
-        analogInputTask.reset();
-    }
-}
-
-
-void NIDAQPluginHelper::requireAnalogOutputTask() {
-    if (!analogOutputTask) {
-        analogOutputTask.reset(new nidaq::AnalogOutputTask(device));
-    }
+    device->clearAnalogInputTask();
 }
 
 
 void NIDAQPluginHelper::createAnalogOutputVoltageChannel() {
-    requireAnalogOutputTask();
-    analogOutputTask->addVoltageChannel(m.analogVoltageChannel.channelNumber,
-                                        m.analogVoltageChannel.minVal,
-                                        m.analogVoltageChannel.maxVal);
+    device->getAnalogOutputTask().addVoltageChannel(m.analogVoltageChannel.channelNumber,
+                                                    m.analogVoltageChannel.minVal,
+                                                    m.analogVoltageChannel.maxVal);
 }
 
 
 void NIDAQPluginHelper::setAnalogOutputSampleClockTiming() {
-    requireAnalogOutputTask();
-    analogOutputTask->setSampleClockTiming(m.sampleClockTiming.samplingRate,
-                                           m.sampleClockTiming.samplesPerChannelToAcquire);
+    device->getAnalogOutputTask().setSampleClockTiming(m.sampleClockTiming.samplingRate,
+                                                       m.sampleClockTiming.samplesPerChannelToAcquire);
 }
 
 
 void NIDAQPluginHelper::startAnalogOutputTask() {
-    requireAnalogOutputTask();
-    analogOutputTask->start();
+    device->getAnalogOutputTask().start();
 }
 
 
 void NIDAQPluginHelper::writeAnalogOutputSamples() {
-    requireAnalogOutputTask();
-    
-    std::size_t numSamplesWritten = analogOutputTask->write(m.analogSamples.samples,
-                                                       m.analogSamples.timeout,
-                                                       true);  // Group samples by scan number
+    std::size_t numSamplesWritten = device->getAnalogOutputTask().write(m.analogSamples.samples,
+                                                                        m.analogSamples.timeout,
+                                                                        true);  // Group samples by scan number
     
     m.analogSamples.samples.numSamples = numSamplesWritten;
 }
 
 
 void NIDAQPluginHelper::clearAnalogOutputTask() {
-    if (analogOutputTask) {
-        analogOutputTask->stop();
-        analogOutputTask.reset();
-    }
-}
-
-
-void NIDAQPluginHelper::requireDigitalInputTask() {
-    if (!digitalInputTask) {
-        digitalInputTask.reset(new nidaq::DigitalInputTask(device));
-    }
+    device->clearAnalogOutputTask();
 }
 
 
 void NIDAQPluginHelper::createDigitalInputChannel() {
-    requireDigitalInputTask();
-    digitalInputTask->addChannel(m.digitalChannel.portNumber);
+    device->getDigitalInputTask().addChannel(m.digitalChannel.portNumber);
 }
 
 
 void NIDAQPluginHelper::startDigitalInputTask() {
-    requireDigitalInputTask();
-    digitalInputTask->start();
+    device->getDigitalInputTask().start();
 }
 
 
 void NIDAQPluginHelper::readDigitalInputSamples() {
-    requireDigitalInputTask();
-    if (!(digitalInputTask->isRunning())) {
+    if (!(device->getDigitalInputTask().isRunning())) {
         throw NIDAQPluginHelperError("Digital input task is not running");
     }
     
-    std::size_t numSamplesRead = digitalInputTask->read(m.digitalSamples.samples,
-                                                   m.digitalSamples.timeout,
-                                                   true);  // Group samples by scan number
+    std::size_t numSamplesRead = device->getDigitalInputTask().read(m.digitalSamples.samples,
+                                                                    m.digitalSamples.timeout,
+                                                                    true);  // Group samples by scan number
     m.digitalSamples.samples.numSamples = numSamplesRead;
 }
 
 
 void NIDAQPluginHelper::clearDigitalInputTask() {
-    if (digitalInputTask) {
-        digitalInputTask->stop();
-        digitalInputTask.reset();
-    }
-}
-
-
-void NIDAQPluginHelper::requireDigitalOutputTask() {
-    if (!digitalOutputTask) {
-        digitalOutputTask.reset(new nidaq::DigitalOutputTask(device));
-    }
+    device->clearDigitalInputTask();
 }
 
 
 void NIDAQPluginHelper::createDigitalOutputChannel() {
-    requireDigitalOutputTask();
-    digitalOutputTask->addChannel(m.digitalChannel.portNumber);
+    device->getDigitalOutputTask(m.digitalChannel.portNumber);
+    digitalOutputPortNumbers.insert(m.digitalChannel.portNumber);
 }
 
 
-void NIDAQPluginHelper::startDigitalOutputTask() {
-    requireDigitalOutputTask();
-    digitalOutputTask->start();
-}
-
-
-void NIDAQPluginHelper::writeDigitalOutputSamples() {
-    requireDigitalOutputTask();
-    
-    std::size_t numSamplesWritten = digitalOutputTask->write(m.digitalSamples.samples,
-                                                        m.digitalSamples.timeout,
-                                                        true);  // Group samples by scan number
-    
-    m.digitalSamples.samples.numSamples = numSamplesWritten;
-}
-
-
-void NIDAQPluginHelper::clearDigitalOutputTask() {
-    if (digitalOutputTask) {
-        digitalOutputTask->stop();
-        digitalOutputTask.reset();
+void NIDAQPluginHelper::startDigitalOutputTasks() {
+    BOOST_FOREACH(unsigned int portNumber, digitalOutputPortNumbers) {
+        device->getDigitalOutputTask(portNumber).start();
     }
 }
 
 
-void NIDAQPluginHelper::shutDown() {
-    // Resetting the device will invalidate all associated tasks, so make sure we've cleared them first
-    analogInputTask.reset();
-    analogOutputTask.reset();
-    digitalInputTask.reset();
-    digitalOutputTask.reset();
+void NIDAQPluginHelper::writeDigitalOutputSamples() {
+    nidaq::DigitalOutputTask &task = device->getDigitalOutputTask(m.digitalSamples.portNumber);
     
-    device.reset();
+    std::size_t numSamplesWritten = task.write(m.digitalSamples.samples,
+                                               m.digitalSamples.timeout);
+
+    m.digitalSamples.samples.numSamples = numSamplesWritten;
+}
+
+
+void NIDAQPluginHelper::clearDigitalOutputTasks() {
+    BOOST_FOREACH(unsigned int portNumber, digitalOutputPortNumbers) {
+        device->clearDigitalOutputTask(portNumber);
+        digitalOutputPortNumbers.erase(portNumber);
+    }
 }
 
 

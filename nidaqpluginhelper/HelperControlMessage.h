@@ -107,9 +107,9 @@ struct HelperControlMessage {
         REQUEST_CLEAR_DIGITAL_INPUT_TASK,
         
         REQUEST_CREATE_DIGITAL_OUTPUT_CHANNEL,
-        REQUEST_START_DIGITAL_OUTPUT_TASK,
+        REQUEST_START_DIGITAL_OUTPUT_TASKS,
         REQUEST_WRITE_DIGITAL_OUTPUT_SAMPLES,
-        REQUEST_CLEAR_DIGITAL_OUTPUT_TASK,
+        REQUEST_CLEAR_DIGITAL_OUTPUT_TASKS,
         
         REQUEST_SHUTDOWN,
         REQUEST_PING,
@@ -160,6 +160,7 @@ struct HelperControlMessage {
         } analogSamples;
         
         struct {
+            unsigned_int portNumber;
             double timeout;
             samples_buffer<std::uint32_t> samples;
         } digitalSamples;
