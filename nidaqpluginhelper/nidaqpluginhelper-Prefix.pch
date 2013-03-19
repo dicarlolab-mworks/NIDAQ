@@ -1,8 +1,0 @@
-//
-// Prefix header for all source files of the 'nidaqpluginhelper' target in the 'NIDAQ' project
-//
-
-#ifdef __cplusplus
-    //#include <MWorksCore/CoreBuilderForeman.h>
-    //#include <MWorksCore/StandardServerCoreBuilder.h>
-#endif

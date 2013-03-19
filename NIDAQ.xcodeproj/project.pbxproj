@@ -190,7 +190,6 @@
 		E1C51BC816F21AED00893111 /* MWLibrary.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MWLibrary.xml; sourceTree = "<group>"; };
 		E1C51BCA16F25F3C00893111 /* NIDAQDigitalOutputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDigitalOutputChannel.cpp; sourceTree = "<group>"; };
 		E1C51BCB16F25F3C00893111 /* NIDAQDigitalOutputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDigitalOutputChannel.h; sourceTree = "<group>"; };
-		E1CA0DD615EBC89B00EB6B60 /* nidaqpluginhelper-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "nidaqpluginhelper-Prefix.pch"; sourceTree = "<group>"; };
 		E1CA0DDB15EBCA7200EB6B60 /* libnidaqapi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnidaqapi.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -209,9 +208,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1CA0DE415EBCBE800EB6B60 /* libnidaqapi.a in Frameworks */,
 				E179EE6715E7D8CC00CC1BED /* nidaqmxbase.framework in Frameworks */,
 				E179EE6815E7D8CE00CC1BED /* nidaqmxbaselv.framework in Frameworks */,
+				E1CA0DE415EBCBE800EB6B60 /* libnidaqapi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,9 +218,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1CA0DE315EBCB5300EB6B60 /* libnidaqapi.a in Frameworks */,
 				E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */,
 				E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */,
+				E1CA0DE315EBCB5300EB6B60 /* libnidaqapi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,7 +312,6 @@
 				E1A7227415EEA72C006671AD /* NIDAQPluginHelper.h */,
 				E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */,
 				E179EE5A15E7D71400CC1BED /* main.cpp */,
-				E1CA0DD415EBC87B00EB6B60 /* Supporting Files */,
 			);
 			path = nidaqpluginhelper;
 			sourceTree = "<group>";
@@ -396,14 +394,6 @@
 				E15D0B2716C2C37700F331B1 /* libboost_system.a */,
 			);
 			name = "Frameworks & Libraries";
-			sourceTree = "<group>";
-		};
-		E1CA0DD415EBC87B00EB6B60 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				E1CA0DD615EBC89B00EB6B60 /* nidaqpluginhelper-Prefix.pch */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -537,14 +527,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1690E8E15E69851007DFCEF /* NIDAQPlugin.cpp in Sources */,
-				E1690E9915E6ADD4007DFCEF /* NIDAQDevice.cpp in Sources */,
-				E157464015F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp in Sources */,
 				E13DEB6515F7DCA600AC7480 /* NIDAQAnalogChannel.cpp in Sources */,
+				E157464015F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp in Sources */,
 				E15EB1EC16026B6700D6A9D6 /* NIDAQAnalogOutputVoltageWaveformChannel.cpp in Sources */,
 				E100C59816F0CE0800B463A4 /* NIDAQDigitalChannel.cpp in Sources */,
 				E100C59F16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp in Sources */,
 				E1C51BCC16F25F3C00893111 /* NIDAQDigitalOutputChannel.cpp in Sources */,
+				E1690E9915E6ADD4007DFCEF /* NIDAQDevice.cpp in Sources */,
+				E1690E8E15E69851007DFCEF /* NIDAQPlugin.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -552,10 +542,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E179EE5B15E7D71400CC1BED /* main.cpp in Sources */,
-				E1A7227515EEA72C006671AD /* NIDAQPluginHelper.cpp in Sources */,
-				E15E883315FE32DD0077757B /* MachError.cpp in Sources */,
 				E15E883815FE32F60077757B /* MachClock.cpp in Sources */,
+				E15E883315FE32DD0077757B /* MachError.cpp in Sources */,
+				E1A7227515EEA72C006671AD /* NIDAQPluginHelper.cpp in Sources */,
+				E179EE5B15E7D71400CC1BED /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,9 +553,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E196C53115E2AD3200059BF2 /* main.cpp in Sources */,
 				E15E883415FE32DD0077757B /* MachError.cpp in Sources */,
 				E15E883915FE32F60077757B /* MachClock.cpp in Sources */,
+				E196C53115E2AD3200059BF2 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,12 +564,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1CA0DDF15EBCB0800EB6B60 /* Error.cpp in Sources */,
-				E1CA0DDE15EBCB0700EB6B60 /* Device.cpp in Sources */,
 				E1CA0DE015EBCB0E00EB6B60 /* Task.cpp in Sources */,
 				E1CA0DE215EBCB1300EB6B60 /* AnalogInputTask.cpp in Sources */,
 				E1CA0DE115EBCB1100EB6B60 /* AnalogOutputTask.cpp in Sources */,
 				E18BF7E9160110E400B23BCA /* DigitalInputTask.cpp in Sources */,
 				E18BF7ED1601133500B23BCA /* DigitalOutputTask.cpp in Sources */,
+				E1CA0DDE15EBCB0700EB6B60 /* Device.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -660,8 +650,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "nidaqpluginhelper/nidaqpluginhelper-Prefix.pch";
 				PRODUCT_NAME = MWNIDAQPluginHelper;
 			};
 			name = Development;
