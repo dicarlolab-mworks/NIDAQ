@@ -8,6 +8,7 @@
 
 #include "Task.h"
 
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
 #include "NIDAQmxBaseAPI.h"
@@ -21,7 +22,6 @@ BEGIN_NAMESPACE_NIDAQ
 Task::Task(Device &device) :
     device(device),
     handle(NULL),
-    numChannels(0),
     running(false)
 {
     Error::throwIfFailed(  DAQmxBaseCreateTask("", &handle)  );
@@ -33,6 +33,10 @@ Task::~Task() {
         Error::logIfFailed(  DAQmxBaseStopTask(getHandle())  );
     }
     Error::logIfFailed(  DAQmxBaseClearTask(getHandle())  );
+    
+    BOOST_FOREACH(const std::string &name, channelNames) {
+        device.allChannelNames.erase(name);
+    }
 }
 
 
@@ -74,14 +78,15 @@ std::string Task::getChannelName(const std::string &type, unsigned int number) c
 
 
 void Task::addChannel(const std::string &name) {
-    if (!(device.channelNames.insert(name).second)) {
+    if (!(device.allChannelNames.insert(name).second)) {
         throw Error("Channel " + name + " is already in use");
     }
-    numChannels++;
+    channelNames.insert(name);
 }
 
 
 std::int32_t Task::getNumSamplesPerChannel(std::size_t numSamples) const {
+    const std::size_t numChannels = getNumChannels();
     if ((numChannels == 0) || (numSamples % numChannels != 0))
     {
         throw std::invalid_argument("Invalid number of samples");

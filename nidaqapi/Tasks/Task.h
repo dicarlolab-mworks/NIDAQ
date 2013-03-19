@@ -9,6 +9,7 @@
 #ifndef __NIDAQ__Task__
 #define __NIDAQ__Task__
 
+#include <set>
 #include <string>
 
 #include <boost/noncopyable.hpp>
@@ -53,7 +54,7 @@ protected:
     void addChannel(const std::string &name);
     
     std::size_t getNumChannels() const {
-        return numChannels;
+        return channelNames.size();;
     }
     
     std::int32_t getNumSamplesPerChannel(std::size_t numSamples) const;
@@ -61,7 +62,7 @@ protected:
 private:
     Device &device;
     TaskHandle handle;
-    std::size_t numChannels;
+    std::set<std::string> channelNames;
     bool running;
     
 };

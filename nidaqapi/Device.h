@@ -44,13 +44,18 @@ public:
     DigitalInputTask& getDigitalInputTask();
     DigitalOutputTask& getDigitalOutputTask(unsigned int portNumber);
     
+    void clearAnalogInputTask();
+    void clearAnalogOutputTask();
+    void clearDigitalInputTask();
+    void clearDigitalOutputTask(unsigned int portNumber);
+    
 private:
     static std::uint32_t getSerialNumber(const std::string &deviceName);
     
     const std::string name;
     const std::uint32_t serialNumber;
     
-    std::set<std::string> channelNames;
+    std::set<std::string> allChannelNames;
     
     std::unique_ptr<AnalogInputTask> analogInputTask;
     std::unique_ptr<AnalogOutputTask> analogOutputTask;

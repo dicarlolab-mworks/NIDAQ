@@ -65,6 +65,39 @@ DigitalOutputTask& Device::getDigitalOutputTask(unsigned int portNumber) {
 }
 
 
+void Device::clearAnalogInputTask() {
+    if (analogInputTask) {
+        analogInputTask->stop();
+        analogInputTask.reset();
+    }
+}
+
+
+void Device::clearAnalogOutputTask() {
+    if (analogOutputTask) {
+        analogOutputTask->stop();
+        analogOutputTask.reset();
+    }
+}
+
+
+void Device::clearDigitalInputTask() {
+    if (digitalInputTask) {
+        digitalInputTask->stop();
+        digitalInputTask.reset();
+    }
+}
+
+
+void Device::clearDigitalOutputTask(unsigned int portNumber) {
+    std::unique_ptr<DigitalOutputTask> &task = digitalOutputTasks[portNumber];
+    if (task) {
+        task->stop();
+        task.reset();
+    }
+}
+
+
 std::uint32_t Device::getSerialNumber(const std::string &deviceName) {
     nidaqmxbase::uint32_t serialNumber = 0;
     Error::throwIfFailed(  DAQmxBaseGetDevSerialNum(deviceName.c_str(), &serialNumber)  );
