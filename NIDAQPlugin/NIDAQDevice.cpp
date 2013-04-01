@@ -297,7 +297,7 @@ bool NIDAQDevice::startDeviceIO() {
     if ((haveAnalogInputChannels() || haveDigitalInputChannels()) && !readInputScheduleTask) {
         boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
         readInputScheduleTask = Scheduler::instance()->scheduleUS(FILELINE,
-                                                                  0,
+                                                                  updateInterval,
                                                                   updateInterval,
                                                                   M_REPEAT_INDEFINITELY,
                                                                   boost::bind(&NIDAQDevice::readInput, sharedThis),
