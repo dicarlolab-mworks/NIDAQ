@@ -486,7 +486,7 @@ void NIDAQDevice::readAnalogInput() {
     
     if (numSamplesRead != analogInputSampleBufferSize) {
         mwarning(M_IODEVICE_MESSAGE_DOMAIN,
-                 "NIDAQ device requested %u analog samples but got only %u",
+                 "NIDAQ device requested %lu analog samples but got only %lu",
                  analogInputSampleBufferSize,
                  numSamplesRead);
     }
@@ -540,7 +540,7 @@ bool NIDAQDevice::writeAnalogOutput() {
     
     if (numSamplesWritten != analogOutputSampleBufferSize) {
         merror(M_IODEVICE_MESSAGE_DOMAIN,
-               "Wrote only %u of %u analog output samples to NIDAQ device",
+               "Wrote only %lu of %lu analog output samples to NIDAQ device",
                numSamplesWritten,
                analogOutputSampleBufferSize);
         return false;
@@ -565,7 +565,7 @@ void NIDAQDevice::readDigitalInput() {
     
     if (numSamplesRead != digitalInputSampleBufferSize) {
         mwarning(M_IODEVICE_MESSAGE_DOMAIN,
-                 "NIDAQ device requested %u digital samples but got only %u",
+                 "NIDAQ device requested %lu digital samples but got only %lu",
                  digitalInputSampleBufferSize,
                  numSamplesRead);
     }
@@ -618,7 +618,7 @@ bool NIDAQDevice::writeDigitalOutput(int portNumber) {
     
     if (numSamplesWritten != digitalOutputSampleBufferSize) {
         mwarning(M_IODEVICE_MESSAGE_DOMAIN,
-                 "Wrote only %u of %u digital output samples to NIDAQ device",
+                 "Wrote only %lu of %lu digital output samples to NIDAQ device",
                  numSamplesWritten,
                  digitalOutputSampleBufferSize);
         return false;
@@ -725,7 +725,7 @@ bool NIDAQDevice::sendHelperRequest() {
             
         default:
             merror(M_IODEVICE_MESSAGE_DOMAIN,
-                   "Internal error: Unknown response code (%d) from %s",
+                   "Internal error: Unknown response code (%lld) from %s",
                    responseCode,
                    PLUGIN_HELPER_EXECUTABLE);
             break;
