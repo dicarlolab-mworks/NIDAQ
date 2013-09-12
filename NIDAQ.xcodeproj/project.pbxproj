@@ -659,10 +659,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E105A21215E67FEB007F9F38 /* Development.xcconfig */;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"\"/Applications/National Instruments/NI-DAQmx Base/includes\"",
-					"$(inherited)",
-				);
 				WARNING_CFLAGS = "-Wreorder";
 			};
 			name = Development;

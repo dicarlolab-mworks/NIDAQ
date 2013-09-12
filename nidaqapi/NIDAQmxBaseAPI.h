@@ -12,7 +12,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
 
-#include <NIDAQmxBase.h>
+#include <nidaqmxbase/NIDAQmxBase.h>
 
 
 #define ASSERT_SAME_TYPE(T1, T2)  BOOST_STATIC_ASSERT((boost::is_same<T1, T2>::value))
