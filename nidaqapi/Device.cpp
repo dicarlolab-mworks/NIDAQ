@@ -65,6 +65,15 @@ DigitalOutputTask& Device::getDigitalOutputTask(unsigned int portNumber) {
 }
 
 
+CounterInputCountEdgesTask& Device::getCounterInputCountEdgesTask(unsigned int counterNumber, bool countRisingEdges) {
+    std::unique_ptr<CounterInputCountEdgesTask> &task = counterInputCountEdgesTasks[counterNumber];
+    if (!task) {
+        task.reset(new CounterInputCountEdgesTask(*this, counterNumber, countRisingEdges));
+    }
+    return *task;
+}
+
+
 void Device::clearAnalogInputTask() {
     if (analogInputTask) {
         analogInputTask->stop();
@@ -91,6 +100,15 @@ void Device::clearDigitalInputTask() {
 
 void Device::clearDigitalOutputTask(unsigned int portNumber) {
     std::unique_ptr<DigitalOutputTask> &task = digitalOutputTasks[portNumber];
+    if (task) {
+        task->stop();
+        task.reset();
+    }
+}
+
+
+void Device::clearCounterInputCountEdgesTask(unsigned int counterNumber) {
+    std::unique_ptr<CounterInputCountEdgesTask> &task = counterInputCountEdgesTasks[counterNumber];
     if (task) {
         task->stop();
         task.reset();

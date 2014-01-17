@@ -268,6 +268,25 @@ static void testDigitalIOLatency(nidaq::Device &device) {
 }
 
 
+static void countEdges(nidaq::Device &device) {
+    nidaq::CounterInputCountEdgesTask &ciTask = device.getCounterInputCountEdgesTask(0);
+    
+    const unsigned int interval = 5;
+    const double timeout = 10.0;
+    
+    ciTask.start();
+    
+    MachTimer timer;
+    sleep(interval);
+    std::uint32_t count = ciTask.read(timeout);
+    double elapsed = timer.intervalMilli();
+    
+    ciTask.stop();
+    
+    std::cout << "Counted " << count << " edges in " << elapsed / 1000.0 << " s" << std::endl;
+}
+
+
 int main(int argc, const char * argv[])
 {
     try {
@@ -283,7 +302,8 @@ int main(int argc, const char * argv[])
         //analogRepeater(device);
         //testTiming(device);
         //simpleDigitalIO(device);
-        testDigitalIOLatency(device);
+        //testDigitalIOLatency(device);
+        countEdges(device);
         
         std::cout << "Done!" << std::endl;
         

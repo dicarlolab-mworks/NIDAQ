@@ -59,6 +59,7 @@
 		E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
 		E1A7227515EEA72C006671AD /* NIDAQPluginHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */; };
+		E1B886531889A8EB0063AC98 /* CounterInputCountEdgesTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B886511889A8EB0063AC98 /* CounterInputCountEdgesTask.cpp */; };
 		E1C51BC916F21AED00893111 /* MWLibrary.xml in Resources */ = {isa = PBXBuildFile; fileRef = E1C51BC816F21AED00893111 /* MWLibrary.xml */; };
 		E1C51BCC16F25F3C00893111 /* NIDAQDigitalOutputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1C51BCA16F25F3C00893111 /* NIDAQDigitalOutputChannel.cpp */; };
 		E1CA0DDE15EBCB0700EB6B60 /* Device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E196C54315E2BF7000059BF2 /* Device.cpp */; };
@@ -187,6 +188,8 @@
 		E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQmxBaseAPI.h; sourceTree = "<group>"; };
 		E1B3C56415E42252000B0F8E /* AnalogOutputTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnalogOutputTask.cpp; sourceTree = "<group>"; };
 		E1B3C56515E42252000B0F8E /* AnalogOutputTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalogOutputTask.h; sourceTree = "<group>"; };
+		E1B886511889A8EB0063AC98 /* CounterInputCountEdgesTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CounterInputCountEdgesTask.cpp; sourceTree = "<group>"; };
+		E1B886521889A8EB0063AC98 /* CounterInputCountEdgesTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CounterInputCountEdgesTask.h; sourceTree = "<group>"; };
 		E1C51BC816F21AED00893111 /* MWLibrary.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MWLibrary.xml; sourceTree = "<group>"; };
 		E1C51BCA16F25F3C00893111 /* NIDAQDigitalOutputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDigitalOutputChannel.cpp; sourceTree = "<group>"; };
 		E1C51BCB16F25F3C00893111 /* NIDAQDigitalOutputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDigitalOutputChannel.h; sourceTree = "<group>"; };
@@ -343,6 +346,8 @@
 				E18BF7E7160110E400B23BCA /* DigitalInputTask.cpp */,
 				E18BF7EC1601133500B23BCA /* DigitalOutputTask.h */,
 				E18BF7EB1601133400B23BCA /* DigitalOutputTask.cpp */,
+				E1B886521889A8EB0063AC98 /* CounterInputCountEdgesTask.h */,
+				E1B886511889A8EB0063AC98 /* CounterInputCountEdgesTask.cpp */,
 			);
 			path = Tasks;
 			sourceTree = "<group>";
@@ -566,6 +571,7 @@
 				E1CA0DDF15EBCB0800EB6B60 /* Error.cpp in Sources */,
 				E1CA0DE015EBCB0E00EB6B60 /* Task.cpp in Sources */,
 				E1CA0DE215EBCB1300EB6B60 /* AnalogInputTask.cpp in Sources */,
+				E1B886531889A8EB0063AC98 /* CounterInputCountEdgesTask.cpp in Sources */,
 				E1CA0DE115EBCB1100EB6B60 /* AnalogOutputTask.cpp in Sources */,
 				E18BF7E9160110E400B23BCA /* DigitalInputTask.cpp in Sources */,
 				E18BF7ED1601133500B23BCA /* DigitalOutputTask.cpp in Sources */,

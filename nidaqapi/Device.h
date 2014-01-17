@@ -20,6 +20,7 @@
 #include "AnalogOutputTask.h"
 #include "DigitalInputTask.h"
 #include "DigitalOutputTask.h"
+#include "CounterInputCountEdgesTask.h"
 
 
 BEGIN_NAMESPACE_NIDAQ
@@ -43,11 +44,13 @@ public:
     AnalogOutputTask& getAnalogOutputTask();
     DigitalInputTask& getDigitalInputTask();
     DigitalOutputTask& getDigitalOutputTask(unsigned int portNumber);
+    CounterInputCountEdgesTask& getCounterInputCountEdgesTask(unsigned int counterNumber, bool countRisingEdges = true);
     
     void clearAnalogInputTask();
     void clearAnalogOutputTask();
     void clearDigitalInputTask();
     void clearDigitalOutputTask(unsigned int portNumber);
+    void clearCounterInputCountEdgesTask(unsigned int counterNumber);
     
 private:
     static std::uint32_t getSerialNumber(const std::string &deviceName);
@@ -61,6 +64,7 @@ private:
     std::unique_ptr<AnalogOutputTask> analogOutputTask;
     std::unique_ptr<DigitalInputTask> digitalInputTask;
     std::map< unsigned int, std::unique_ptr<DigitalOutputTask> > digitalOutputTasks;
+    std::map< unsigned int, std::unique_ptr<CounterInputCountEdgesTask> > counterInputCountEdgesTasks;
     
     friend class Task;
     
