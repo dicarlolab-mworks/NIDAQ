@@ -27,6 +27,7 @@ Device::~Device() {
     analogOutputTask.reset();
     digitalInputTask.reset();
     digitalOutputTasks.clear();
+    counterInputCountEdgesTasks.clear();
     
     Error::logIfFailed(  DAQmxBaseResetDevice(name.c_str())  );
 }

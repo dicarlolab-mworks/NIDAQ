@@ -121,4 +121,24 @@ Digital output channel on a NIDAQ device.  Supports up to 32 lines on a single p
     </code>
   </MWElement>
   
+  <MWElement name="NIDAQ Counter Input Count Edges Channel">
+    <match_signature>iochannel[@type="nidaq_counter_input_count_edges"]</match_signature>
+
+    <isa>IOChannel</isa>
+    <allowed_parent>NIDAQ Device</allowed_parent>
+
+    <icon>smallIOFolder</icon>
+
+    <description>
+Counter input count edges channel on a NIDAQ device
+    </description>
+
+    <code>
+      <iochannel type="nidaq_counter_input_count_edges"
+                 tag="NIDAQ Counter Input Count Edges Channel"
+                 counter_number="0"
+                 count=""
+             />
+    </code>
+  </MWElement>
 </MWElements>

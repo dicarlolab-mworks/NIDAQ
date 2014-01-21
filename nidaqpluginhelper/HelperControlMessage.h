@@ -111,6 +111,11 @@ struct HelperControlMessage {
         REQUEST_WRITE_DIGITAL_OUTPUT_SAMPLES,
         REQUEST_CLEAR_DIGITAL_OUTPUT_TASKS,
         
+        REQUEST_CREATE_COUNTER_INPUT_COUNT_EDGES_CHANNEL,
+        REQUEST_START_COUNTER_INPUT_COUNT_EDGES_TASKS,
+        REQUEST_READ_COUNTER_INPUT_COUNT_EDGES_VALUE,
+        REQUEST_CLEAR_COUNTER_INPUT_COUNT_EDGES_TASKS,
+        
         REQUEST_SHUTDOWN,
         REQUEST_PING,
         
@@ -150,6 +155,10 @@ struct HelperControlMessage {
             unsigned_int portNumber;
         } digitalChannel;
         
+        struct {
+            unsigned_int counterNumber;
+        } counterChannel;
+        
         //
         // Request/response data
         //
@@ -164,6 +173,12 @@ struct HelperControlMessage {
             double timeout;
             samples_buffer<std::uint32_t> samples;
         } digitalSamples;
+        
+        struct {
+            unsigned_int counterNumber;
+            double timeout;
+            unsigned_int value;
+        } edgeCount;
         
         //
         // Response data

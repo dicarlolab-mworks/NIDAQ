@@ -139,6 +139,22 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             clearDigitalOutputTasks();
             break;
             
+        case HelperControlMessage::REQUEST_CREATE_COUNTER_INPUT_COUNT_EDGES_CHANNEL:
+            createCounterInputCountEdgesChannel();
+            break;
+            
+        case HelperControlMessage::REQUEST_START_COUNTER_INPUT_COUNT_EDGES_TASKS:
+            startCounterInputCountEdgesTasks();
+            break;
+            
+        case HelperControlMessage::REQUEST_READ_COUNTER_INPUT_COUNT_EDGES_VALUE:
+            readCounterInputCountEdgesValue();
+            break;
+            
+        case HelperControlMessage::REQUEST_CLEAR_COUNTER_INPUT_COUNT_EDGES_TASKS:
+            clearCounterInputCountEdgesTasks();
+            break;
+            
         case HelperControlMessage::REQUEST_SHUTDOWN:
             done = true;
             break;
@@ -286,6 +302,40 @@ void NIDAQPluginHelper::clearDigitalOutputTasks() {
     BOOST_FOREACH(unsigned int portNumber, std::set<unsigned int>(digitalOutputPortNumbers)) {
         getDevice().clearDigitalOutputTask(portNumber);
         digitalOutputPortNumbers.erase(portNumber);
+    }
+}
+
+
+void NIDAQPluginHelper::createCounterInputCountEdgesChannel() {
+    getDevice().getCounterInputCountEdgesTask(m.counterChannel.counterNumber);
+    counterInputCountEdgesCounterNumbers.insert(m.counterChannel.counterNumber);
+}
+
+
+void NIDAQPluginHelper::startCounterInputCountEdgesTasks() {
+    BOOST_FOREACH(unsigned int counterNumber, counterInputCountEdgesCounterNumbers) {
+        getDevice().getCounterInputCountEdgesTask(counterNumber).start();
+    }
+}
+
+
+void NIDAQPluginHelper::readCounterInputCountEdgesValue() {
+    nidaq::CounterInputCountEdgesTask &task = getDevice().getCounterInputCountEdgesTask(m.edgeCount.counterNumber);
+    
+    if (!(task.isRunning())) {
+        throw NIDAQPluginHelperError("Counter input count edges task is not running");
+    }
+    
+    std::uint32_t value = task.read(m.edgeCount.timeout);
+    m.edgeCount.value = value;
+}
+
+
+void NIDAQPluginHelper::clearCounterInputCountEdgesTasks() {
+    // Iterate over a copy of the set so that we can safely erase elements during iteration
+    BOOST_FOREACH(unsigned int counterNumber, std::set<unsigned int>(counterInputCountEdgesCounterNumbers)) {
+        getDevice().clearCounterInputCountEdgesTask(counterNumber);
+        counterInputCountEdgesCounterNumbers.erase(counterNumber);
     }
 }
 

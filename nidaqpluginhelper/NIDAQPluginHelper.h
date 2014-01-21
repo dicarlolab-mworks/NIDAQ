@@ -64,12 +64,18 @@ private:
     void writeDigitalOutputSamples();
     void clearDigitalOutputTasks();
     
+    void createCounterInputCountEdgesChannel();
+    void startCounterInputCountEdgesTasks();
+    void readCounterInputCountEdgesValue();
+    void clearCounterInputCountEdgesTasks();
+    
     IPCRequestResponse &ipc;
     HelperControlMessage &m;
     const std::string deviceName;
     
     std::unique_ptr<nidaq::Device> device;
     std::set<unsigned int> digitalOutputPortNumbers;
+    std::set<unsigned int> counterInputCountEdgesCounterNumbers;
     
     MachClock clock;
     

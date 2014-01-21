@@ -77,7 +77,8 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     digitalInputSampleBufferSize(0),
     digitalInputTaskRunning(false),
     digitalOutputSampleBufferSize(0),
-    digitalOutputTasksRunning(false)
+    digitalOutputTasksRunning(false),
+    counterInputCountEdgesTasksRunning(false)
 {
     if (updateInterval <= 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid update interval");
@@ -143,6 +144,12 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
         return;
     }
     
+    boost::shared_ptr<NIDAQCounterInputCountEdgesChannel> ciCEChannel = boost::dynamic_pointer_cast<NIDAQCounterInputCountEdgesChannel>(child);
+    if (ciCEChannel) {
+        counterInputCountEdgesChannels[ciCEChannel->getCounterNumber()] = ciCEChannel;
+        return;
+    }
+    
     throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid channel type for NIDAQ device");
 }
 
@@ -151,7 +158,8 @@ bool NIDAQDevice::initialize() {
     if (analogInputChannels.empty() &&
         analogOutputChannels.empty() &&
         digitalInputChannels.empty() &&
-        digitalOutputChannels.empty())
+        digitalOutputChannels.empty() &&
+        counterInputCountEdgesChannels.empty())
     {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device must have at least one channel");
     }
@@ -193,6 +201,9 @@ bool NIDAQDevice::createTasks() {
         return false;
     }
     if (haveDigitalOutputChannels() && !createDigitalOutputTasks()) {
+        return false;
+    }
+    if (haveCounterInputCountEdgesChannels() && !createCounterInputCountEdgesTasks()) {
         return false;
     }
     
@@ -278,6 +289,20 @@ bool NIDAQDevice::createDigitalOutputTasks() {
 }
 
 
+bool NIDAQDevice::createCounterInputCountEdgesTasks() {
+    BOOST_FOREACH(const CounterInputCountEdgesChannelMap::value_type &value, counterInputCountEdgesChannels) {
+        controlMessage->code = HelperControlMessage::REQUEST_CREATE_COUNTER_INPUT_COUNT_EDGES_CHANNEL;
+        controlMessage->counterChannel.counterNumber = value.first;
+        
+        if (!sendHelperRequest()) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
 bool NIDAQDevice::startDeviceIO() {
     scoped_lock lock(controlMutex);
     
@@ -293,8 +318,13 @@ bool NIDAQDevice::startDeviceIO() {
     if (haveDigitalInputChannels() && !startDigitalInputTask()) {
         return false;
     }
+    if (haveCounterInputCountEdgesChannels() && !startCounterInputCountEdgesTasks()) {
+        return false;
+    }
     
-    if ((haveAnalogInputChannels() || haveDigitalInputChannels()) && !readInputScheduleTask) {
+    if ((haveAnalogInputChannels() || haveDigitalInputChannels() || haveCounterInputCountEdgesChannels()) &&
+        !readInputScheduleTask)
+    {
         boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
         readInputScheduleTask = Scheduler::instance()->scheduleUS(FILELINE,
                                                                   updateInterval,
@@ -382,6 +412,20 @@ bool NIDAQDevice::startDigitalInputTask() {
 }
 
 
+bool NIDAQDevice::startCounterInputCountEdgesTasks() {
+    if (!counterInputCountEdgesTasksRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_START_COUNTER_INPUT_COUNT_EDGES_TASKS;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        counterInputCountEdgesTasksRunning = true;
+    }
+    
+    return true;
+}
+
+
 bool NIDAQDevice::stopDeviceIO() {
     scoped_lock lock(controlMutex);
     
@@ -390,11 +434,25 @@ bool NIDAQDevice::stopDeviceIO() {
         readInputScheduleTask.reset();
     }
     
-    if (!(digitalInputTaskRunning || digitalOutputTasksRunning || analogInputTaskRunning || analogOutputTaskRunning)) {
+    if (!(counterInputCountEdgesTasksRunning ||
+          digitalInputTaskRunning ||
+          digitalOutputTasksRunning ||
+          analogInputTaskRunning ||
+          analogOutputTaskRunning))
+    {
         return true;
     }
     
     bool success = true;
+    
+    if (counterInputCountEdgesTasksRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_COUNTER_INPUT_COUNT_EDGES_TASKS;
+        if (!sendHelperRequest()) {
+            success = false;
+        } else {
+            counterInputCountEdgesTasksRunning = false;
+        }
+    }
     
     if (digitalInputTaskRunning) {
         controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_INPUT_TASK;
@@ -453,12 +511,15 @@ void* NIDAQDevice::readInput() {
         return NULL;
     }
     
-    // Read digital input first, since analog input read may block until the requested number of
-    // samples are available
     if (haveDigitalInputChannels()) {
         readDigitalInput();
     }
     
+    if (haveCounterInputCountEdgesChannels()) {
+        readEdgeCounts();
+    }
+    
+    // Read analog input last, since the read may block until the requested number of samples are available
     if (haveAnalogInputChannels()) {
         readAnalogInput();
     }
@@ -625,6 +686,19 @@ bool NIDAQDevice::writeDigitalOutput(int portNumber) {
     }
     
     return true;
+}
+
+
+void NIDAQDevice::readEdgeCounts() {
+    BOOST_FOREACH(const CounterInputCountEdgesChannelMap::value_type &value, counterInputCountEdgesChannels) {
+        controlMessage->code = HelperControlMessage::REQUEST_READ_COUNTER_INPUT_COUNT_EDGES_VALUE;
+        controlMessage->edgeCount.counterNumber = value.first;
+        controlMessage->edgeCount.timeout = double(updateInterval) / 1e6;  // us to s
+        
+        if (sendHelperRequest()) {
+            value.second->postCount(controlMessage->edgeCount.value, Clock::instance()->getCurrentTimeUS());
+        }
+    }
 }
 
 

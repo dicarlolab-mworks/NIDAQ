@@ -24,6 +24,7 @@
 #include "NIDAQAnalogOutputVoltageWaveformChannel.h"
 #include "NIDAQDigitalInputChannel.h"
 #include "NIDAQDigitalOutputChannel.h"
+#include "NIDAQCounterInputCountEdgesChannel.h"
 
 
 BEGIN_NAMESPACE_MW
@@ -75,6 +76,11 @@ private:
     bool startDigitalOutputTasks();
     bool writeDigitalOutput(int portNumber);
     
+    bool haveCounterInputCountEdgesChannels() const { return !(counterInputCountEdgesChannels.empty()); }
+    bool createCounterInputCountEdgesTasks();
+    bool startCounterInputCountEdgesTasks();
+    void readEdgeCounts();
+    
     void spawnHelper();
     void reapHelper();
     bool sendHelperRequest();
@@ -117,6 +123,10 @@ private:
     DigitalOutputChannelMap digitalOutputChannels;
     std::size_t digitalOutputSampleBufferSize;
     bool digitalOutputTasksRunning;
+    
+    typedef std::map< int, boost::shared_ptr<NIDAQCounterInputCountEdgesChannel> > CounterInputCountEdgesChannelMap;
+    CounterInputCountEdgesChannelMap counterInputCountEdgesChannels;
+    bool counterInputCountEdgesTasksRunning;
     
     
     class DigitalOutputLineStateNotification : public VariableNotification {
