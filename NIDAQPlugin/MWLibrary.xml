@@ -130,7 +130,7 @@ Digital output channel on a NIDAQ device.  Supports up to 32 lines on a single p
     <icon>smallIOFolder</icon>
 
     <description>
-Counter input count edges channel on a NIDAQ device
+Counter input count edges channel on a NIDAQ device.  Counts falling edges detected on the specified counter input.
     </description>
 
     <code>

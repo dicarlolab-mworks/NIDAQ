@@ -44,7 +44,7 @@ public:
     AnalogOutputTask& getAnalogOutputTask();
     DigitalInputTask& getDigitalInputTask();
     DigitalOutputTask& getDigitalOutputTask(unsigned int portNumber);
-    CounterInputCountEdgesTask& getCounterInputCountEdgesTask(unsigned int counterNumber, bool countRisingEdges = true);
+    CounterInputCountEdgesTask& getCounterInputCountEdgesTask(unsigned int counterNumber);
     
     void clearAnalogInputTask();
     void clearAnalogOutputTask();

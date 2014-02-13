@@ -66,10 +66,10 @@ DigitalOutputTask& Device::getDigitalOutputTask(unsigned int portNumber) {
 }
 
 
-CounterInputCountEdgesTask& Device::getCounterInputCountEdgesTask(unsigned int counterNumber, bool countRisingEdges) {
+CounterInputCountEdgesTask& Device::getCounterInputCountEdgesTask(unsigned int counterNumber) {
     std::unique_ptr<CounterInputCountEdgesTask> &task = counterInputCountEdgesTasks[counterNumber];
     if (!task) {
-        task.reset(new CounterInputCountEdgesTask(*this, counterNumber, countRisingEdges));
+        task.reset(new CounterInputCountEdgesTask(*this, counterNumber));
     }
     return *task;
 }

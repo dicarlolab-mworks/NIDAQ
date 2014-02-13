@@ -21,7 +21,7 @@ public:
     std::uint32_t read(double timeout);
     
 private:
-    CounterInputCountEdgesTask(Device &device, unsigned int counterNumber, bool countRisingEdges);
+    CounterInputCountEdgesTask(Device &device, unsigned int counterNumber);
     
     friend class Device;
     

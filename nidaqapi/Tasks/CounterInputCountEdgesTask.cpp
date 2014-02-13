@@ -15,9 +15,7 @@
 BEGIN_NAMESPACE_NIDAQ
 
 
-CounterInputCountEdgesTask::CounterInputCountEdgesTask(Device &device,
-                                                       unsigned int counterNumber,
-                                                       bool countRisingEdges) :
+CounterInputCountEdgesTask::CounterInputCountEdgesTask(Device &device, unsigned int counterNumber) :
     Task(device)
 {
     std::string counter = getChannelName("ctr", counterNumber);
@@ -25,7 +23,7 @@ CounterInputCountEdgesTask::CounterInputCountEdgesTask(Device &device,
     std::int32_t error = DAQmxBaseCreateCICountEdgesChan(getHandle(),
                                                          counter.c_str(),
                                                          NULL,
-                                                         (countRisingEdges ? DAQmx_Val_Rising : DAQmx_Val_Falling),
+                                                         DAQmx_Val_Falling,
                                                          0,
                                                          DAQmx_Val_CountUp);
     Error::throwIfFailed(error);
