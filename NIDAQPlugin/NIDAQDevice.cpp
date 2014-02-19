@@ -380,15 +380,17 @@ bool NIDAQDevice::startAnalogInputTask() {
 
 bool NIDAQDevice::startDigitalOutputTasks() {
     if (!digitalOutputTasksRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_START_DIGITAL_OUTPUT_TASKS;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        // Write the initial output values *after* starting the task, as writing before starting
+        // fails with some devices (e.g. the NI USB-6501)
         BOOST_FOREACH(const DigitalOutputChannelMap::value_type &value, digitalOutputChannels) {
             if (!writeDigitalOutput(value.first)) {
                 return false;
             }
-        }
-        
-        controlMessage->code = HelperControlMessage::REQUEST_START_DIGITAL_OUTPUT_TASKS;
-        if (!sendHelperRequest()) {
-            return false;
         }
         
         digitalOutputTasksRunning = true;
