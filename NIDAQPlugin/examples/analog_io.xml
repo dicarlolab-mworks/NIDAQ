@@ -9,7 +9,7 @@
         </iodevice>
     </io_devices>
     <variables tag="Variables">
-        <variable tag="amplitude" scope="global" logging="when_changed" default_value="10.0" type="float"></variable>
+        <variable tag="amplitude" scope="global" logging="when_changed" default_value="5.0" type="float"></variable>
         <variable tag="period" scope="global" logging="when_changed" default_value="5.0s" type="float"></variable>
         <variable tag="box_size" scope="global" logging="when_changed" default_value="2.0" type="float"></variable>
         <variable tag="box_x" scope="global" logging="when_changed" default_value="0.0" type="float"></variable>

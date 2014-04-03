@@ -1,0 +1,66 @@
+<?xml version="1.0" standalone="no"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices">
+        <iodevice type="nidaq" tag="nidaq" name="Dev1" update_interval="3ms" analog_input_data_interval="1ms" analog_output_data_interval="1ms" assume_multiplexed_adc="YES">
+            <iochannel type="nidaq_digital_output" tag="port1" port_number="1" num_lines_in_port="8" line0="signal" line1="" line2="" line3="" line4="" line5="" line6="" line7="" line8="" line9="" line10="" line11="" line12="" line13="" line14="" line15="" line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23="" line24="" line25="" line26="" line27="" line28="" line29="" line30="" line31=""></iochannel>
+            <iochannel type="nidaq_counter_input_count_edges" tag="ctr0" counter_number="0" count="count"></iochannel>
+        </iodevice>
+    </io_devices>
+    <variables tag="Variables">
+        <variable tag="signal" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="count" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="previous_count" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="num_trials" scope="global" logging="when_changed" default_value="100" type="integer"></variable>
+        <variable tag="num_trials_done" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+    </variables>
+    <sounds tag="Sounds"></sounds>
+    <stimuli tag="Stimuli"></stimuli>
+    <filters tag="Filters"></filters>
+    <optimizers tag="Optimizers"></optimizers>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential" interruptible="YES">
+            <task_system tag="New Task System" interruptible="YES">
+                <task_system_state tag="Begin State System" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Reset signal" variable="signal" value="0"></action>
+                    <action type="assignment" tag="Reset count" variable="count" value="0"></action>
+                    <action type="assignment" tag="Reset num trials done" variable="num_trials_done" value="0"></action>
+                    <action tag="Start IO Device" type="start_device_IO" device="nidaq"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="direct" tag="Always Go to ..." target="Signal High"></transition>
+                </task_system_state>
+                <task_system_state tag="Signal High" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Store previous count" variable="previous_count" value="count"></action>
+                    <action type="assignment" tag="Set signal high" variable="signal" value="1"></action>
+                    <action type="start_timer" tag="Start Timer" timer="MyTimer" timebase="" duration="20" duration_units="ms"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="count != previous_count" target="Exit State System"></transition>
+                    <transition type="timer_expired" tag="If Timer Expired, Transition to ..." target="Signal Low" timer="MyTimer"></transition>
+                </task_system_state>
+                <task_system_state tag="Signal Low" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Set signal low" variable="signal" value="0"></action>
+                    <action type="start_timer" tag="Start Timer 2" timer="MyTimer" timebase="" duration="20" duration_units="ms"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="conditional" tag="If Condition is True, Transition to ... 3" condition="count == previous_count + 1" target="Counter incremented"></transition>
+                    <transition type="timer_expired" tag="If Timer Expired, Transition to ... 2" target="Exit State System" timer="MyTimer"></transition>
+                </task_system_state>
+                <task_system_state tag="Counter incremented" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Increment num trials done" variable="num_trials_done" value="num_trials_done + 1"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="conditional" tag="If Condition is True, Transition to ... 2" condition="num_trials_done == num_trials" target="Exit State System"></transition>
+                    <transition type="direct" tag="Always Go to ... 2" target="Signal High"></transition>
+                </task_system_state>
+                <task_system_state tag="Exit State System" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action tag="Stop IO Device" type="stop_device_IO" device="nidaq"></action>
+                    <action type="assert" tag="Assert" condition="num_trials_done == num_trials" message="Failed to complete all trials" stop_on_failure="0"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition tag="Return to parent task system" type="yield"></transition>
+                </task_system_state>
+            </task_system>
+        </protocol>
+    </experiment>
+</monkeyml>
