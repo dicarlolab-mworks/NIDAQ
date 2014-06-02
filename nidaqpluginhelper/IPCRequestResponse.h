@@ -11,7 +11,10 @@
 
 #include <string>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
 #include <boost/interprocess/sync/named_semaphore.hpp>
+#pragma clang diagnostic pop
 #include <boost/noncopyable.hpp>
 
 // We insist that boost::interprocess::named_semaphore use POSIX named semaphores, because the fallback

@@ -12,7 +12,10 @@
 #include <map>
 #include <vector>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
 #include <boost/interprocess/mapped_region.hpp>
+#pragma clang diagnostic pop
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/thread/mutex.hpp>
