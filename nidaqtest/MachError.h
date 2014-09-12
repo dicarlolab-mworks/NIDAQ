@@ -23,8 +23,6 @@ public:
         }
     }
     
-    ~MachError() throw() /*override*/ { }
-    
     explicit MachError(mach_error_t value);
     
     mach_error_t getValue() const {

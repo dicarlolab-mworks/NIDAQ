@@ -49,11 +49,11 @@ public:
     
     void addChild(std::map<std::string, std::string> parameters,
                   ComponentRegistryPtr reg,
-                  boost::shared_ptr<Component> child) MW_OVERRIDE;
+                  boost::shared_ptr<Component> child) override;
     
-    bool initialize() MW_OVERRIDE;
-    bool startDeviceIO() MW_OVERRIDE;
-    bool stopDeviceIO() MW_OVERRIDE;
+    bool initialize() override;
+    bool startDeviceIO() override;
+    bool stopDeviceIO() override;
     
 private:
     bool createTasks();
@@ -139,7 +139,7 @@ private:
             portNumber(portNumber)
         { }
         
-        void notify(const Datum &data, MWTime time) MW_OVERRIDE;
+        void notify(const Datum &data, MWTime time) override;
         
     private:
         boost::weak_ptr<NIDAQDevice> nidaqDeviceWeak;

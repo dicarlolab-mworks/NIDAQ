@@ -37,8 +37,6 @@ public:
         }
     }
     
-    ~Error() throw() /*override*/ { }
-    
     Error(const std::string &message, std::int32_t code = 0);
     
     const std::string& getMessage() const {
