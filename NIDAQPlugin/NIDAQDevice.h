@@ -24,6 +24,7 @@
 #include "HelperSharedMemory.h"
 
 #include "NIDAQAnalogInputVoltageChannel.h"
+#include "NIDAQAnalogOutputVoltageChannel.h"
 #include "NIDAQAnalogOutputVoltageWaveformChannel.h"
 #include "NIDAQDigitalInputChannel.h"
 #include "NIDAQDigitalOutputChannel.h"
@@ -64,7 +65,9 @@ private:
     bool startAnalogInputTask();
     void readAnalogInput();
     
-    bool haveAnalogOutputChannels() const { return !(analogOutputChannels.empty()); }
+    bool haveAnalogOutputVoltageChannels() const { return !(analogOutputVoltageChannels.empty()); }
+    bool haveAnalogOutputVoltageWaveformChannels() const { return !(analogOutputVoltageWaveformChannels.empty()); }
+    bool haveAnalogOutputChannels() const { return haveAnalogOutputVoltageChannels() || haveAnalogOutputVoltageWaveformChannels(); }
     bool createAnalogOutputTask();
     bool startAnalogOutputTask();
     bool writeAnalogOutput();
@@ -114,7 +117,8 @@ private:
     bool analogInputTaskRunning;
     
     MWTime analogOutputDataInterval;
-    std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> > analogOutputChannels;
+    std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageChannel> > analogOutputVoltageChannels;
+    std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> > analogOutputVoltageWaveformChannels;
     std::size_t analogOutputSampleBufferSize;
     bool analogOutputTaskRunning;
     
@@ -132,9 +136,22 @@ private:
     bool counterInputCountEdgesTasksRunning;
     
     
+    class AnalogOutputVoltageNotification : public VariableNotification {
+    public:
+        explicit AnalogOutputVoltageNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice) :
+            nidaqDeviceWeak(nidaqDevice)
+        { }
+        
+        void notify(const Datum &data, MWTime time) override;
+        
+    private:
+        boost::weak_ptr<NIDAQDevice> nidaqDeviceWeak;
+    };
+    
+    
     class DigitalOutputLineStateNotification : public VariableNotification {
     public:
-        explicit DigitalOutputLineStateNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice, int portNumber) :
+        DigitalOutputLineStateNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice, int portNumber) :
             nidaqDeviceWeak(nidaqDevice),
             portNumber(portNumber)
         { }

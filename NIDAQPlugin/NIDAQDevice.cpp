@@ -108,9 +108,21 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
         return;
     }
     
-    boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> aoChannel = boost::dynamic_pointer_cast<NIDAQAnalogOutputVoltageWaveformChannel>(child);
+    boost::shared_ptr<NIDAQAnalogOutputVoltageChannel> aoChannel;
+    aoChannel = boost::dynamic_pointer_cast<NIDAQAnalogOutputVoltageChannel>(child);
     if (aoChannel) {
-        MWTime period = aoChannel->getPeriod();
+        boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
+        boost::shared_ptr<AnalogOutputVoltageNotification> notification(new AnalogOutputVoltageNotification(sharedThis));
+        aoChannel->addNewVoltageNotification(notification);
+        
+        analogOutputVoltageChannels.push_back(aoChannel);
+        return;
+    }
+    
+    boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> aoVWChannel;
+    aoVWChannel = boost::dynamic_pointer_cast<NIDAQAnalogOutputVoltageWaveformChannel>(child);
+    if (aoVWChannel) {
+        MWTime period = aoVWChannel->getPeriod();
         if (period % analogOutputDataInterval != 0) {
             throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
                                   "Analog output waveform period must be an integer multiple of analog output data interval");
@@ -120,7 +132,7 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
         analogOutputSampleBufferSize = std::max(analogOutputSampleBufferSize,
                                                 std::size_t(period / analogOutputDataInterval));
         
-        analogOutputChannels.push_back(aoChannel);
+        analogOutputVoltageWaveformChannels.push_back(aoVWChannel);
         return;
     }
     
@@ -155,18 +167,27 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
 
 
 bool NIDAQDevice::initialize() {
-    if (analogInputChannels.empty() &&
-        analogOutputChannels.empty() &&
-        digitalInputChannels.empty() &&
-        digitalOutputChannels.empty() &&
-        counterInputCountEdgesChannels.empty())
+    if (!(haveAnalogInputChannels() ||
+          haveAnalogOutputChannels() ||
+          haveDigitalInputChannels() ||
+          haveDigitalOutputChannels() ||
+          haveCounterInputCountEdgesChannels()))
     {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device must have at least one channel");
     }
     
+    if (haveAnalogOutputVoltageChannels() && haveAnalogOutputVoltageWaveformChannels()) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
+                              "NIDAQ device cannot use static and waveform analog output voltage channels simultaneously");
+    }
+    
     analogInputSampleBufferSize = (std::size_t(updateInterval / analogInputDataInterval) *
                                    analogInputChannels.size());
-    analogOutputSampleBufferSize *= analogOutputChannels.size();
+    if (haveAnalogOutputVoltageChannels()) {
+        analogOutputSampleBufferSize = analogOutputVoltageChannels.size();
+    } else {
+        analogOutputSampleBufferSize *= analogOutputVoltageWaveformChannels.size();
+    }
     digitalInputSampleBufferSize = digitalInputChannels.size();
     digitalOutputSampleBufferSize = (digitalOutputChannels.empty() ? 0 : 1);
     
@@ -237,24 +258,42 @@ bool NIDAQDevice::createAnalogInputTask() {
 
 
 bool NIDAQDevice::createAnalogOutputTask() {
-    BOOST_FOREACH(const boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> &channel, analogOutputChannels) {
-        controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL;
+    if (haveAnalogOutputVoltageChannels()) {
         
-        controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
-        controlMessage->analogVoltageChannel.minVal = channel->getRangeMin();
-        controlMessage->analogVoltageChannel.maxVal = channel->getRangeMax();
+        for (auto &channel : analogOutputVoltageChannels) {
+            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL;
+            
+            controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
+            controlMessage->analogVoltageChannel.minVal = channel->getRangeMin();
+            controlMessage->analogVoltageChannel.maxVal = channel->getRangeMax();
+            
+            if (!sendHelperRequest()) {
+                return false;
+            }
+        }
         
+    } else {
+        
+        for (auto &channel : analogOutputVoltageWaveformChannels) {
+            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL;
+            
+            controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
+            controlMessage->analogVoltageChannel.minVal = channel->getRangeMin();
+            controlMessage->analogVoltageChannel.maxVal = channel->getRangeMax();
+            
+            if (!sendHelperRequest()) {
+                return false;
+            }
+        }
+        
+        controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_OUTPUT_SAMPLE_CLOCK_TIMING;
+        controlMessage->sampleClockTiming.samplingRate = 1.0 / (analogOutputDataInterval / 1e6);  // us to s
+        controlMessage->sampleClockTiming.samplesPerChannelToAcquire = (analogOutputSampleBufferSize /
+                                                                        analogOutputVoltageWaveformChannels.size());
         if (!sendHelperRequest()) {
             return false;
         }
-    }
-    
-    controlMessage->code = HelperControlMessage::REQUEST_SET_ANALOG_OUTPUT_SAMPLE_CLOCK_TIMING;
-    controlMessage->sampleClockTiming.samplingRate = 1.0 / (analogOutputDataInterval / 1e6);  // us to s
-    controlMessage->sampleClockTiming.samplesPerChannelToAcquire = (analogOutputSampleBufferSize /
-                                                                    analogOutputChannels.size());
-    if (!sendHelperRequest()) {
-        return false;
+        
     }
     
     return true;
@@ -343,8 +382,11 @@ bool NIDAQDevice::startDeviceIO() {
 
 bool NIDAQDevice::startAnalogOutputTask() {
     if (!analogOutputTaskRunning) {
-        if (!writeAnalogOutput()) {
-            return false;
+        // Waveform samples must be written *before* starting the task
+        if (haveAnalogOutputVoltageWaveformChannels()) {
+            if (!writeAnalogOutput()) {
+                return false;
+            }
         }
         
         controlMessage->code = HelperControlMessage::REQUEST_START_ANALOG_OUTPUT_TASK;
@@ -352,9 +394,16 @@ bool NIDAQDevice::startAnalogOutputTask() {
             return false;
         }
         
+        // Static samples must be written *after* starting the task
+        if (haveAnalogOutputVoltageChannels()) {
+            if (!writeAnalogOutput()) {
+                return false;
+            }
+        }
+        
         analogOutputTaskRunning = true;
     }
-
+    
     return true;
 }
 
@@ -583,16 +632,27 @@ void NIDAQDevice::readAnalogInput() {
 
 
 bool NIDAQDevice::writeAnalogOutput() {
-    const std::size_t numChannels = analogOutputChannels.size();
+    std::size_t numChannels;
+    if (haveAnalogOutputVoltageChannels()) {
+        numChannels = analogOutputVoltageChannels.size();
+    } else {
+        numChannels = analogOutputVoltageWaveformChannels.size();
+    }
     
     controlMessage->code = HelperControlMessage::REQUEST_WRITE_ANALOG_OUTPUT_SAMPLES;
     controlMessage->analogSamples.timeout = 10.0;
     controlMessage->analogSamples.samples.numSamples = analogOutputSampleBufferSize;
     
     for (std::size_t i = 0; i < analogOutputSampleBufferSize; i++) {
+        const std::size_t channelNum = i % numChannels;
         double &sample = controlMessage->analogSamples.samples[i];
-        MWTime sampleTime = analogOutputDataInterval * (i / numChannels);
-        sample = analogOutputChannels[i % numChannels]->getSampleForTime(sampleTime);
+        
+        if (haveAnalogOutputVoltageChannels()) {
+            sample = analogOutputVoltageChannels[channelNum]->getVoltage();
+        } else {
+            MWTime sampleTime = analogOutputDataInterval * (i / numChannels);
+            sample = analogOutputVoltageWaveformChannels[channelNum]->getSampleForTime(sampleTime);
+        }
     }
     
     if (!sendHelperRequest()) {
@@ -808,6 +868,17 @@ bool NIDAQDevice::sendHelperRequest() {
     }
     
     return (responseCode == HelperControlMessage::RESPONSE_OK);
+}
+
+
+void NIDAQDevice::AnalogOutputVoltageNotification::notify(const Datum &data, MWTime time) {
+    boost::shared_ptr<NIDAQDevice> nidaqDevice = nidaqDeviceWeak.lock();
+    if (nidaqDevice) {
+        scoped_lock lock(nidaqDevice->controlMutex);
+        if (nidaqDevice->analogOutputTaskRunning) {
+            nidaqDevice->writeAnalogOutput();
+        }
+    }
 }
 
 

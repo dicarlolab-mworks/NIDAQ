@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 MIT. All rights reserved.
 //
 
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <unistd.h>
@@ -44,6 +45,32 @@ static void generateSineWaves(nidaq::Device &device) {
     
     task.start();
     usleep(10000000);
+    task.stop();
+}
+
+
+static void variableOutputVoltage(nidaq::Device &device) {
+    std::cout << "Creating analog output task" << std::endl;
+    nidaq::AnalogOutputTask &task = device.getAnalogOutputTask();
+    
+    std::cout << "Creating analog output channel" << std::endl;
+    task.addVoltageChannel(0, -10.0, 10.0);
+    
+    const std::size_t samplesPerChan = 1;
+    std::array<double, samplesPerChan> data;
+    
+    task.start();
+    
+    for (std::size_t i = 1; i <= 5; i++) {
+        data.fill(double(i));
+        
+        std::cout << "Writing samples" << std::endl;
+        std::size_t samplesWritten = task.write(data, 10.0);
+        std::cout << "Wrote " << samplesWritten << " of " << data.size() << " samples" << std::endl;
+        
+        usleep(5000000);
+    }
+    
     task.stop();
 }
 
@@ -298,12 +325,13 @@ int main(int argc, const char * argv[])
                   << std::hex << std::uppercase << device.getSerialNumber() << std::dec <<  ")" << std::endl;
         
         //generateSineWaves(device);
+        variableOutputVoltage(device);
         //acquireNScans(device);
         //analogRepeater(device);
         //testTiming(device);
         //simpleDigitalIO(device);
         //testDigitalIOLatency(device);
-        countEdges(device);
+        //countEdges(device);
         
         std::cout << "Done!" << std::endl;
         

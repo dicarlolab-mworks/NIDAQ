@@ -16,6 +16,7 @@ class NIDAQPlugin : public Plugin {
     void registerComponents(boost::shared_ptr<ComponentRegistry> registry) override {
         registry->registerFactory<StandardComponentFactory, NIDAQDevice>();
         registry->registerFactory<StandardComponentFactory, NIDAQAnalogInputVoltageChannel>();
+        registry->registerFactory<StandardComponentFactory, NIDAQAnalogOutputVoltageChannel>();
         registry->registerFactory<StandardComponentFactory, NIDAQAnalogOutputVoltageWaveformChannel>();
         registry->registerFactory<StandardComponentFactory, NIDAQDigitalInputChannel>();
         registry->registerFactory<StandardComponentFactory, NIDAQDigitalOutputChannel>();

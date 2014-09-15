@@ -18,8 +18,6 @@ BEGIN_NAMESPACE_MW
 class NIDAQAnalogInputVoltageChannel : public NIDAQAnalogChannel {
     
 public:
-    static const std::string VOLTAGE;
-    
     static void describeComponent(ComponentInfo &info);
     
     explicit NIDAQAnalogInputVoltageChannel(const ParameterValueMap &parameters);

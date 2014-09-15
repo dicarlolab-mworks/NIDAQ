@@ -19,6 +19,7 @@ public:
     static const std::string CHANNEL_NUMBER;
     static const std::string RANGE_MIN;
     static const std::string RANGE_MAX;
+    static const std::string VOLTAGE;
     
     static void describeComponent(ComponentInfo &info);
     

@@ -15,6 +15,7 @@ BEGIN_NAMESPACE_MW
 const std::string NIDAQAnalogChannel::CHANNEL_NUMBER("channel_number");
 const std::string NIDAQAnalogChannel::RANGE_MIN("range_min");
 const std::string NIDAQAnalogChannel::RANGE_MAX("range_max");
+const std::string NIDAQAnalogChannel::VOLTAGE("voltage");
 
 
 void NIDAQAnalogChannel::describeComponent(ComponentInfo &info) {

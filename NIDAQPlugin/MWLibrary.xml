@@ -46,6 +46,29 @@ Analog input voltage channel on a NIDAQ device
     </code>
   </MWElement>
   
+  <MWElement name="NIDAQ Analog Output Voltage Channel">
+    <match_signature>iochannel[@type="nidaq_analog_output_voltage"]</match_signature>
+    
+    <isa>IOChannel</isa>
+    <allowed_parent>NIDAQ Device</allowed_parent>
+
+    <icon>smallIOFolder</icon>
+    
+    <description>
+Analog output voltage channel on a NIDAQ device
+    </description>
+    
+    <code>
+      <iochannel type="nidaq_analog_output_voltage"
+                 tag="NIDAQ Analog Output Voltage Channel"
+                 channel_number="0"
+                 range_min="-10.0"
+                 range_max="10.0"
+                 voltage=""
+             />
+    </code>
+  </MWElement>
+  
   <MWElement name="NIDAQ Analog Output Voltage Waveform Channel">
     <match_signature>iochannel[@type="nidaq_analog_output_voltage_waveform"]</match_signature>
     

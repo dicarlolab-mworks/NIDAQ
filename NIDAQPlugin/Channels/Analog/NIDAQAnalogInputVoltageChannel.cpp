@@ -12,9 +12,6 @@
 BEGIN_NAMESPACE_MW
 
 
-const std::string NIDAQAnalogInputVoltageChannel::VOLTAGE("voltage");
-
-
 void NIDAQAnalogInputVoltageChannel::describeComponent(ComponentInfo &info) {
     NIDAQAnalogChannel::describeComponent(info);
     info.setSignature("iochannel/nidaq_analog_input_voltage");
