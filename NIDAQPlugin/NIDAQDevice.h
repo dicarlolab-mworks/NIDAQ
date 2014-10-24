@@ -18,7 +18,7 @@
 #pragma clang diagnostic pop
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 
 #include "IPCRequestResponse.h"
 #include "HelperSharedMemory.h"
@@ -102,8 +102,8 @@ private:
     
     pid_t helperPID;
     
-    typedef boost::mutex::scoped_lock scoped_lock;
-    boost::mutex controlMutex;
+    using scoped_lock = boost::recursive_mutex::scoped_lock;
+    boost::recursive_mutex controlMutex;
     
     MWTime updateInterval;
     boost::shared_ptr<ScheduleTask> readInputScheduleTask;
