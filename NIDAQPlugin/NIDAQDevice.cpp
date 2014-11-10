@@ -791,6 +791,35 @@ void NIDAQDevice::spawnHelper() {
                               "Unable to launch " PLUGIN_HELPER_EXECUTABLE,
                               std::strerror(status));
     }
+    
+    // Give helper process some time to start up
+    Clock::instance()->sleepMS(1000);
+    
+    //
+    // Verify that the helper has not exited
+    //
+    
+    pid_t pid = waitpid(helperPID, &status, WNOHANG | WUNTRACED);
+    
+    if (-1 == pid) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN,
+               "Error while checking status of %s: %s",
+               PLUGIN_HELPER_EXECUTABLE,
+               std::strerror(errno));
+    } else if (pid != 0) {
+        helperPID = -1;
+        std::string msg(PLUGIN_HELPER_EXECUTABLE " ");
+        
+        if (WSTOPSIG(status)) {
+            msg += "was stopped by a signal";
+        } else if (WIFSIGNALED(status)) {
+            msg += "terminated due to a signal";
+        } else {
+            msg += "exited prematurely";
+        }
+        
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, msg);
+    }
 }
 
 
