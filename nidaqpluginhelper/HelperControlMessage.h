@@ -21,16 +21,13 @@
 struct HelperControlMessage {
     
     //
-    // Type definitions (portable between x86_64 and i386)
+    // Type definitions
     //
-    
-    typedef std::int64_t signed_int;
-    typedef std::uint64_t unsigned_int;
     
     template <typename SampleType>
     struct samples_buffer {
         std::size_t size() const {
-            return std::size_t(numSamples);
+            return numSamples;
         }
         
         const SampleType& operator[](std::size_t i) const {
@@ -41,7 +38,7 @@ struct HelperControlMessage {
             return const_cast<SampleType &>(static_cast<const samples_buffer &>(*this)[i]);
         }
         
-        unsigned_int numSamples;  // *not* size_t
+        std::size_t numSamples;
         
     private:
         SampleType firstSample;
@@ -129,7 +126,7 @@ struct HelperControlMessage {
         RESPONSE_BAD_REQUEST
     };
     
-    signed_int code;
+    int code;
     
     //
     // Message data
@@ -141,22 +138,22 @@ struct HelperControlMessage {
         //
         
         struct {
-            unsigned_int channelNumber;
+            unsigned int channelNumber;
             double minVal;
             double maxVal;
         } analogVoltageChannel;
         
         struct {
             double samplingRate;
-            unsigned_int samplesPerChannelToAcquire;
+            unsigned int samplesPerChannelToAcquire;
         } sampleClockTiming;
         
         struct {
-            unsigned_int portNumber;
+            unsigned int portNumber;
         } digitalChannel;
         
         struct {
-            unsigned_int counterNumber;
+            unsigned int counterNumber;
         } counterChannel;
         
         //
@@ -169,25 +166,25 @@ struct HelperControlMessage {
         } analogSamples;
         
         struct {
-            unsigned_int portNumber;
+            unsigned int portNumber;
             double timeout;
             samples_buffer<std::uint32_t> samples;
         } digitalSamples;
         
         struct {
-            unsigned_int counterNumber;
+            unsigned int counterNumber;
             double timeout;
-            unsigned_int value;
+            unsigned int value;
         } edgeCount;
         
         //
         // Response data
         //
         
-        unsigned_int taskStartTime;
+        unsigned int taskStartTime;
         
         struct {
-            signed_int code;
+            int code;
             message_buffer what;
         } nidaqError;
         
@@ -218,14 +215,14 @@ struct HelperControlMessage {
 private:
     template <typename SampleType>
     static std::size_t sizeWithBuffer(char * const startAddress,
-                                 samples_buffer<SampleType> &samples,
-                                 std::size_t numSamples)
+                                      samples_buffer<SampleType> &samples,
+                                      std::size_t numSamples)
     {
         char * const endAddress = reinterpret_cast<char *>(&(samples[0]) + numSamples);
         return std::size_t(endAddress - startAddress);
     }
     
-} __attribute__((aligned (8)));;
+};
 
 
 #endif /* !defined(NIDAQ_HelperControlMessage_h) */
