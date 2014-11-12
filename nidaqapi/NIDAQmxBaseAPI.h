@@ -22,7 +22,11 @@ namespace nidaqmxbase_static_assertions {
     // Confirm our assumptions about type identities
     ASSERT_SAME_TYPE(float32, float);
     ASSERT_SAME_TYPE(float64, double);
+#ifdef __i386__
     ASSERT_SAME_TYPE(TaskHandle, unsigned long *);
+#else
+    ASSERT_SAME_TYPE(TaskHandle, unsigned int *);
+#endif
     
     // Confirm that both negative and positive status codes denote failure
     BOOST_STATIC_ASSERT(DAQmxFailed(-1) && DAQmxFailed(1) && !DAQmxFailed(0));

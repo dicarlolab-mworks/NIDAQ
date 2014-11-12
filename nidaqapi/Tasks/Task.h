@@ -42,7 +42,11 @@ public:
     }
     
 protected:
+#ifdef __i386__
     typedef unsigned long * TaskHandle;
+#else
+    typedef unsigned int * TaskHandle;
+#endif
     
     explicit Task(Device &device);
     
