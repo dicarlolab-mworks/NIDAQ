@@ -417,8 +417,8 @@ bool NIDAQDevice::startAnalogInputTask() {
             return false;
         }
         
-        unsigned int systemBaseTimeNS = Clock::instance()->getSystemBaseTimeNS();
-        analogInputStartTime = MWTime((controlMessage->taskStartTime - systemBaseTimeNS) / 1000u);  // ns to us
+        MachClock::time_type systemBaseTimeNS = Clock::instance()->getSystemBaseTimeNS();
+        analogInputStartTime = MWTime(controlMessage->taskStartTime - systemBaseTimeNS) / MWTime(1000);  // ns to us
         totalNumAnalogInputSamplesAcquired = 0;
         
         analogInputTaskRunning = true;

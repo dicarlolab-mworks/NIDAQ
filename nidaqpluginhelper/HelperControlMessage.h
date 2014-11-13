@@ -17,6 +17,8 @@
 #include <cstdint>
 #include <boost/format.hpp>
 
+#include "MachClock.h"
+
 
 struct HelperControlMessage {
     
@@ -181,7 +183,7 @@ struct HelperControlMessage {
         // Response data
         //
         
-        unsigned int taskStartTime;
+        MachClock::time_type taskStartTime;
         
         struct {
             int code;
