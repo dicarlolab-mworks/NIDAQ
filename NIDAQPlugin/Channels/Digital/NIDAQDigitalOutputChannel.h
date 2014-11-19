@@ -20,12 +20,20 @@ BEGIN_NAMESPACE_MW
 class NIDAQDigitalOutputChannel : public NIDAQDigitalChannel {
     
 public:
+    static const std::string WORD;
+    static const std::string WORD_LINES;
+    
     static void describeComponent(ComponentInfo &info);
     
     explicit NIDAQDigitalOutputChannel(const ParameterValueMap &parameters);
     
+    void addNewWordNotification(const boost::shared_ptr<VariableNotification> &vn) const;
     void addNewLineStateNotification(std::size_t lineNumber, const boost::shared_ptr<VariableNotification> &vn) const;
     bool getLineState(std::size_t lineNumber) const;
+    
+private:
+    VariablePtr word;
+    std::vector<std::size_t> wordLines;
     
 };
 

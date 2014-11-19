@@ -20,7 +20,11 @@ void NIDAQDigitalInputChannel::describeComponent(ComponentInfo &info) {
 
 NIDAQDigitalInputChannel::NIDAQDigitalInputChannel(const ParameterValueMap &parameters) :
     NIDAQDigitalChannel(parameters)
-{ }
+{
+    if (!hasLineVariables()) {
+        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Digital input channel must use at least one line");
+    }
+}
 
 
 void NIDAQDigitalInputChannel::postLineState(std::size_t lineNumber, bool state, MWTime time) const {

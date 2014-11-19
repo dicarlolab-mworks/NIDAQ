@@ -47,7 +47,6 @@ NIDAQDigitalChannel::NIDAQDigitalChannel(const ParameterValueMap &parameters) :
                  portNumber);
     }
     
-    bool foundLineParameter = false;
     for (std::size_t lineNumber = 0; lineNumber < maxNumLines; lineNumber++) {
         const ParameterValue &lineParameter = parameters[getLineParameterName(lineNumber)];
         if (!lineParameter.empty()) {
@@ -56,12 +55,15 @@ NIDAQDigitalChannel::NIDAQDigitalChannel(const ParameterValueMap &parameters) :
                                       "Requested line number exceeds number of lines in port");
             }
             lineVariables.at(lineNumber) = VariablePtr(lineParameter);
-            foundLineParameter = true;
         }
     }
-    if (!foundLineParameter) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Digital channel must use at least one line");
-    }
+}
+
+
+bool NIDAQDigitalChannel::hasLineVariables() const {
+    return std::any_of(lineVariables.begin(), lineVariables.end(), [](const VariablePtr &var) {
+        return bool(var);
+    });
 }
 
 

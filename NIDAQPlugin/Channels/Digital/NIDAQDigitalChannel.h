@@ -30,6 +30,7 @@ public:
     int getNumLinesInPort() const { return numLinesInPort; }
     
 protected:
+    bool hasLineVariables() const;
     const VariablePtr& getLineVariable(std::size_t lineNumber) const { return lineVariables.at(lineNumber); }
     
 private:

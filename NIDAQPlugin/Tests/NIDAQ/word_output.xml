@@ -1,0 +1,46 @@
+<?xml version="1.0" standalone="no"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices">
+        <iodevice type="nidaq" tag="nidaq" name="Dev1" update_interval="3ms" analog_input_data_interval="1ms" analog_output_data_interval="1ms" assume_multiplexed_adc="YES">
+            <iochannel type="nidaq_digital_input" tag="port0" port_number="0" num_lines_in_port="8" line0="" line1="" line2="" line3="" line4="port0_line4" line5="port0_line5" line6="port0_line6" line7="port0_line7" line8="" line9="" line10="" line11="" line12="" line13="" line14="" line15="" line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23="" line24="" line25="" line26="" line27="" line28="" line29="" line30="" line31=""></iochannel>
+            <iochannel type="nidaq_digital_input" tag="port1" port_number="1" num_lines_in_port="8" line0="port1_line0" line1="" line2="" line3="" line4="" line5="" line6="" line7="" line8="" line9="" line10="" line11="" line12="" line13="" line14="" line15="" line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23="" line24="" line25="" line26="" line27="" line28="" line29="" line30="" line31=""></iochannel>
+            <iochannel type="nidaq_digital_output" tag="port2" port_number="2" num_lines_in_port="8" word="word" word_lines="4:7" line0="port2_line0" line1="" line2="" line3="" line4="" line5="" line6="" line7="" line8="" line9="" line10="" line11="" line12="" line13="" line14="" line15="" line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23="" line24="" line25="" line26="" line27="" line28="" line29="" line30="" line31=""></iochannel>
+        </iodevice>
+    </io_devices>
+    <variables tag="Variables">
+        <variable tag="port0_line4" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="port0_line5" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="port0_line6" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="port0_line7" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="port1_line0" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="port2_line0" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="word" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="index" scope="local" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="inputs" scope="global" logging="when_changed" default_value="[0, 1, 2, 4, 8, 15, 16]" type="any"></variable>
+        <variable tag="expected_outputs" scope="global" logging="when_changed" default_value="[[0,0,0,0], [1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1], [1,1,1,1], [0,0,0,0]]" type="any"></variable>
+        <variable tag="expected" scope="global" logging="when_changed" default_value="[0,0,0,0]" type="any"></variable>
+    </variables>
+    <sounds tag="Sounds"></sounds>
+    <stimuli tag="Stimuli"></stimuli>
+    <filters tag="Filters"></filters>
+    <optimizers tag="Optimizers"></optimizers>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential" interruptible="YES">
+            <action tag="Start IO Device" type="start_device_IO" device="nidaq"></action>
+            <range_replicator tag="New Range Replicator" from="0" to="6" step="1" variable="index">
+                <trial tag="New Trial" nsamples="1" sampling_method="cycles" selection="sequential" interruptible="YES">
+                    <action type="assignment" tag="Set word" variable="word" value="inputs[index]"></action>
+                    <action type="assignment" tag="Set port2_line0" variable="port2_line0" value="!port2_line0"></action>
+                    <action type="assignment" tag="Set expected" variable="expected" value="expected_outputs[index]"></action>
+                    <action type="wait" tag="Wait" duration="1" duration_units="s"></action>
+                    <action type="assert" tag="Check port0_line4" condition="port0_line4 = expected[0]" message="" stop_on_failure="0"></action>
+                    <action type="assert" tag="Check port0_line5" condition="port0_line5 = expected[1]" message="" stop_on_failure="0"></action>
+                    <action type="assert" tag="Check port0_line6" condition="port0_line6 = expected[2]" message="" stop_on_failure="0"></action>
+                    <action type="assert" tag="Check port0_line7" condition="port0_line7 = expected[3]" message="" stop_on_failure="0"></action>
+                    <action type="assert" tag="Check port1_line0" condition="port1_line0 == port2_line0" message="" stop_on_failure="0"></action>
+                </trial>
+            </range_replicator>
+            <action tag="Stop IO Device" type="stop_device_IO" device="nidaq"></action>
+        </protocol>
+    </experiment>
+</monkeyml>
