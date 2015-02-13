@@ -148,11 +148,19 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
     if (doChannel) {
         boost::shared_ptr<NIDAQDevice> sharedThis = component_shared_from_this<NIDAQDevice>();
         const int portNumber = doChannel->getPortNumber();
-        boost::shared_ptr<DigitalOutputLineStateNotification> notification(new DigitalOutputLineStateNotification(sharedThis, portNumber));
         
-        doChannel->addNewWordNotification(notification);
+        //
+        // Even though all the DigitalOutputLineStateNotification instances are identical, we need a unique instance
+        // for the word and each line, because each will become a node in a different notifications LinkedList
+        //
+        
+        {
+            boost::shared_ptr<DigitalOutputLineStateNotification> notification(new DigitalOutputLineStateNotification(sharedThis, portNumber));
+            doChannel->addNewWordNotification(notification);
+        }
         
         for (std::size_t lineNumber = 0; lineNumber < doChannel->getNumLinesInPort(); lineNumber++) {
+            boost::shared_ptr<DigitalOutputLineStateNotification> notification(new DigitalOutputLineStateNotification(sharedThis, portNumber));
             doChannel->addNewLineStateNotification(lineNumber, notification);
         }
         
