@@ -596,6 +596,7 @@ void NIDAQDevice::readAnalogInput() {
     controlMessage->analogSamples.samples.numSamples = analogInputSampleBufferSize;
     
     if (!sendHelperRequest()) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ analog input read failed");
         return;
     }
     
@@ -667,6 +668,7 @@ bool NIDAQDevice::writeAnalogOutput() {
     }
     
     if (!sendHelperRequest()) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ analog output write failed");
         return false;
     }
     
@@ -690,6 +692,7 @@ void NIDAQDevice::readDigitalInput() {
     controlMessage->digitalSamples.samples.numSamples = digitalInputSampleBufferSize;
     
     if (!sendHelperRequest()) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ digital input read failed");
         return;
     }
     
@@ -745,6 +748,7 @@ bool NIDAQDevice::writeDigitalOutput(int portNumber) {
     }
     
     if (!sendHelperRequest()) {
+        merror(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ digital output write failed");
         return false;
     }
     
@@ -770,6 +774,8 @@ void NIDAQDevice::readEdgeCounts() {
         
         if (sendHelperRequest()) {
             value.second->postCount(controlMessage->edgeCount.value, Clock::instance()->getCurrentTimeUS());
+        } else {
+            merror(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ counter input read failed");
         }
     }
 }
