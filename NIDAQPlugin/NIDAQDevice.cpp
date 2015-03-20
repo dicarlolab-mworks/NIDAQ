@@ -427,8 +427,9 @@ bool NIDAQDevice::startAnalogInputTask() {
             return false;
         }
         
-        MachClock::time_type systemBaseTimeNS = Clock::instance()->getSystemBaseTimeNS();
-        analogInputStartTime = MWTime(controlMessage->taskStartTime - systemBaseTimeNS) / MWTime(1000);  // ns to us
+        HelperControlMessage::unsigned_int systemBaseTimeNS = Clock::instance()->getSystemBaseTimeNS();
+        analogInputStartTime = MWTime((controlMessage->taskStartTime - systemBaseTimeNS)
+                                      / HelperControlMessage::unsigned_int(1000));  // ns to us
         totalNumAnalogInputSamplesAcquired = 0;
         
         analogInputTaskRunning = true;
@@ -907,7 +908,7 @@ bool NIDAQDevice::sendHelperRequest() {
     }
     
     HelperControlMessage &m = *controlMessage;
-    int responseCode = m.code;
+    HelperControlMessage::signed_int responseCode = m.code;
     
     switch (responseCode) {
         case HelperControlMessage::RESPONSE_OK:
@@ -934,7 +935,7 @@ bool NIDAQDevice::sendHelperRequest() {
             
         default:
             merror(M_IODEVICE_MESSAGE_DOMAIN,
-                   "Internal error: Unknown response code (%d) from %s",
+                   "Internal error: Unknown response code (%lld) from %s",
                    responseCode,
                    PLUGIN_HELPER_EXECUTABLE);
             break;
