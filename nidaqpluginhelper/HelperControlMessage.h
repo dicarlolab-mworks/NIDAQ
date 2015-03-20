@@ -218,8 +218,8 @@ struct HelperControlMessage {
 private:
     template <typename SampleType>
     static std::size_t sizeWithBuffer(char * const startAddress,
-                                 samples_buffer<SampleType> &samples,
-                                 std::size_t numSamples)
+                                      samples_buffer<SampleType> &samples,
+                                      std::size_t numSamples)
     {
         char * const endAddress = reinterpret_cast<char *>(&(samples[0]) + numSamples);
         return std::size_t(endAddress - startAddress);

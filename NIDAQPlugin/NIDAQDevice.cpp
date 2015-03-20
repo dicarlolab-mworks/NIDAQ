@@ -801,11 +801,11 @@ void NIDAQDevice::spawnHelper() {
     } BOOST_SCOPE_EXIT_END
     
     {
-#ifdef __i386__
+//#ifdef __i386__
         cpu_type_t pref = CPU_TYPE_I386;
-#else
-        cpu_type_t pref = CPU_TYPE_X86_64;
-#endif
+//#else
+//        cpu_type_t pref = CPU_TYPE_X86_64;
+//#endif
         size_t ocount;
         status = posix_spawnattr_setbinpref_np(&attr, 1, &pref, &ocount);
         if (status != 0) {
