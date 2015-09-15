@@ -713,7 +713,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E105A21215E67FEB007F9F38 /* Development.xcconfig */;
 			buildSettings = {
-				WARNING_CFLAGS = "-Wreorder";
 			};
 			name = Development;
 		};
