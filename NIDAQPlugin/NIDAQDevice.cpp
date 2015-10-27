@@ -13,11 +13,10 @@
 #include <spawn.h>
 #include <sys/wait.h>
 
-#include <openssl/rand.h>
-
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
+#include <boost/random/random_device.hpp>
 #include <boost/scope_exit.hpp>
 
 
@@ -45,16 +44,10 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
 
 
 static std::string generateUniqueID() {
-    std::uint64_t uniqueID;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    int status = RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&uniqueID), sizeof(uniqueID));
-#pragma clang diagnostic pop
-    if (status < 0) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
-                              "Internal error: Unable to generate unique identifier for NIDAQ device IPC resource");
-    }
-    return (boost::format("%x") % uniqueID).str();
+    boost::random::random_device rd;
+    std::array<std::uint32_t, 2> uniqueID;
+    rd.generate(uniqueID.begin(), uniqueID.end());
+    return (boost::format("%x%x") % uniqueID.at(0) % uniqueID.at(1)).str();
 }
 
 
