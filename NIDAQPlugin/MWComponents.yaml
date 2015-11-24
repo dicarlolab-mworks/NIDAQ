@@ -1,0 +1,297 @@
+---
+
+
+name: NIDAQ Device
+signature: iodevice/nidaq
+isa: IODevice
+icon: smallIOFolder
+description: >
+    Interface to a National Instruments data acquisition (DAQ) device
+parameters: 
+  - 
+    name: name
+    default: Dev1
+  - 
+    name: update_interval
+    default: 3ms
+  - 
+    name: analog_input_data_interval
+    default: 1ms
+  - 
+    name: analog_output_data_interval
+    default: 1ms
+  - 
+    name: assume_multiplexed_adc
+    default: YES
+
+
+---
+
+
+name: NIDAQ Analog Input Voltage Channel
+signature: iochannel/nidaq_analog_input_voltage
+isa: IOChannel
+icon: smallIOFolder
+allowed_parent: NIDAQ Device
+description: Analog input voltage channel on a NIDAQ device
+parameters: 
+  - 
+    name: channel_number
+    default: 0
+  - 
+    name: range_min
+    default: -10.0
+  - 
+    name: range_max
+    default: 10.0
+  - 
+    name: voltage
+
+
+---
+
+
+name: NIDAQ Analog Output Voltage Channel
+signature: iochannel/nidaq_analog_output_voltage
+isa: IOChannel
+icon: smallIOFolder
+allowed_parent: NIDAQ Device
+description: Analog output voltage channel on a NIDAQ device
+parameters: 
+  - 
+    name: channel_number
+    default: 0
+  - 
+    name: range_min
+    default: -10.0
+  - 
+    name: range_max
+    default: 10.0
+  - 
+    name: voltage
+
+
+---
+
+
+name: NIDAQ Analog Output Voltage Waveform Channel
+signature: iochannel/nidaq_analog_output_voltage_waveform
+isa: IOChannel
+icon: smallIOFolder
+allowed_parent: NIDAQ Device
+description: >
+    Generates a periodic analog output voltage signal on a NIDAQ device.
+    Supported waveform types are "sinusoid", "square", "triangle", and
+    "sawtooth".
+parameters: 
+  - 
+    name: channel_number
+    default: 0
+  - 
+    name: range_min
+    default: -10.0
+  - 
+    name: range_max
+    default: 10.0
+  - 
+    name: waveform
+    default: sinusoid
+  - 
+    name: period
+    default: 500ms
+  - 
+    name: offset
+    default: 0ms
+
+
+---
+
+
+name: NIDAQ Digital Input Channel
+signature: iochannel/nidaq_digital_input
+isa: IOChannel
+icon: smallIOFolder
+allowed_parent: NIDAQ Device
+description: >
+    Digital input channel on a NIDAQ device.  Supports up to 32 lines on a
+    single port.
+parameters: 
+  - 
+    name: port_number
+    default: 0
+  - 
+    name: num_lines_in_port
+    default: 8
+  - 
+    name: line0
+  - 
+    name: line1
+  - 
+    name: line2
+  - 
+    name: line3
+  - 
+    name: line4
+  - 
+    name: line5
+  - 
+    name: line6
+  - 
+    name: line7
+  - 
+    name: line8
+  - 
+    name: line9
+  - 
+    name: line10
+  - 
+    name: line11
+  - 
+    name: line12
+  - 
+    name: line13
+  - 
+    name: line14
+  - 
+    name: line15
+  - 
+    name: line16
+  - 
+    name: line17
+  - 
+    name: line18
+  - 
+    name: line19
+  - 
+    name: line20
+  - 
+    name: line21
+  - 
+    name: line22
+  - 
+    name: line23
+  - 
+    name: line24
+  - 
+    name: line25
+  - 
+    name: line26
+  - 
+    name: line27
+  - 
+    name: line28
+  - 
+    name: line29
+  - 
+    name: line30
+  - 
+    name: line31
+
+
+---
+
+
+name: NIDAQ Digital Output Channel
+signature: iochannel/nidaq_digital_output
+isa: IOChannel
+icon: smallIOFolder
+allowed_parent: NIDAQ Device
+description: >
+    Digital output channel on a NIDAQ device.  Supports up to 32 lines on a
+    single port.
+parameters: 
+  - 
+    name: port_number
+    default: 0
+  - 
+    name: num_lines_in_port
+    default: 8
+  - 
+    name: word
+  - 
+    name: word_lines
+  - 
+    name: line0
+  - 
+    name: line1
+  - 
+    name: line2
+  - 
+    name: line3
+  - 
+    name: line4
+  - 
+    name: line5
+  - 
+    name: line6
+  - 
+    name: line7
+  - 
+    name: line8
+  - 
+    name: line9
+  - 
+    name: line10
+  - 
+    name: line11
+  - 
+    name: line12
+  - 
+    name: line13
+  - 
+    name: line14
+  - 
+    name: line15
+  - 
+    name: line16
+  - 
+    name: line17
+  - 
+    name: line18
+  - 
+    name: line19
+  - 
+    name: line20
+  - 
+    name: line21
+  - 
+    name: line22
+  - 
+    name: line23
+  - 
+    name: line24
+  - 
+    name: line25
+  - 
+    name: line26
+  - 
+    name: line27
+  - 
+    name: line28
+  - 
+    name: line29
+  - 
+    name: line30
+  - 
+    name: line31
+
+
+---
+
+
+name: NIDAQ Counter Input Count Edges Channel
+signature: iochannel/nidaq_counter_input_count_edges
+isa: IOChannel
+icon: smallIOFolder
+allowed_parent: NIDAQ Device
+description: >
+    Counter input count edges channel on a NIDAQ device.  Counts falling
+    edges detected on the specified counter input.
+parameters: 
+  - 
+    name: counter_number
+    default: 0
+  - 
+    name: count
+
+
