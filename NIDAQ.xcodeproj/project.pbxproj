@@ -72,6 +72,7 @@
 		E1CA0DE215EBCB1300EB6B60 /* AnalogInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E183169415E540770028F623 /* AnalogInputTask.cpp */; };
 		E1CA0DE315EBCB5300EB6B60 /* libnidaqapi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E1CA0DDB15EBCA7200EB6B60 /* libnidaqapi.a */; };
 		E1CA0DE415EBCBE800EB6B60 /* libnidaqapi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E1CA0DDB15EBCA7200EB6B60 /* libnidaqapi.a */; };
+		E1E07EAF1C04F4D1008DD97E /* MWComponents.yaml in Resources */ = {isa = PBXBuildFile; fileRef = E1E07EAE1C04F4D1008DD97E /* MWComponents.yaml */; };
 		E1FD946E19C36462001E27A7 /* NIDAQAnalogOutputVoltageChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1FD946C19C36462001E27A7 /* NIDAQAnalogOutputVoltageChannel.cpp */; };
 		E1FDD3AA1889CC46009FFC8A /* NIDAQCounterInputCountEdgesChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1FDD3A81889CC46009FFC8A /* NIDAQCounterInputCountEdgesChannel.cpp */; };
 /* End PBXBuildFile section */
@@ -212,6 +213,7 @@
 		E1C51BCA16F25F3C00893111 /* NIDAQDigitalOutputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDigitalOutputChannel.cpp; sourceTree = "<group>"; };
 		E1C51BCB16F25F3C00893111 /* NIDAQDigitalOutputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDigitalOutputChannel.h; sourceTree = "<group>"; };
 		E1CA0DDB15EBCA7200EB6B60 /* libnidaqapi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnidaqapi.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1E07EAE1C04F4D1008DD97E /* MWComponents.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWComponents.yaml; sourceTree = "<group>"; };
 		E1FD946C19C36462001E27A7 /* NIDAQAnalogOutputVoltageChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogOutputVoltageChannel.cpp; sourceTree = "<group>"; };
 		E1FD946D19C36462001E27A7 /* NIDAQAnalogOutputVoltageChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogOutputVoltageChannel.h; sourceTree = "<group>"; };
 		E1FDD3A81889CC46009FFC8A /* NIDAQCounterInputCountEdgesChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQCounterInputCountEdgesChannel.cpp; sourceTree = "<group>"; };
@@ -316,6 +318,7 @@
 				E105A21D15E6835A007F9F38 /* NIDAQPlugin-Info.plist */,
 				E105A21E15E6835A007F9F38 /* InfoPlist.strings */,
 				E1690EAD15E6B71D007DFCEF /* NIDAQPlugin-Prefix.pch */,
+				E1E07EAE1C04F4D1008DD97E /* MWComponents.yaml */,
 				E1C51BC816F21AED00893111 /* MWLibrary.xml */,
 			);
 			name = "Supporting Files";
@@ -567,6 +570,7 @@
 			files = (
 				E105A22015E6835A007F9F38 /* InfoPlist.strings in Resources */,
 				E1C51BC916F21AED00893111 /* MWLibrary.xml in Resources */,
+				E1E07EAF1C04F4D1008DD97E /* MWComponents.yaml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
