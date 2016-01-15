@@ -6,23 +6,28 @@ signature: iodevice/nidaq
 isa: IODevice
 icon: smallIOFolder
 description: >
-    Interface to a National Instruments data acquisition (DAQ) device
+    Interface to a `National Instruments <http://www.ni.com>`_ data acquisition
+    (DAQ) device
 parameters: 
   - 
     name: name
-    default: Dev1
+    required: yes
+    example: Dev1
   - 
     name: update_interval
-    default: 3ms
+    required: yes
+    example: 3ms
   - 
     name: analog_input_data_interval
-    default: 1ms
+    required: yes
+    example: 1ms
   - 
     name: analog_output_data_interval
-    default: 1ms
+    required: yes
+    example: 1ms
   - 
     name: assume_multiplexed_adc
-    default: YES
+    default: 'YES'
 
 
 ---
@@ -33,19 +38,23 @@ signature: iochannel/nidaq_analog_input_voltage
 isa: IOChannel
 icon: smallIOFolder
 allowed_parent: NIDAQ Device
-description: Analog input voltage channel on a NIDAQ device
+description: Analog input voltage channel on a `NIDAQ Device`
 parameters: 
   - 
     name: channel_number
-    default: 0
+    required: yes
+    example: 0
   - 
     name: range_min
-    default: -10.0
+    required: yes
+    example: -10.0
   - 
     name: range_max
-    default: 10.0
+    required: yes
+    example: 10.0
   - 
     name: voltage
+    required: yes
 
 
 ---
@@ -56,19 +65,23 @@ signature: iochannel/nidaq_analog_output_voltage
 isa: IOChannel
 icon: smallIOFolder
 allowed_parent: NIDAQ Device
-description: Analog output voltage channel on a NIDAQ device
+description: Analog output voltage channel on a `NIDAQ Device`
 parameters: 
   - 
     name: channel_number
-    default: 0
+    required: yes
+    example: 0
   - 
     name: range_min
-    default: -10.0
+    required: yes
+    example: -10.0
   - 
     name: range_max
-    default: 10.0
+    required: yes
+    example: 10.0
   - 
     name: voltage
+    required: yes
 
 
 ---
@@ -80,28 +93,34 @@ isa: IOChannel
 icon: smallIOFolder
 allowed_parent: NIDAQ Device
 description: >
-    Generates a periodic analog output voltage signal on a NIDAQ device.
-    Supported waveform types are "sinusoid", "square", "triangle", and
-    "sawtooth".
+    Generates a periodic analog output voltage signal on a `NIDAQ Device`.
+    Supported waveform types are ``sinusoid``, ``square``, ``triangle``, and
+    ``sawtooth``.
 parameters: 
   - 
     name: channel_number
-    default: 0
+    required: yes
+    example: 0
   - 
     name: range_min
-    default: -10.0
+    required: yes
+    example: -10.0
   - 
     name: range_max
-    default: 10.0
+    required: yes
+    example: 10.0
   - 
     name: waveform
-    default: sinusoid
+    required: yes
+    example: sinusoid
   - 
     name: period
-    default: 500ms
+    required: yes
+    example: 500ms
   - 
     name: offset
-    default: 0ms
+    required: yes
+    example: 0ms
 
 
 ---
@@ -113,15 +132,17 @@ isa: IOChannel
 icon: smallIOFolder
 allowed_parent: NIDAQ Device
 description: >
-    Digital input channel on a NIDAQ device.  Supports up to 32 lines on a
+    Digital input channel on a `NIDAQ Device`.  Supports up to 32 lines on a
     single port.
 parameters: 
   - 
     name: port_number
-    default: 0
+    required: yes
+    example: 0
   - 
     name: num_lines_in_port
-    default: 8
+    required: yes
+    example: 8
   - 
     name: line0
   - 
@@ -197,15 +218,17 @@ isa: IOChannel
 icon: smallIOFolder
 allowed_parent: NIDAQ Device
 description: >
-    Digital output channel on a NIDAQ device.  Supports up to 32 lines on a
+    Digital output channel on a `NIDAQ Device`.  Supports up to 32 lines on a
     single port.
 parameters: 
   - 
     name: port_number
-    default: 0
+    required: yes
+    example: 0
   - 
     name: num_lines_in_port
-    default: 8
+    required: yes
+    example: 8
   - 
     name: word
   - 
@@ -285,13 +308,15 @@ isa: IOChannel
 icon: smallIOFolder
 allowed_parent: NIDAQ Device
 description: >
-    Counter input count edges channel on a NIDAQ device.  Counts falling
+    Counter input count edges channel on a `NIDAQ Device`.  Counts falling
     edges detected on the specified counter input.
 parameters: 
   - 
     name: counter_number
-    default: 0
+    required: yes
+    example: 0
   - 
     name: count
+    required: yes
 
 
