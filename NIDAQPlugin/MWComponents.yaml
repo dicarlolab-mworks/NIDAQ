@@ -283,7 +283,7 @@ parameters:
         specified in `word_lines`_ to be changed immediately.
   - 
     name: word_lines
-    example: ['1,2,3', '4:7', '1:4:6,7']
+    example: ['1,2,3', '4:7', '1,4:6,7']
     description: |
         Lines used to output the individual bits of multi-bit words. The first
         line receives the least significant bit, the last line the most
