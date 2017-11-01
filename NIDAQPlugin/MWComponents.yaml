@@ -5,6 +5,7 @@ name: NIDAQ Device
 signature: iodevice/nidaq
 isa: IODevice
 platform: macos
+allowed_child: NIDAQ Channel
 description: >
     Interface to a `National Instruments <http://www.ni.com>`_ data acquisition
     (DAQ) device
@@ -53,11 +54,18 @@ parameters:
 ---
 
 
-name: NIDAQ Analog Input Voltage Channel
-signature: iochannel/nidaq_analog_input_voltage
+name: NIDAQ Channel
+abstract: yes
 isa: IOChannel
 platform: macos
-allowed_parent: NIDAQ Device
+
+
+---
+
+
+name: NIDAQ Analog Input Voltage Channel
+signature: iochannel/nidaq_analog_input_voltage
+isa: NIDAQ Channel
 description: Analog input voltage channel on a `NIDAQ Device`
 parameters: 
   - 
@@ -87,9 +95,7 @@ parameters:
 
 name: NIDAQ Analog Output Voltage Channel
 signature: iochannel/nidaq_analog_output_voltage
-isa: IOChannel
-platform: macos
-allowed_parent: NIDAQ Device
+isa: NIDAQ Channel
 description: Analog output voltage channel on a `NIDAQ Device`
 parameters: 
   - 
@@ -122,9 +128,7 @@ parameters:
 
 name: NIDAQ Analog Output Voltage Waveform Channel
 signature: iochannel/nidaq_analog_output_voltage_waveform
-isa: IOChannel
-platform: macos
-allowed_parent: NIDAQ Device
+isa: NIDAQ Channel
 description: >
     Generates a periodic analog output voltage signal on a `NIDAQ Device`
 parameters: 
@@ -168,9 +172,7 @@ parameters:
 
 name: NIDAQ Digital Channel
 abstract: yes
-isa: IOChannel
-platform: macos
-allowed_parent: NIDAQ Device
+isa: NIDAQ Channel
 parameters: 
   - 
     name: port_number
@@ -304,9 +306,7 @@ parameters:
 
 name: NIDAQ Counter Input Count Edges Channel
 signature: iochannel/nidaq_counter_input_count_edges
-isa: IOChannel
-platform: macos
-allowed_parent: NIDAQ Device
+isa: NIDAQ Channel
 description: >
     Counts falling edges detected on the specified counter input on a `NIDAQ
     Device`
