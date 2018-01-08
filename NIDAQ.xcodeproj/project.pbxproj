@@ -487,6 +487,7 @@
 			buildPhases = (
 				E179EE5315E7D71400CC1BED /* Sources */,
 				E179EE5415E7D71400CC1BED /* Frameworks */,
+				E1D3A4D020040A370046D1F1 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -540,6 +541,26 @@
 			attributes = {
 				LastUpgradeCheck = 0440;
 				ORGANIZATIONNAME = MIT;
+				TargetAttributes = {
+					E105A21715E6835A007F9F38 = {
+						ProvisioningStyle = Automatic;
+					};
+					E1690E7815E689CF007DFCEF = {
+						ProvisioningStyle = Automatic;
+					};
+					E1690E8315E69665007DFCEF = {
+						ProvisioningStyle = Automatic;
+					};
+					E179EE5615E7D71400CC1BED = {
+						ProvisioningStyle = Automatic;
+					};
+					E196C52B15E2AD3200059BF2 = {
+						ProvisioningStyle = Automatic;
+					};
+					E1CA0DDA15EBCA7200EB6B60 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = E196C52615E2AD3200059BF2 /* Build configuration list for PBXProject "NIDAQ" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -575,6 +596,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E1D3A4D020040A370046D1F1 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "nidaqmxbase_path=/Library/Frameworks/nidaqmxbase.framework/nidaqmxbase\nnidaqmxbaselv_path=/Library/Frameworks/nidaqmxbaselv.framework/nidaqmxbaselv\n\n/usr/bin/xcrun install_name_tool \\\n  -change \\\n  \"$(/usr/bin/xcrun otool -D $nidaqmxbase_path | /usr/bin/tail -n 1)\" \\\n  \"$nidaqmxbase_path\" \\\n  -change \\\n  \"$(/usr/bin/xcrun otool -D $nidaqmxbaselv_path | /usr/bin/tail -n 1)\" \\\n  \"$nidaqmxbaselv_path\" \\\n  \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E105A21415E6835A007F9F38 /* Sources */ = {
@@ -709,6 +747,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-headerpad_max_install_names",
+				);
 				PRODUCT_NAME = MWNIDAQPluginHelper;
 			};
 			name = Development;
