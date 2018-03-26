@@ -41,6 +41,15 @@ parameters:
         Interval between generated samples on analog output channels
         (microseconds)
   - 
+    name: analog_read_timeout
+    example: 3ms
+    description: |
+        Maximum time to wait for a single update's worth of analog input samples
+        (microseconds).  If the samples are not received in the allotted time,
+        issue an error message.
+
+        If omitted, defaults to `update_interval`_.
+  - 
     name: assume_multiplexed_adc
     default: 'YES'
     description: >

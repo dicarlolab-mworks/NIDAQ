@@ -27,6 +27,7 @@ const std::string NIDAQDevice::NAME("name");
 const std::string NIDAQDevice::UPDATE_INTERVAL("update_interval");
 const std::string NIDAQDevice::ANALOG_INPUT_DATA_INTERVAL("analog_input_data_interval");
 const std::string NIDAQDevice::ANALOG_OUTPUT_DATA_INTERVAL("analog_output_data_interval");
+const std::string NIDAQDevice::ANALOG_READ_TIMEOUT("analog_read_timeout");
 const std::string NIDAQDevice::ASSUME_MULTIPLEXED_ADC("assume_multiplexed_adc");
 
 
@@ -39,6 +40,7 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
     info.addParameter(UPDATE_INTERVAL, true, "3ms");
     info.addParameter(ANALOG_INPUT_DATA_INTERVAL, true, "1ms");
     info.addParameter(ANALOG_OUTPUT_DATA_INTERVAL, true, "1ms");
+    info.addParameter(ANALOG_READ_TIMEOUT, false, "3ms");
     info.addParameter(ASSUME_MULTIPLEXED_ADC, "1");
 }
 
@@ -63,6 +65,7 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     helperPID(-1),
     updateInterval(parameters[UPDATE_INTERVAL]),
     analogInputDataInterval(parameters[ANALOG_INPUT_DATA_INTERVAL]),
+    analogReadTimeout(updateInterval),
     assumeMultiplexedADC(parameters[ASSUME_MULTIPLEXED_ADC]),
     analogInputSampleBufferSize(0),
     analogInputTaskRunning(false),
@@ -85,6 +88,13 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     if (updateInterval % analogInputDataInterval != 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
                               "Update interval must be an integer multiple of analog input data interval");
+    }
+    
+    if (!(parameters[ANALOG_READ_TIMEOUT].empty())) {
+        analogReadTimeout = MWTime(parameters[ANALOG_READ_TIMEOUT]);
+        if (analogReadTimeout < 0) {
+            throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid analog read timeout");
+        }
     }
     
     if (analogOutputDataInterval <= 0) {
@@ -586,7 +596,7 @@ void* NIDAQDevice::readInput() {
 
 void NIDAQDevice::readAnalogInput() {
     controlMessage->code = HelperControlMessage::REQUEST_READ_ANALOG_INPUT_SAMPLES;
-    controlMessage->analogSamples.timeout = double(updateInterval) / 1e6;  // us to s
+    controlMessage->analogSamples.timeout = double(analogReadTimeout) / 1e6;  // us to s
     controlMessage->analogSamples.samples.numSamples = analogInputSampleBufferSize;
     
     if (!sendHelperRequest()) {

@@ -18,6 +18,7 @@ Interface to a National Instruments data acquisition (DAQ) device
                 update_interval="3ms"
                 analog_input_data_interval="1ms"
                 analog_output_data_interval="1ms"
+                analog_read_timeout=""
                 assume_multiplexed_adc="YES"
                 />
     </code>
