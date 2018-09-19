@@ -17,7 +17,6 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/random/random_device.hpp>
-#include <boost/scope_exit.hpp>
 
 
 BEGIN_NAMESPACE_MW
@@ -791,33 +790,6 @@ NIDAQDevice::~NIDAQDevice() {
 
 
 void NIDAQDevice::spawnHelper() {
-    posix_spawnattr_t attr;
-    int status = posix_spawnattr_init(&attr);
-    if (status != 0) {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "posix_spawnattr_init failed", std::strerror(status));
-    }
-    BOOST_SCOPE_EXIT(&attr) {
-        int status = posix_spawnattr_destroy(&attr);
-        if (status != 0) {
-            merror(M_IODEVICE_MESSAGE_DOMAIN, "posix_spawnattr_destroy failed: %s", std::strerror(status));
-        }
-    } BOOST_SCOPE_EXIT_END
-    
-    {
-//#ifdef __i386__
-        cpu_type_t pref = CPU_TYPE_I386;
-//#else
-//        cpu_type_t pref = CPU_TYPE_X86_64;
-//#endif
-        size_t ocount;
-        status = posix_spawnattr_setbinpref_np(&attr, 1, &pref, &ocount);
-        if (status != 0) {
-            throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
-                                  "posix_spawnattr_setbinpref_np failed",
-                                  std::strerror(status));
-        }
-    }
-    
     const char * const argv[] = {
         PLUGIN_HELPER_EXECUTABLE,
         requestSemName.c_str(),
@@ -827,12 +799,12 @@ void NIDAQDevice::spawnHelper() {
         0
     };
     
-    status = posix_spawn(&helperPID,
-                         PLUGIN_HELPERS_DIR "/" PLUGIN_HELPER_EXECUTABLE,
-                         NULL,
-                         &attr,
-                         const_cast<char * const *>(argv),
-                         *_NSGetEnviron());
+    int status = posix_spawn(&helperPID,
+                             PLUGIN_HELPERS_DIR "/" PLUGIN_HELPER_EXECUTABLE,
+                             NULL,
+                             NULL,
+                             const_cast<char * const *>(argv),
+                             *_NSGetEnviron());
     
     if (status != 0) {
         throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
