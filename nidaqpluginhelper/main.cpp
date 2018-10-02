@@ -8,6 +8,9 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <thread>
+
+#include <CoreFoundation/CoreFoundation.h>
 
 #include "HelperSharedMemory.h"
 #include "NIDAQPluginHelper.h"
@@ -27,36 +30,22 @@ int main(int argc, const char * argv[])
     
     IPCRequestResponse ipc(boost::interprocess::open_only, requestSemName, responseSemName);
     HelperSharedMemory sharedMemory(boost::interprocess::open_only, sharedMemoryName);
+    bool success = false;
     
-    NIDAQPluginHelper helper(ipc, *(sharedMemory.getMessagePtr()), deviceName);
-    bool success = helper.handleRequests();
+    //
+    // Run the helper on a separate thread, so that we can execute the main run loop on
+    // this thread and thereby process calls to
+    // -[NSApplication nextEventMatchingMask:untilDate:inMode:dequeue:]
+    //
+    
+    auto helperThread = std::thread([&ipc, &sharedMemory, &deviceName, &success]() {
+        NIDAQPluginHelper helper(ipc, *(sharedMemory.getMessagePtr()), deviceName);
+        success = helper.handleRequests();
+        CFRunLoopStop(CFRunLoopGetMain());
+    });
+    
+    CFRunLoopRun();
+    helperThread.join();
     
     return (success ? EXIT_SUCCESS : EXIT_FAILURE);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

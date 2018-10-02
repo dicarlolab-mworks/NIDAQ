@@ -72,6 +72,8 @@
 		E1CA0DE215EBCB1300EB6B60 /* AnalogInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E183169415E540770028F623 /* AnalogInputTask.cpp */; };
 		E1CA0DE315EBCB5300EB6B60 /* libnidaqapi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E1CA0DDB15EBCA7200EB6B60 /* libnidaqapi.a */; };
 		E1CA0DE415EBCBE800EB6B60 /* libnidaqapi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E1CA0DDB15EBCA7200EB6B60 /* libnidaqapi.a */; };
+		E1D0F9F52163B51D00A7813D /* NSApplication+NextEventMatchingMaskFix.m in Sources */ = {isa = PBXBuildFile; fileRef = E12AAFA82162B31B002A3077 /* NSApplication+NextEventMatchingMaskFix.m */; };
+		E1D0F9F72163B53700A7813D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E12AAFAF2162B6E2002A3077 /* AppKit.framework */; };
 		E1E07EAF1C04F4D1008DD97E /* MWComponents.yaml in Resources */ = {isa = PBXBuildFile; fileRef = E1E07EAE1C04F4D1008DD97E /* MWComponents.yaml */; };
 		E1FD946E19C36462001E27A7 /* NIDAQAnalogOutputVoltageChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1FD946C19C36462001E27A7 /* NIDAQAnalogOutputVoltageChannel.cpp */; };
 		E1FDD3AA1889CC46009FFC8A /* NIDAQCounterInputCountEdgesChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1FDD3A81889CC46009FFC8A /* NIDAQCounterInputCountEdgesChannel.cpp */; };
@@ -159,6 +161,8 @@
 		E105A21D15E6835A007F9F38 /* NIDAQPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NIDAQPlugin-Info.plist"; sourceTree = "<group>"; };
 		E105A21F15E6835A007F9F38 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E105A22415E68597007F9F38 /* MWorksCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MWorksCore.framework; path = /Library/Frameworks/MWorksCore.framework; sourceTree = "<absolute>"; };
+		E12AAFA82162B31B002A3077 /* NSApplication+NextEventMatchingMaskFix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSApplication+NextEventMatchingMaskFix.m"; sourceTree = "<group>"; };
+		E12AAFAF2162B6E2002A3077 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		E13DEB6215F7BB2100AC7480 /* HelperSharedMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelperSharedMemory.h; sourceTree = "<group>"; };
 		E13DEB6315F7DCA600AC7480 /* NIDAQAnalogChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogChannel.cpp; sourceTree = "<group>"; };
 		E13DEB6415F7DCA600AC7480 /* NIDAQAnalogChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogChannel.h; sourceTree = "<group>"; };
@@ -235,6 +239,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E1D0F9F72163B53700A7813D /* AppKit.framework in Frameworks */,
 				E179EE6715E7D8CC00CC1BED /* nidaqmxbase.framework in Frameworks */,
 				E179EE6815E7D8CE00CC1BED /* nidaqmxbaselv.framework in Frameworks */,
 				E1CA0DE415EBCBE800EB6B60 /* libnidaqapi.a in Frameworks */,
@@ -343,6 +348,7 @@
 				E157464615F50AAE0014089E /* NIDAQPluginHelperError.h */,
 				E1A7227415EEA72C006671AD /* NIDAQPluginHelper.h */,
 				E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */,
+				E12AAFA82162B31B002A3077 /* NSApplication+NextEventMatchingMaskFix.m */,
 				E179EE5A15E7D71400CC1BED /* main.cpp */,
 			);
 			path = nidaqpluginhelper;
@@ -430,6 +436,7 @@
 			isa = PBXGroup;
 			children = (
 				E105A22415E68597007F9F38 /* MWorksCore.framework */,
+				E12AAFAF2162B6E2002A3077 /* AppKit.framework */,
 				E196C53915E2B19200059BF2 /* nidaqmxbase.framework */,
 				E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */,
 				E1ADE3B41BDEAB420055642F /* libboost_random.a */,
@@ -639,6 +646,7 @@
 			files = (
 				E15E883815FE32F60077757B /* MachClock.cpp in Sources */,
 				E15E883315FE32DD0077757B /* MachError.cpp in Sources */,
+				E1D0F9F52163B51D00A7813D /* NSApplication+NextEventMatchingMaskFix.m in Sources */,
 				E1A7227515EEA72C006671AD /* NIDAQPluginHelper.cpp in Sources */,
 				E179EE5B15E7D71400CC1BED /* main.cpp in Sources */,
 			);
