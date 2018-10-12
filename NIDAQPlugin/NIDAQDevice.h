@@ -70,8 +70,10 @@ private:
     bool haveAnalogOutputVoltageWaveformChannels() const { return !(analogOutputVoltageWaveformChannels.empty()); }
     bool haveAnalogOutputChannels() const { return haveAnalogOutputVoltageChannels() || haveAnalogOutputVoltageWaveformChannels(); }
     bool createAnalogOutputTask();
+    bool createAnalogOutputVoltageChannel(const boost::shared_ptr<NIDAQAnalogChannel> &channel);
     bool startAnalogOutputTask();
-    bool writeAnalogOutput();
+    bool stopAnalogOutputTask();
+    bool writeAnalogOutput(bool stopping = false);
     
     bool haveDigitalInputChannels() const { return !(digitalInputChannels.empty()); }
     bool createDigitalInputTask();

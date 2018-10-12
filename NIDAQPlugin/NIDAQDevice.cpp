@@ -275,13 +275,7 @@ bool NIDAQDevice::createAnalogOutputTask() {
     if (haveAnalogOutputVoltageChannels()) {
         
         for (auto &channel : analogOutputVoltageChannels) {
-            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL;
-            
-            controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
-            controlMessage->analogVoltageChannel.minVal = channel->getRangeMin();
-            controlMessage->analogVoltageChannel.maxVal = channel->getRangeMax();
-            
-            if (!sendHelperRequest()) {
+            if (!createAnalogOutputVoltageChannel(channel)) {
                 return false;
             }
         }
@@ -289,13 +283,7 @@ bool NIDAQDevice::createAnalogOutputTask() {
     } else {
         
         for (auto &channel : analogOutputVoltageWaveformChannels) {
-            controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL;
-            
-            controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
-            controlMessage->analogVoltageChannel.minVal = channel->getRangeMin();
-            controlMessage->analogVoltageChannel.maxVal = channel->getRangeMax();
-            
-            if (!sendHelperRequest()) {
+            if (!createAnalogOutputVoltageChannel(channel)) {
                 return false;
             }
         }
@@ -311,6 +299,27 @@ bool NIDAQDevice::createAnalogOutputTask() {
     }
     
     return true;
+}
+
+
+bool NIDAQDevice::createAnalogOutputVoltageChannel(const boost::shared_ptr<NIDAQAnalogChannel> &channel) {
+    // Ensure that the range of allowed values includes zero, so that we can set the
+    // output to zero when stopping the device
+    auto rangeMin = channel->getRangeMin();
+    auto rangeMax = channel->getRangeMax();
+    if (rangeMin > 0.0) {
+        rangeMin = 0.0;
+    } else if (rangeMax < 0.0) {
+        rangeMax = 0.0;
+    }
+    
+    controlMessage->code = HelperControlMessage::REQUEST_CREATE_ANALOG_OUTPUT_VOLTAGE_CHANNEL;
+    
+    controlMessage->analogVoltageChannel.channelNumber = channel->getChannelNumber();
+    controlMessage->analogVoltageChannel.minVal = rangeMin;
+    controlMessage->analogVoltageChannel.maxVal = rangeMax;
+    
+    return sendHelperRequest();
 }
 
 
@@ -541,13 +550,8 @@ bool NIDAQDevice::stopDeviceIO() {
         }
     }
     
-    if (analogOutputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_ANALOG_OUTPUT_TASK;
-        if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            analogOutputTaskRunning = false;
-        }
+    if (!stopAnalogOutputTask()) {
+        success = false;
     }
     
     if (!success) {
@@ -579,6 +583,26 @@ bool NIDAQDevice::stopDigitalOutputTasks() {
         digitalOutputTasksRunning = false;
     }
 
+    return true;
+}
+
+
+bool NIDAQDevice::stopAnalogOutputTask() {
+    if (analogOutputTaskRunning) {
+        if (haveAnalogOutputVoltageChannels()) {
+            if (!writeAnalogOutput(true)) {  // Set all channels to zero
+                return false;
+            }
+        }
+        
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_ANALOG_OUTPUT_TASK;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        analogOutputTaskRunning = false;
+    }
+    
     return true;
 }
 
@@ -661,7 +685,7 @@ void NIDAQDevice::readAnalogInput() {
 }
 
 
-bool NIDAQDevice::writeAnalogOutput() {
+bool NIDAQDevice::writeAnalogOutput(bool stopping) {
     std::size_t numChannels;
     if (haveAnalogOutputVoltageChannels()) {
         numChannels = analogOutputVoltageChannels.size();
@@ -677,7 +701,9 @@ bool NIDAQDevice::writeAnalogOutput() {
         const std::size_t channelNum = i % numChannels;
         double &sample = controlMessage->analogSamples.samples[i];
         
-        if (haveAnalogOutputVoltageChannels()) {
+        if (stopping) {
+            sample = 0.0;
+        } else if (haveAnalogOutputVoltageChannels()) {
             sample = analogOutputVoltageChannels[channelNum]->getVoltage();
         } else {
             MWTime sampleTime = analogOutputDataInterval * (i / numChannels);
