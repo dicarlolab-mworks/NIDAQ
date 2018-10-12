@@ -528,13 +528,8 @@ bool NIDAQDevice::stopDeviceIO() {
         }
     }
     
-    if (digitalOutputTasksRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASKS;
-        if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            digitalOutputTasksRunning = false;
-        }
+    if (!stopDigitalOutputTasks()) {
+        success = false;
     }
     
     if (analogInputTaskRunning) {
@@ -564,6 +559,26 @@ bool NIDAQDevice::stopDeviceIO() {
         return false;
     }
     
+    return true;
+}
+
+
+bool NIDAQDevice::stopDigitalOutputTasks() {
+    if (digitalOutputTasksRunning) {
+        BOOST_FOREACH(const DigitalOutputChannelMap::value_type &value, digitalOutputChannels) {
+            if (!writeDigitalOutput(value.first, true)) {  // Set all lines low
+                return false;
+            }
+        }
+        
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASKS;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        digitalOutputTasksRunning = false;
+    }
+
     return true;
 }
 
@@ -732,7 +747,7 @@ void NIDAQDevice::readDigitalInput() {
 }
 
 
-bool NIDAQDevice::writeDigitalOutput(int portNumber) {
+bool NIDAQDevice::writeDigitalOutput(int portNumber, bool stopping) {
     controlMessage->code = HelperControlMessage::REQUEST_WRITE_DIGITAL_OUTPUT_SAMPLES;
     controlMessage->digitalSamples.portNumber = portNumber;
     controlMessage->digitalSamples.timeout = double(updateInterval) / 1e6;  // us to s
@@ -744,9 +759,11 @@ bool NIDAQDevice::writeDigitalOutput(int portNumber) {
         std::uint32_t &sample = controlMessage->digitalSamples.samples[sampleNumber];
         sample = 0;
         
-        for (std::size_t lineNumber = 0; lineNumber < channel->getNumLinesInPort(); lineNumber++) {
-            bool lineState = channel->getLineState(lineNumber);
-            sample |= (std::uint32_t(lineState) << lineNumber);
+        if (!stopping) {
+            for (std::size_t lineNumber = 0; lineNumber < channel->getNumLinesInPort(); lineNumber++) {
+                bool lineState = channel->getLineState(lineNumber);
+                sample |= (std::uint32_t(lineState) << lineNumber);
+            }
         }
     }
     

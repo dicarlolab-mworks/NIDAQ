@@ -81,7 +81,8 @@ private:
     bool haveDigitalOutputChannels() const { return !(digitalOutputChannels.empty()); }
     bool createDigitalOutputTasks();
     bool startDigitalOutputTasks();
-    bool writeDigitalOutput(int portNumber);
+    bool stopDigitalOutputTasks();
+    bool writeDigitalOutput(int portNumber, bool stopping = false);
     
     bool haveCounterInputCountEdgesChannels() const { return !(counterInputCountEdgesChannels.empty()); }
     bool createCounterInputCountEdgesTasks();
