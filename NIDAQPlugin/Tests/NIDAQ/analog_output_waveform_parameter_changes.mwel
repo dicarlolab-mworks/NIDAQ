@@ -1,0 +1,129 @@
+var waveform = 0
+var period = 0
+var offset = 0
+var amplitude = 0
+var mean = 0
+
+%define reset_params ()
+    waveform = 'sinusoid'
+    period = 5s
+    offset = 0s
+    amplitude = 10.0
+    mean = 0.0
+%end
+
+reset_params ()  // Set initial values
+
+var voltage = 0
+
+nidaq nidaq (
+    name = Dev1
+    update_interval = 3ms
+    analog_input_data_interval = 1ms
+    analog_output_data_interval = 2ms
+    ) {
+    nidaq_analog_output_voltage_waveform (
+        channel_number = 0
+        range_min = -10.0
+        range_max = 10.0
+        waveform = waveform
+        period = period
+        offset = offset
+        amplitude = amplitude
+        mean = mean
+        )
+
+    nidaq_analog_input_voltage (
+        channel_number = 0
+        range_min = -10.0
+        range_max = 10.0
+        voltage = voltage
+        )
+}
+
+
+stimulus_display (
+    background_color = 0.5, 0.5, 0.5
+    redraw_on_every_refresh = true
+    )
+
+
+%define bar (index)
+    rectangle (
+        color = !(index % 2), index % 2, 0
+        x_size = 10
+        y_size = 2
+        x_position = -15 + 10*index
+        )
+%end
+
+bar bar1 (0)
+bar bar2 (1)
+bar bar3 (2)
+bar bar4 (3)
+
+
+circle cursor (
+    x_size = 1.0
+    x_position = 2 * voltage
+    )
+
+
+%define run_and_wait ()
+    voltage = mean
+    start_io_device (nidaq)
+
+    list (nsamples = 2) {
+        wait_for_condition (
+            condition = voltage >= mean + 0.5 * amplitude
+            timeout = period
+            )
+        wait_for_condition (
+            condition = voltage <= mean - 0.5 * amplitude
+            timeout = period
+            )
+        wait_for_condition (
+            condition = voltage >= mean
+            timeout = period
+            )
+    }
+
+    stop_io_device (nidaq)
+%end
+
+
+protocol {
+    queue_stimulus (bar1)
+    queue_stimulus (bar2)
+    queue_stimulus (bar3)
+    queue_stimulus (bar4)
+
+    voltage = 0
+    live_queue_stimulus (cursor)
+
+    update_display ()
+
+    reset_params ()
+    run_and_wait ()
+
+    reset_params ()
+    period /= 3
+    run_and_wait ()
+
+    reset_params ()
+    waveform = 'sawtooth'
+    run_and_wait ()
+
+    reset_params ()
+    offset = period / 2
+    run_and_wait ()
+
+    reset_params ()
+    amplitude /= 2
+    run_and_wait ()
+
+    reset_params ()
+    amplitude /= 2
+    mean = amplitude
+    run_and_wait ()
+}

@@ -117,12 +117,12 @@ parameters:
     name: range_min
     required: yes
     example: -10.0
-    description: Minimum expected output value (volts)
+    description: Minimum permitted output value (volts)
   - 
     name: range_max
     required: yes
     example: 10.0
-    description: Maximum expected output value (volts)
+    description: Maximum permitted output value (volts)
   - 
     name: voltage
     required: yes
@@ -138,8 +138,12 @@ parameters:
 name: NIDAQ Analog Output Voltage Waveform Channel
 signature: iochannel/nidaq_analog_output_voltage_waveform
 isa: NIDAQ Channel
-description: >
-    Generates a periodic analog output voltage signal on a `NIDAQ Device`
+description: |
+    Generates a periodic analog output voltage signal on a `NIDAQ Device`.
+
+    All waveform parameters (`waveform`_, `period`_, `offset`_, `amplitude`_,
+    and `mean`_) can be modified at run time.  Changes take effect after the
+    device is `stopped <Stop IO Device>` and `restarted <Start IO Device>`.
 parameters: 
   - 
     name: channel_number
@@ -151,12 +155,12 @@ parameters:
     name: range_min
     required: yes
     example: -10.0
-    description: Waveform minimum (volts)
+    description: Minimum permitted output value (volts)
   - 
     name: range_max
     required: yes
     example: 10.0
-    description: Waveform maximum (volts)
+    description: Maximum permitted output value (volts)
   - 
     name: waveform
     required: yes
@@ -169,11 +173,22 @@ parameters:
     description: Waveform period (microseconds)
   - 
     name: offset
-    required: yes
-    example: 0ms
+    default: 0ms
     description: >
         Waveform time offset (microseconds).  Determines the initial phase of
         the waveform.
+  - 
+    name: amplitude
+    example: 2.5
+    description: >
+        Waveform amplitude (volts).  If omitted, defaults to
+        ``(range_max-range_min)/2``.
+  - 
+    name: mean
+    example: 5.0
+    description: |
+        Waveform mean (volts).  If omitted, defaults to
+        ``(range_min+range_max)/2``.
 
 
 ---

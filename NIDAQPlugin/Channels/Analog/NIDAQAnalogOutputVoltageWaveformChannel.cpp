@@ -19,6 +19,8 @@ BEGIN_NAMESPACE_MW
 const std::string NIDAQAnalogOutputVoltageWaveformChannel::WAVEFORM("waveform");
 const std::string NIDAQAnalogOutputVoltageWaveformChannel::PERIOD("period");
 const std::string NIDAQAnalogOutputVoltageWaveformChannel::OFFSET("offset");
+const std::string NIDAQAnalogOutputVoltageWaveformChannel::AMPLITUDE("amplitude");
+const std::string NIDAQAnalogOutputVoltageWaveformChannel::MEAN("mean");
 
 
 void NIDAQAnalogOutputVoltageWaveformChannel::describeComponent(ComponentInfo &info) {
@@ -26,23 +28,23 @@ void NIDAQAnalogOutputVoltageWaveformChannel::describeComponent(ComponentInfo &i
     info.setSignature("iochannel/nidaq_analog_output_voltage_waveform");
     info.addParameter(WAVEFORM);
     info.addParameter(PERIOD);
-    info.addParameter(OFFSET);
+    info.addParameter(OFFSET, "0ms");
+    info.addParameter(AMPLITUDE, false);
+    info.addParameter(MEAN, false);
 }
 
 
 NIDAQAnalogOutputVoltageWaveformChannel::NIDAQAnalogOutputVoltageWaveformChannel(const ParameterValueMap &parameters) :
     NIDAQAnalogChannel(parameters),
-    waveformFunc(getWaveformFunction(parameters[WAVEFORM].str())),
-    amplitude((getRangeMax() - getRangeMin()) / 2.0),
+    waveform(variableOrText(parameters[WAVEFORM])),
     period(parameters[PERIOD]),
     timeOffset(parameters[OFFSET]),
-    voltageOffset(getRangeMin() + amplitude)
+    amplitude(optionalVariable(parameters[AMPLITUDE])),
+    voltageOffset(optionalVariable(parameters[MEAN]))
 { }
 
 
-NIDAQAnalogOutputVoltageWaveformChannel::WaveformFunction
-NIDAQAnalogOutputVoltageWaveformChannel::getWaveformFunction(std::string waveform)
-{
+auto NIDAQAnalogOutputVoltageWaveformChannel::getWaveformFunction(std::string waveform) -> WaveformFunction {
     boost::algorithm::to_lower(waveform);
     if (waveform == "sinusoid") {
         return &sinusoid;
@@ -52,9 +54,11 @@ NIDAQAnalogOutputVoltageWaveformChannel::getWaveformFunction(std::string wavefor
         return &triangle;
     } else if (waveform == "sawtooth") {
         return &sawtooth;
-    } else {
-        throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN, "Invalid waveform type", waveform);
     }
+    merror(M_IODEVICE_MESSAGE_DOMAIN,
+           "Invalid waveform type (%s) for NIDAQ analog output waveform channel",
+           waveform.c_str());
+    return &null;
 }
 
 
@@ -75,6 +79,11 @@ double NIDAQAnalogOutputVoltageWaveformChannel::triangle(double period, double t
 
 double NIDAQAnalogOutputVoltageWaveformChannel::sawtooth(double period, double time) {
     return 2.0 * (time/period - std::floor(0.5 + time/period));
+}
+
+
+double NIDAQAnalogOutputVoltageWaveformChannel::null(double period, double time) {
+    return 0.0;
 }
 
 
