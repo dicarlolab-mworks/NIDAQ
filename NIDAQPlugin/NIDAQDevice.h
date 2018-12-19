@@ -42,6 +42,7 @@ public:
     static const std::string ANALOG_INPUT_DATA_INTERVAL;
     static const std::string ANALOG_OUTPUT_DATA_INTERVAL;
     static const std::string ANALOG_READ_TIMEOUT;
+    static const std::string ANALOG_OUTPUT_ENABLED;
     static const std::string ASSUME_MULTIPLEXED_ADC;
     
     static void describeComponent(ComponentInfo &info);
@@ -58,12 +59,12 @@ public:
     bool stopDeviceIO() override;
     
 private:
-    bool createTasks();
     void* readInput();
     
     bool haveAnalogInputChannels() const { return !(analogInputChannels.empty()); }
     bool createAnalogInputTask();
     bool startAnalogInputTask();
+    bool stopAnalogInputTask();
     void readAnalogInput();
     
     bool haveAnalogOutputVoltageChannels() const { return !(analogOutputVoltageChannels.empty()); }
@@ -71,6 +72,7 @@ private:
     bool haveAnalogOutputChannels() const { return haveAnalogOutputVoltageChannels() || haveAnalogOutputVoltageWaveformChannels(); }
     bool createAnalogOutputTask();
     bool createAnalogOutputVoltageChannel(const boost::shared_ptr<NIDAQAnalogChannel> &channel);
+    bool isAnalogOutputEnabled() const { return analogOutputEnabled->getValue().getBool(); }
     bool startAnalogOutputTask();
     bool stopAnalogOutputTask();
     bool writeAnalogOutput(bool stopping = false);
@@ -78,6 +80,7 @@ private:
     bool haveDigitalInputChannels() const { return !(digitalInputChannels.empty()); }
     bool createDigitalInputTask();
     bool startDigitalInputTask();
+    bool stopDigitalInputTask();
     void readDigitalInput();
     
     bool haveDigitalOutputChannels() const { return !(digitalOutputChannels.empty()); }
@@ -89,6 +92,7 @@ private:
     bool haveCounterInputCountEdgesChannels() const { return !(counterInputCountEdgesChannels.empty()); }
     bool createCounterInputCountEdgesTasks();
     bool startCounterInputCountEdgesTasks();
+    bool stopCounterInputCountEdgesTasks();
     void readEdgeCounts();
     
     void spawnHelper();
@@ -125,6 +129,7 @@ private:
     std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageChannel> > analogOutputVoltageChannels;
     std::vector< boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> > analogOutputVoltageWaveformChannels;
     std::size_t analogOutputSampleBufferSize;
+    const VariablePtr analogOutputEnabled;
     bool analogOutputTaskRunning;
     
     std::vector< boost::shared_ptr<NIDAQDigitalInputChannel> > digitalInputChannels;
@@ -139,6 +144,19 @@ private:
     typedef std::map< int, boost::shared_ptr<NIDAQCounterInputCountEdgesChannel> > CounterInputCountEdgesChannelMap;
     CounterInputCountEdgesChannelMap counterInputCountEdgesChannels;
     bool counterInputCountEdgesTasksRunning;
+    
+    
+    class AnalogOutputEnabledNotification : public VariableNotification {
+    public:
+        explicit AnalogOutputEnabledNotification(const boost::shared_ptr<NIDAQDevice> &nidaqDevice) :
+            nidaqDeviceWeak(nidaqDevice)
+        { }
+        
+        void notify(const Datum &data, MWTime time) override;
+        
+    private:
+        boost::weak_ptr<NIDAQDevice> nidaqDeviceWeak;
+    };
     
     
     class AnalogOutputVoltageNotification : public VariableNotification {

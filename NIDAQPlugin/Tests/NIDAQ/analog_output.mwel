@@ -1,14 +1,16 @@
 %define range_min = -9.5
 %define range_max = 9.5
 
-var output = 0
-var input = 0
+var analog_output_enabled = true
+var output = 0.0
+var input = 0.0
 
 nidaq nidaq (
     name = Dev1
     update_interval = 3ms
     analog_input_data_interval = 1ms
     analog_output_data_interval = 1ms
+    analog_output_enabled = analog_output_enabled
     ) {
     nidaq_analog_output_voltage (
         channel_number = 0
@@ -37,20 +39,53 @@ rectangle box (
     )
 
 
-protocol {
-    output = 0
-    start_device_io (nidaq)
+%define wait_for_output (expected_input)
+    report ('output = $output')
+    wait (2s)
+    report ('input = $input')
+    assert (abs(input - expected_input) < 0.005)
+%end
 
+
+protocol {
+    input = 0.0
     live_queue_stimulus (box)
     update_stimulus_display ()
 
+    output = 0.0
+    start_device_io (nidaq)
+    wait_for_output (0.0)
+
     list (nsamples = 5) {
-        wait (2s)
-        assert (abs(input - output) < 0.005)
-        output = rand(range_min, range_max)
+        choose {
+            when (output < 0.0) {
+                output = rand(range_max/2, range_max)
+            }
+            otherwise {
+                output = rand(range_min, range_min/2)
+            }
+        }
+        wait_for_output (output)
     }
 
-    wait (2s)
+    analog_output_enabled = false
+    report ('Analog output DISABLED')
+    wait_for_output (0.0)
+
+    output = range_max
+    wait_for_output (0.0)
+
+    stop_device_io (nidaq)
+    report ('Device STOPPED')
+    wait_for_output (0.0)
+
+    start_device_io (nidaq)
+    report ('Device STARTED')
+    wait_for_output (0.0)
+
+    analog_output_enabled = true
+    report ('Analog output ENABLED')
+    wait_for_output (output)
 
     dequeue_stimulus (box)
     update_stimulus_display ()

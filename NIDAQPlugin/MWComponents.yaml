@@ -50,6 +50,20 @@ parameters:
 
         If omitted, defaults to `update_interval`_.
   - 
+    name: analog_output_enabled
+    default: 'YES'
+    description: |
+        Controls whether the device performs output on configured analog
+        output `voltage <NIDAQ Analog Output Voltage Channel>` and
+        `voltage waveform <NIDAQ Analog Output Voltage Waveform Channel>`
+        channels.
+
+        If this parameter is set to a variable name, then setting the variable
+        to ``NO`` while the experiment is running will stop analog output, and
+        subsequently setting the variable to ``YES`` will restart analog output.
+        Hence, it provides a means to start and stop analog output independently
+        of other input and output tasks.
+  - 
     name: assume_multiplexed_adc
     default: 'YES'
     description: >
@@ -142,8 +156,10 @@ description: |
     Generates a periodic analog output voltage signal on a `NIDAQ Device`.
 
     All waveform parameters (`waveform`_, `period`_, `offset`_, `amplitude`_,
-    and `mean`_) can be modified at run time.  Changes take effect after the
-    device is `stopped <Stop IO Device>` and `restarted <Start IO Device>`.
+    and `mean`_) can be modified at run time.  Changes take effect after output
+    is stopped and restarted, either by `stopping <Stop IO Device>` and
+    `restarting <Start IO Device>` the device, or by setting the device's
+    ``analog_output_enabled`` parameter to ``NO`` and then ``YES``.
 parameters: 
   - 
     name: channel_number

@@ -27,6 +27,7 @@ const std::string NIDAQDevice::UPDATE_INTERVAL("update_interval");
 const std::string NIDAQDevice::ANALOG_INPUT_DATA_INTERVAL("analog_input_data_interval");
 const std::string NIDAQDevice::ANALOG_OUTPUT_DATA_INTERVAL("analog_output_data_interval");
 const std::string NIDAQDevice::ANALOG_READ_TIMEOUT("analog_read_timeout");
+const std::string NIDAQDevice::ANALOG_OUTPUT_ENABLED("analog_output_enabled");
 const std::string NIDAQDevice::ASSUME_MULTIPLEXED_ADC("assume_multiplexed_adc");
 
 
@@ -40,7 +41,8 @@ void NIDAQDevice::describeComponent(ComponentInfo &info) {
     info.addParameter(ANALOG_INPUT_DATA_INTERVAL, true, "1ms");
     info.addParameter(ANALOG_OUTPUT_DATA_INTERVAL, true, "1ms");
     info.addParameter(ANALOG_READ_TIMEOUT, false, "3ms");
-    info.addParameter(ASSUME_MULTIPLEXED_ADC, "1");
+    info.addParameter(ANALOG_OUTPUT_ENABLED, "YES");
+    info.addParameter(ASSUME_MULTIPLEXED_ADC, "YES");
 }
 
 
@@ -70,6 +72,7 @@ NIDAQDevice::NIDAQDevice(const ParameterValueMap &parameters) :
     analogInputTaskRunning(false),
     analogOutputDataInterval(parameters[ANALOG_OUTPUT_DATA_INTERVAL]),
     analogOutputSampleBufferSize(0),
+    analogOutputEnabled(parameters[ANALOG_OUTPUT_ENABLED]),
     analogOutputTaskRunning(false),
     digitalInputSampleBufferSize(0),
     digitalInputTaskRunning(false),
@@ -215,17 +218,6 @@ bool NIDAQDevice::initialize() {
     
     mprintf(M_IODEVICE_MESSAGE_DOMAIN, "Configuring NIDAQ device \"%s\"...", deviceName.c_str());
     
-    if (!createTasks()) {
-        return false;
-    }
-    
-    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device \"%s\" is ready", deviceName.c_str());
-    
-    return true;
-}
-
-
-bool NIDAQDevice::createTasks() {
     if (haveAnalogInputChannels() && !createAnalogInputTask()) {
         return false;
     }
@@ -240,6 +232,14 @@ bool NIDAQDevice::createTasks() {
     }
     if (haveCounterInputCountEdgesChannels() && !createCounterInputCountEdgesTasks()) {
         return false;
+    }
+    
+    mprintf(M_IODEVICE_MESSAGE_DOMAIN, "NIDAQ device \"%s\" is ready", deviceName.c_str());
+    
+    if (haveAnalogOutputChannels()) {
+        auto sharedThis = component_shared_from_this<NIDAQDevice>();
+        auto notification = boost::make_shared<AnalogOutputEnabledNotification>(sharedThis);
+        analogOutputEnabled->addNotification(notification);
     }
     
     return true;
@@ -368,7 +368,7 @@ bool NIDAQDevice::createCounterInputCountEdgesTasks() {
 bool NIDAQDevice::startDeviceIO() {
     scoped_lock lock(controlMutex);
     
-    if (haveAnalogOutputChannels() && !startAnalogOutputTask()) {
+    if (haveAnalogOutputChannels() && isAnalogOutputEnabled() && !startAnalogOutputTask()) {
         return false;
     }
     if (haveAnalogInputChannels() && !startAnalogInputTask()) {
@@ -417,14 +417,12 @@ bool NIDAQDevice::startAnalogOutputTask() {
             return false;
         }
         
+        analogOutputTaskRunning = true;
+        
         // Static samples must be written *after* starting the task
         if (haveAnalogOutputVoltageChannels()) {
-            if (!writeAnalogOutput()) {
-                return false;
-            }
+            writeAnalogOutput();  // Ignore return value, since task has already started
         }
-        
-        analogOutputTaskRunning = true;
     }
     
     return true;
@@ -438,12 +436,12 @@ bool NIDAQDevice::startAnalogInputTask() {
             return false;
         }
         
+        analogInputTaskRunning = true;
+        
         HelperControlMessage::unsigned_int systemBaseTimeNS = Clock::instance()->getSystemBaseTimeNS();
         analogInputStartTime = MWTime((controlMessage->taskStartTime - systemBaseTimeNS)
                                       / HelperControlMessage::unsigned_int(1000));  // ns to us
         totalNumAnalogInputSamplesAcquired = 0;
-        
-        analogInputTaskRunning = true;
     }
     
     return true;
@@ -457,15 +455,13 @@ bool NIDAQDevice::startDigitalOutputTasks() {
             return false;
         }
         
+        digitalOutputTasksRunning = true;
+        
         // Write the initial output values *after* starting the task, as writing before starting
         // fails with some devices (e.g. the NI USB-6501)
         BOOST_FOREACH(const DigitalOutputChannelMap::value_type &value, digitalOutputChannels) {
-            if (!writeDigitalOutput(value.first)) {
-                return false;
-            }
+            writeDigitalOutput(value.first);  // Ignore return value, since task has already started
         }
-        
-        digitalOutputTasksRunning = true;
     }
     
     return true;
@@ -508,59 +504,51 @@ bool NIDAQDevice::stopDeviceIO() {
         readInputScheduleTask.reset();
     }
     
-    if (!(counterInputCountEdgesTasksRunning ||
-          digitalInputTaskRunning ||
-          digitalOutputTasksRunning ||
-          analogInputTaskRunning ||
-          analogOutputTaskRunning))
-    {
-        return true;
-    }
-    
     bool success = true;
     
+    // Try to stop as much as possible, even if some attempts fail
+    success = stopCounterInputCountEdgesTasks() && success;
+    success = stopDigitalInputTask() && success;
+    success = stopDigitalOutputTasks() && success;
+    success = stopAnalogInputTask() && success;
+    success = stopAnalogOutputTask() && success;
+    
+    return success;
+}
+
+
+bool NIDAQDevice::stopCounterInputCountEdgesTasks() {
     if (counterInputCountEdgesTasksRunning) {
         controlMessage->code = HelperControlMessage::REQUEST_CLEAR_COUNTER_INPUT_COUNT_EDGES_TASKS;
         if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            counterInputCountEdgesTasksRunning = false;
+            return false;
+        }
+        
+        counterInputCountEdgesTasksRunning = false;
+        
+        // Recreate the tasks so they're ready to go if input is started again
+        if (!createCounterInputCountEdgesTasks()) {
+            return false;
         }
     }
     
+    return true;
+}
+
+
+bool NIDAQDevice::stopDigitalInputTask() {
     if (digitalInputTaskRunning) {
         controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_INPUT_TASK;
         if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            digitalInputTaskRunning = false;
+            return false;
         }
-    }
-    
-    if (!stopDigitalOutputTasks()) {
-        success = false;
-    }
-    
-    if (analogInputTaskRunning) {
-        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_ANALOG_INPUT_TASK;
-        if (!sendHelperRequest()) {
-            success = false;
-        } else {
-            analogInputTaskRunning = false;
+        
+        digitalInputTaskRunning = false;
+        
+        // Recreate the task so it's ready to go if input is started again
+        if (!createDigitalInputTask()) {
+            return false;
         }
-    }
-    
-    if (!stopAnalogOutputTask()) {
-        success = false;
-    }
-    
-    if (!success) {
-        return false;
-    }
-    
-    // Recreate the tasks so they're ready to go if startDeviceIO is called again
-    if (!createTasks()) {
-        return false;
     }
     
     return true;
@@ -570,9 +558,9 @@ bool NIDAQDevice::stopDeviceIO() {
 bool NIDAQDevice::stopDigitalOutputTasks() {
     if (digitalOutputTasksRunning) {
         BOOST_FOREACH(const DigitalOutputChannelMap::value_type &value, digitalOutputChannels) {
-            if (!writeDigitalOutput(value.first, true)) {  // Set all lines low
-                return false;
-            }
+            // Set all lines low.  Ignore return value, since we want to stop the task even if
+            // the write fails.
+            writeDigitalOutput(value.first, true);
         }
         
         controlMessage->code = HelperControlMessage::REQUEST_CLEAR_DIGITAL_OUTPUT_TASKS;
@@ -581,8 +569,32 @@ bool NIDAQDevice::stopDigitalOutputTasks() {
         }
         
         digitalOutputTasksRunning = false;
+        
+        // Recreate the tasks so they're ready to go if output is started again
+        if (!createDigitalOutputTasks()) {
+            return false;
+        }
     }
 
+    return true;
+}
+
+
+bool NIDAQDevice::stopAnalogInputTask() {
+    if (analogInputTaskRunning) {
+        controlMessage->code = HelperControlMessage::REQUEST_CLEAR_ANALOG_INPUT_TASK;
+        if (!sendHelperRequest()) {
+            return false;
+        }
+        
+        analogInputTaskRunning = false;
+        
+        // Recreate the task so it's ready to go if input is started again
+        if (!createAnalogInputTask()) {
+            return false;
+        }
+    }
+    
     return true;
 }
 
@@ -590,9 +602,9 @@ bool NIDAQDevice::stopDigitalOutputTasks() {
 bool NIDAQDevice::stopAnalogOutputTask() {
     if (analogOutputTaskRunning) {
         if (haveAnalogOutputVoltageChannels()) {
-            if (!writeAnalogOutput(true)) {  // Set all channels to zero
-                return false;
-            }
+            // Set all channels to zero.  Ignore return value, since we want to stop the task even if
+            // the write fails.
+            writeAnalogOutput(true);
         }
         
         controlMessage->code = HelperControlMessage::REQUEST_CLEAR_ANALOG_OUTPUT_TASK;
@@ -601,6 +613,11 @@ bool NIDAQDevice::stopAnalogOutputTask() {
         }
         
         analogOutputTaskRunning = false;
+        
+        // Recreate the task so it's ready to go if output is started again
+        if (!createAnalogOutputTask()) {
+            return false;
+        }
     }
     
     return true;
@@ -960,6 +977,19 @@ bool NIDAQDevice::sendHelperRequest() {
     }
     
     return (responseCode == HelperControlMessage::RESPONSE_OK);
+}
+
+
+void NIDAQDevice::AnalogOutputEnabledNotification::notify(const Datum &data, MWTime time) {
+    auto nidaqDevice = nidaqDeviceWeak.lock();
+    if (nidaqDevice) {
+        scoped_lock lock(nidaqDevice->controlMutex);
+        if (data.getBool()) {
+            nidaqDevice->startAnalogOutputTask();
+        } else {
+            nidaqDevice->stopAnalogOutputTask();
+        }
+    }
 }
 
 
