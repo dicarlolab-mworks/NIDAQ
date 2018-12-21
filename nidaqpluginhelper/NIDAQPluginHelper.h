@@ -24,6 +24,7 @@
 
 #include "IPCRequestResponse.h"
 #include "HelperControlMessage.h"
+#include "HelperSharedMemory.h"
 
 #include "NIDAQPluginHelperError.h"
 
@@ -32,7 +33,7 @@ class NIDAQPluginHelper : boost::noncopyable {
     
 public:
     NIDAQPluginHelper(IPCRequestResponse &ipc,
-                      HelperControlMessage &message,
+                      HelperSharedMemory &sharedMemory,
                       const std::string &deviceName);
     
     bool handleRequests();
@@ -69,10 +70,14 @@ private:
     void readCounterInputCountEdgesValue();
     void clearCounterInputCountEdgesTasks();
     
+    void resizeSharedMemory();
+    
     IPCRequestResponse &ipc;
-    HelperControlMessage &m;
+    HelperSharedMemory &sharedMemory;
     const std::string deviceName;
     
+    HelperControlMessage *m;
+
     std::unique_ptr<nidaq::Device> device;
     std::set<unsigned int> digitalOutputPortNumbers;
     std::set<unsigned int> counterInputCountEdgesCounterNumbers;

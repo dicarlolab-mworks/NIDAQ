@@ -129,16 +129,6 @@ void NIDAQDevice::addChild(std::map<std::string, std::string> parameters,
     boost::shared_ptr<NIDAQAnalogOutputVoltageWaveformChannel> aoVWChannel;
     aoVWChannel = boost::dynamic_pointer_cast<NIDAQAnalogOutputVoltageWaveformChannel>(child);
     if (aoVWChannel) {
-        MWTime period = aoVWChannel->getPeriod();
-        if (period % analogOutputDataInterval != 0) {
-            throw SimpleException(M_IODEVICE_MESSAGE_DOMAIN,
-                                  "Analog output waveform period must be an integer multiple of analog output data interval");
-        }
-        
-        // This is the per-channel buffer size.  We'll multiply by the number of channels in initialize().
-        analogOutputSampleBufferSize = std::max(analogOutputSampleBufferSize,
-                                                std::size_t(period / analogOutputDataInterval));
-        
         analogOutputVoltageWaveformChannels.push_back(aoVWChannel);
         return;
     }
@@ -198,13 +188,8 @@ bool NIDAQDevice::initialize() {
                               "NIDAQ device cannot use static and waveform analog output voltage channels simultaneously");
     }
     
-    analogInputSampleBufferSize = (std::size_t(updateInterval / analogInputDataInterval) *
-                                   analogInputChannels.size());
-    if (haveAnalogOutputVoltageChannels()) {
-        analogOutputSampleBufferSize = analogOutputVoltageChannels.size();
-    } else {
-        analogOutputSampleBufferSize *= analogOutputVoltageWaveformChannels.size();
-    }
+    analogInputSampleBufferSize = analogInputChannels.size() * std::size_t(updateInterval / analogInputDataInterval);
+    analogOutputSampleBufferSize = analogOutputVoltageChannels.size();
     digitalInputSampleBufferSize = digitalInputChannels.size();
     digitalOutputSampleBufferSize = (digitalOutputChannels.empty() ? 0 : 1);
     
@@ -405,8 +390,43 @@ bool NIDAQDevice::startDeviceIO() {
 
 bool NIDAQDevice::startAnalogOutputTask() {
     if (!analogOutputTaskRunning) {
-        // Waveform samples must be written *before* starting the task
         if (haveAnalogOutputVoltageWaveformChannels()) {
+            //
+            // Ensure that controlMessage is appropriately sized for the current period of all
+            // waveform channels
+            //
+            
+            std::size_t newAnalogOutputSampleBufferSize = 0;
+            
+            for (auto &channel : analogOutputVoltageWaveformChannels) {
+                MWTime period = channel->getPeriod();
+                if (period % analogOutputDataInterval != 0) {
+                    merror(M_IODEVICE_MESSAGE_DOMAIN,
+                           "NIDAQ analog output waveform period (%lld) is not an integer multiple of "
+                           "analog output data interval (%lld)",
+                           period,
+                           analogOutputDataInterval);
+                    return false;
+                }
+                // This is the per-channel buffer size.  We'll multiply by the number of channels below.
+                newAnalogOutputSampleBufferSize = std::max(newAnalogOutputSampleBufferSize,
+                                                           std::size_t(period / analogOutputDataInterval));
+            }
+            
+            newAnalogOutputSampleBufferSize *= analogOutputVoltageWaveformChannels.size();
+            if (newAnalogOutputSampleBufferSize != analogOutputSampleBufferSize) {
+                controlMessage->code = HelperControlMessage::REQUEST_RESIZE_SHARED_MEMORY;
+                controlMessage->sharedMemorySize = HelperControlMessage::sizeWithSamples(std::max(analogInputSampleBufferSize,
+                                                                                                  newAnalogOutputSampleBufferSize),
+                                                                                         std::max(digitalInputSampleBufferSize,
+                                                                                                  digitalOutputSampleBufferSize));
+                if (!sendHelperRequest()) {
+                    return false;
+                }
+                analogOutputSampleBufferSize = newAnalogOutputSampleBufferSize;
+            }
+            
+            // Waveform samples must be written *before* starting the task
             if (!writeAnalogOutput()) {
                 return false;
             }
@@ -936,10 +956,17 @@ void NIDAQDevice::reapHelper() {
 
 
 bool NIDAQDevice::sendHelperRequest() {
+    const bool requestedResizeSharedMemory = (controlMessage->code == HelperControlMessage::REQUEST_RESIZE_SHARED_MEMORY);
+    
     controlChannel.postRequest();
     if (!(controlChannel.waitForResponse(boost::posix_time::seconds(10)))) {
         merror(M_IODEVICE_MESSAGE_DOMAIN, "Internal error: Request to %s timed out", PLUGIN_HELPER_EXECUTABLE);
         return false;
+    }
+    
+    if (requestedResizeSharedMemory) {
+        // Shared memory may have been resized, so we need to remap the control message
+        controlMessage = sharedMemory.getMessagePtr();
     }
     
     HelperControlMessage &m = *controlMessage;

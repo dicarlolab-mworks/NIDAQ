@@ -116,6 +116,7 @@ struct HelperControlMessage {
         REQUEST_READ_COUNTER_INPUT_COUNT_EDGES_VALUE,
         REQUEST_CLEAR_COUNTER_INPUT_COUNT_EDGES_TASKS,
         
+        REQUEST_RESIZE_SHARED_MEMORY,
         REQUEST_SHUTDOWN,
         REQUEST_PING,
         
@@ -158,6 +159,8 @@ struct HelperControlMessage {
         struct {
             unsigned_int counterNumber;
         } counterChannel;
+        
+        unsigned_int sharedMemorySize;
         
         //
         // Request/response data

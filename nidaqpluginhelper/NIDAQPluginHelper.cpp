@@ -14,11 +14,12 @@
 
 
 NIDAQPluginHelper::NIDAQPluginHelper(IPCRequestResponse &ipc,
-                                     HelperControlMessage &message,
+                                     HelperSharedMemory &sharedMemory,
                                      const std::string &deviceName) :
     ipc(ipc),
-    m(message),
-    deviceName(deviceName)
+    sharedMemory(sharedMemory),
+    deviceName(deviceName),
+    m(sharedMemory.getMessagePtr())
 { }
 
 
@@ -37,24 +38,24 @@ bool NIDAQPluginHelper::handleRequests() {
             
         } catch (const NIDAQPluginHelperError &e) {
             
-            m.code = HelperControlMessage::RESPONSE_BAD_REQUEST;
-            m.badRequest.info = e.what();
+            m->code = HelperControlMessage::RESPONSE_BAD_REQUEST;
+            m->badRequest.info = e.what();
             
         } catch (const nidaq::Error &e) {
             
-            m.code = HelperControlMessage::RESPONSE_NIDAQ_ERROR;
-            m.nidaqError.code = e.getCode();
-            m.nidaqError.what = e.what();
+            m->code = HelperControlMessage::RESPONSE_NIDAQ_ERROR;
+            m->nidaqError.code = e.getCode();
+            m->nidaqError.what = e.what();
             
         } catch (const std::exception &e) {
             
-            m.code = HelperControlMessage::RESPONSE_EXCEPTION;
-            m.exception.what = e.what();
+            m->code = HelperControlMessage::RESPONSE_EXCEPTION;
+            m->exception.what = e.what();
             
         } catch (...) {
             
-            m.code = HelperControlMessage::RESPONSE_EXCEPTION;
-            m.exception.what = "Unknown exception";
+            m->code = HelperControlMessage::RESPONSE_EXCEPTION;
+            m->exception.what = "Unknown exception";
             
         }
         
@@ -66,7 +67,7 @@ bool NIDAQPluginHelper::handleRequests() {
 
 
 void NIDAQPluginHelper::handleRequest(bool &done) {
-    switch (m.code) {
+    switch (m->code) {
         case HelperControlMessage::REQUEST_CREATE_ANALOG_INPUT_VOLTAGE_CHANNEL:
             createAnalogInputVoltageChannel();
             break;
@@ -155,6 +156,10 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             clearCounterInputCountEdgesTasks();
             break;
             
+        case HelperControlMessage::REQUEST_RESIZE_SHARED_MEMORY:
+            resizeSharedMemory();
+            break;
+            
         case HelperControlMessage::REQUEST_SHUTDOWN:
             done = true;
             break;
@@ -164,10 +169,10 @@ void NIDAQPluginHelper::handleRequest(bool &done) {
             break;
             
         default:
-            throw NIDAQPluginHelperError(boost::format("Unknown request code: %d") % m.code);
+            throw NIDAQPluginHelperError(boost::format("Unknown request code: %d") % m->code);
     }
     
-    m.code = HelperControlMessage::RESPONSE_OK;
+    m->code = HelperControlMessage::RESPONSE_OK;
 }
 
 
@@ -180,21 +185,21 @@ nidaq::Device& NIDAQPluginHelper::getDevice() {
 
 
 void NIDAQPluginHelper::createAnalogInputVoltageChannel() {
-    getDevice().getAnalogInputTask().addVoltageChannel(m.analogVoltageChannel.channelNumber,
-                                                       m.analogVoltageChannel.minVal,
-                                                       m.analogVoltageChannel.maxVal);
+    getDevice().getAnalogInputTask().addVoltageChannel(m->analogVoltageChannel.channelNumber,
+                                                       m->analogVoltageChannel.minVal,
+                                                       m->analogVoltageChannel.maxVal);
 }
 
 
 void NIDAQPluginHelper::setAnalogInputSampleClockTiming() {
-    getDevice().getAnalogInputTask().setSampleClockTiming(m.sampleClockTiming.samplingRate,
-                                                          m.sampleClockTiming.samplesPerChannelToAcquire);
+    getDevice().getAnalogInputTask().setSampleClockTiming(m->sampleClockTiming.samplingRate,
+                                                          m->sampleClockTiming.samplesPerChannelToAcquire);
 }
 
 
 void NIDAQPluginHelper::startAnalogInputTask() {
     getDevice().getAnalogInputTask().start();
-    m.taskStartTime = clock.nanoTime();
+    m->taskStartTime = clock.nanoTime();
 }
 
 
@@ -203,10 +208,10 @@ void NIDAQPluginHelper::readAnalogInputSamples() {
         throw NIDAQPluginHelperError("Analog input task is not running");
     }
     
-    std::size_t numSamplesRead = getDevice().getAnalogInputTask().read(m.analogSamples.samples,
-                                                                       m.analogSamples.timeout,
+    std::size_t numSamplesRead = getDevice().getAnalogInputTask().read(m->analogSamples.samples,
+                                                                       m->analogSamples.timeout,
                                                                        true);  // Group samples by scan number
-    m.analogSamples.samples.numSamples = numSamplesRead;
+    m->analogSamples.samples.numSamples = numSamplesRead;
 }
 
 
@@ -216,15 +221,15 @@ void NIDAQPluginHelper::clearAnalogInputTask() {
 
 
 void NIDAQPluginHelper::createAnalogOutputVoltageChannel() {
-    getDevice().getAnalogOutputTask().addVoltageChannel(m.analogVoltageChannel.channelNumber,
-                                                        m.analogVoltageChannel.minVal,
-                                                        m.analogVoltageChannel.maxVal);
+    getDevice().getAnalogOutputTask().addVoltageChannel(m->analogVoltageChannel.channelNumber,
+                                                        m->analogVoltageChannel.minVal,
+                                                        m->analogVoltageChannel.maxVal);
 }
 
 
 void NIDAQPluginHelper::setAnalogOutputSampleClockTiming() {
-    getDevice().getAnalogOutputTask().setSampleClockTiming(m.sampleClockTiming.samplingRate,
-                                                           m.sampleClockTiming.samplesPerChannelToAcquire);
+    getDevice().getAnalogOutputTask().setSampleClockTiming(m->sampleClockTiming.samplingRate,
+                                                           m->sampleClockTiming.samplesPerChannelToAcquire);
 }
 
 
@@ -234,11 +239,11 @@ void NIDAQPluginHelper::startAnalogOutputTask() {
 
 
 void NIDAQPluginHelper::writeAnalogOutputSamples() {
-    std::size_t numSamplesWritten = getDevice().getAnalogOutputTask().write(m.analogSamples.samples,
-                                                                            m.analogSamples.timeout,
+    std::size_t numSamplesWritten = getDevice().getAnalogOutputTask().write(m->analogSamples.samples,
+                                                                            m->analogSamples.timeout,
                                                                             true);  // Group samples by scan number
     
-    m.analogSamples.samples.numSamples = numSamplesWritten;
+    m->analogSamples.samples.numSamples = numSamplesWritten;
 }
 
 
@@ -248,7 +253,7 @@ void NIDAQPluginHelper::clearAnalogOutputTask() {
 
 
 void NIDAQPluginHelper::createDigitalInputChannel() {
-    getDevice().getDigitalInputTask().addChannel(m.digitalChannel.portNumber);
+    getDevice().getDigitalInputTask().addChannel(m->digitalChannel.portNumber);
 }
 
 
@@ -262,10 +267,10 @@ void NIDAQPluginHelper::readDigitalInputSamples() {
         throw NIDAQPluginHelperError("Digital input task is not running");
     }
     
-    std::size_t numSamplesRead = getDevice().getDigitalInputTask().read(m.digitalSamples.samples,
-                                                                        m.digitalSamples.timeout,
+    std::size_t numSamplesRead = getDevice().getDigitalInputTask().read(m->digitalSamples.samples,
+                                                                        m->digitalSamples.timeout,
                                                                         true);  // Group samples by scan number
-    m.digitalSamples.samples.numSamples = numSamplesRead;
+    m->digitalSamples.samples.numSamples = numSamplesRead;
 }
 
 
@@ -275,8 +280,8 @@ void NIDAQPluginHelper::clearDigitalInputTask() {
 
 
 void NIDAQPluginHelper::createDigitalOutputChannel() {
-    getDevice().getDigitalOutputTask(m.digitalChannel.portNumber);
-    digitalOutputPortNumbers.insert(m.digitalChannel.portNumber);
+    getDevice().getDigitalOutputTask(m->digitalChannel.portNumber);
+    digitalOutputPortNumbers.insert(m->digitalChannel.portNumber);
 }
 
 
@@ -288,12 +293,12 @@ void NIDAQPluginHelper::startDigitalOutputTasks() {
 
 
 void NIDAQPluginHelper::writeDigitalOutputSamples() {
-    nidaq::DigitalOutputTask &task = getDevice().getDigitalOutputTask(m.digitalSamples.portNumber);
+    nidaq::DigitalOutputTask &task = getDevice().getDigitalOutputTask(m->digitalSamples.portNumber);
     
-    std::size_t numSamplesWritten = task.write(m.digitalSamples.samples,
-                                               m.digitalSamples.timeout);
+    std::size_t numSamplesWritten = task.write(m->digitalSamples.samples,
+                                               m->digitalSamples.timeout);
 
-    m.digitalSamples.samples.numSamples = numSamplesWritten;
+    m->digitalSamples.samples.numSamples = numSamplesWritten;
 }
 
 
@@ -307,8 +312,8 @@ void NIDAQPluginHelper::clearDigitalOutputTasks() {
 
 
 void NIDAQPluginHelper::createCounterInputCountEdgesChannel() {
-    getDevice().getCounterInputCountEdgesTask(m.counterChannel.counterNumber);
-    counterInputCountEdgesCounterNumbers.insert(m.counterChannel.counterNumber);
+    getDevice().getCounterInputCountEdgesTask(m->counterChannel.counterNumber);
+    counterInputCountEdgesCounterNumbers.insert(m->counterChannel.counterNumber);
 }
 
 
@@ -320,14 +325,14 @@ void NIDAQPluginHelper::startCounterInputCountEdgesTasks() {
 
 
 void NIDAQPluginHelper::readCounterInputCountEdgesValue() {
-    nidaq::CounterInputCountEdgesTask &task = getDevice().getCounterInputCountEdgesTask(m.edgeCount.counterNumber);
+    nidaq::CounterInputCountEdgesTask &task = getDevice().getCounterInputCountEdgesTask(m->edgeCount.counterNumber);
     
     if (!(task.isRunning())) {
         throw NIDAQPluginHelperError("Counter input count edges task is not running");
     }
     
-    std::uint32_t value = task.read(m.edgeCount.timeout);
-    m.edgeCount.value = value;
+    std::uint32_t value = task.read(m->edgeCount.timeout);
+    m->edgeCount.value = value;
 }
 
 
@@ -337,6 +342,12 @@ void NIDAQPluginHelper::clearCounterInputCountEdgesTasks() {
         getDevice().clearCounterInputCountEdgesTask(counterNumber);
         counterInputCountEdgesCounterNumbers.erase(counterNumber);
     }
+}
+
+
+void NIDAQPluginHelper::resizeSharedMemory() {
+    sharedMemory.setSize(m->sharedMemorySize);
+    m = sharedMemory.getMessagePtr();
 }
 
 

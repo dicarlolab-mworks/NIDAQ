@@ -27,24 +27,20 @@ class HelperSharedMemory : boost::noncopyable {
 public:
     HelperSharedMemory(boost::interprocess::create_only_t createOnly, const std::string &name) :
         sharedMemory(createOnly, name.c_str(), boost::interprocess::read_write),
-        sharedMemoryRemover(name),
-        message(NULL)
+        sharedMemoryRemover(name)
     { }
     
     HelperSharedMemory(boost::interprocess::open_only_t openOnly, const std::string &name) :
-        sharedMemory(openOnly, name.c_str(), boost::interprocess::read_write),
-        mappedRegion(sharedMemory, boost::interprocess::read_write),
-        message(static_cast<HelperControlMessage *>(mappedRegion.get_address()))
+        sharedMemory(openOnly, name.c_str(), boost::interprocess::read_write)
     { }
     
     void setSize(std::size_t size) {
         sharedMemory.truncate(size);
-        mappedRegion = mapped_region(sharedMemory, boost::interprocess::read_write);
-        message = new(mappedRegion.get_address()) HelperControlMessage;
     }
     
-    HelperControlMessage* getMessagePtr() const {
-        return message;
+    HelperControlMessage* getMessagePtr() {
+        mappedRegion = mapped_region(sharedMemory, boost::interprocess::read_write);
+        return new(mappedRegion.get_address()) HelperControlMessage;
     }
     
 private:
@@ -54,7 +50,6 @@ private:
     shared_memory_object sharedMemory;
     IPCNamedResourceRemover<shared_memory_object> sharedMemoryRemover;
     mapped_region mappedRegion;
-    HelperControlMessage *message;
     
 };
 

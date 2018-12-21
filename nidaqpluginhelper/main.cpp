@@ -12,7 +12,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "HelperSharedMemory.h"
 #include "NIDAQPluginHelper.h"
 
 
@@ -39,7 +38,7 @@ int main(int argc, const char * argv[])
     //
     
     auto helperThread = std::thread([&ipc, &sharedMemory, &deviceName, &success]() {
-        NIDAQPluginHelper helper(ipc, *(sharedMemory.getMessagePtr()), deviceName);
+        NIDAQPluginHelper helper(ipc, sharedMemory, deviceName);
         success = helper.handleRequests();
         CFRunLoopStop(CFRunLoopGetMain());
     });
