@@ -40,7 +40,6 @@
 		E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E105A22415E68597007F9F38 /* MWorksCore.framework */; };
 		E13DEB6515F7DCA600AC7480 /* NIDAQAnalogChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E13DEB6315F7DCA600AC7480 /* NIDAQAnalogChannel.cpp */; };
 		E157464015F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */; };
-		E15D0B2816C2C37700F331B1 /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E15D0B2716C2C37700F331B1 /* libboost_system.a */; };
 		E15E883315FE32DD0077757B /* MachError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E15E883115FE32DD0077757B /* MachError.cpp */; };
 		E15E883415FE32DD0077757B /* MachError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E15E883115FE32DD0077757B /* MachError.cpp */; };
 		E15E883815FE32F60077757B /* MachClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E15E883615FE32F60077757B /* MachClock.cpp */; };
@@ -169,7 +168,6 @@
 		E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogInputVoltageChannel.cpp; sourceTree = "<group>"; };
 		E157463F15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogInputVoltageChannel.h; sourceTree = "<group>"; };
 		E157464615F50AAE0014089E /* NIDAQPluginHelperError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQPluginHelperError.h; sourceTree = "<group>"; };
-		E15D0B2716C2C37700F331B1 /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = "/Library/Application Support/MWorks/Developer/lib/libboost_system.a"; sourceTree = "<absolute>"; };
 		E15E883115FE32DD0077757B /* MachError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachError.cpp; sourceTree = "<group>"; };
 		E15E883215FE32DD0077757B /* MachError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachError.h; sourceTree = "<group>"; };
 		E15E883615FE32F60077757B /* MachClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachClock.cpp; sourceTree = "<group>"; };
@@ -231,7 +229,6 @@
 			files = (
 				E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */,
 				E1ADE3B51BDEAB420055642F /* libboost_random.a in Frameworks */,
-				E15D0B2816C2C37700F331B1 /* libboost_system.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,7 +437,6 @@
 				E196C53915E2B19200059BF2 /* nidaqmxbase.framework */,
 				E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */,
 				E1ADE3B41BDEAB420055642F /* libboost_random.a */,
-				E15D0B2716C2C37700F331B1 /* libboost_system.a */,
 			);
 			name = "Frameworks & Libraries";
 			sourceTree = "<group>";
