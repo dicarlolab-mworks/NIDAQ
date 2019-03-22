@@ -10,7 +10,7 @@
 #include <iostream>
 #include <thread>
 
-#include <CoreFoundation/CoreFoundation.h>
+#import <AppKit/AppKit.h>
 
 #include "NIDAQPluginHelper.h"
 
@@ -30,6 +30,7 @@ int main(int argc, const char * argv[])
     IPCRequestResponse ipc(boost::interprocess::open_only, requestSemName, responseSemName);
     HelperSharedMemory sharedMemory(boost::interprocess::open_only, sharedMemoryName);
     bool success = false;
+    std::atomic_bool running(true);
     
     //
     // Run the helper on a separate thread, so that we can execute the main run loop on
@@ -37,13 +38,21 @@ int main(int argc, const char * argv[])
     // -[NSApplication nextEventMatchingMask:untilDate:inMode:dequeue:]
     //
     
-    auto helperThread = std::thread([&ipc, &sharedMemory, &deviceName, &success]() {
+    auto helperThread = std::thread([&ipc, &sharedMemory, &deviceName, &success, &running]() {
         NIDAQPluginHelper helper(ipc, sharedMemory, deviceName);
         success = helper.handleRequests();
-        CFRunLoopStop(CFRunLoopGetMain());
+        running = false;
     });
     
-    CFRunLoopRun();
+    @autoreleasepool {
+        NSRunLoop *runLoop = NSRunLoop.currentRunLoop;
+        while (running) {
+            @autoreleasepool {
+                [runLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+            }
+        }
+    }
+    
     helperThread.join();
     
     return (success ? EXIT_SUCCESS : EXIT_FAILURE);

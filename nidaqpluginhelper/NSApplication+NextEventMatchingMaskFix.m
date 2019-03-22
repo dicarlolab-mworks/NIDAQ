@@ -64,9 +64,9 @@
     
     __block NSEvent *event = nil;
     dispatch_sync(dispatch_get_main_queue(), ^{
-        event = [self mwk_nidaq_nextEventMatchingMask:mask untilDate:expiration inMode:mode dequeue:deqFlag];
+        event = [[self mwk_nidaq_nextEventMatchingMask:mask untilDate:expiration inMode:mode dequeue:deqFlag] retain];
     });
-    return event;
+    return [event autorelease];
 }
 
 
