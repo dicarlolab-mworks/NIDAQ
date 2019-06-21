@@ -153,8 +153,6 @@
 		E100C59716F0CE0700B463A4 /* NIDAQDigitalChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDigitalChannel.h; sourceTree = "<group>"; };
 		E100C59D16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQDigitalInputChannel.cpp; sourceTree = "<group>"; };
 		E100C59E16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDigitalInputChannel.h; sourceTree = "<group>"; };
-		E105A21215E67FEB007F9F38 /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
-		E105A21315E67FEB007F9F38 /* WARNING.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WARNING.txt; sourceTree = "<group>"; };
 		E105A21815E6835A007F9F38 /* NIDAQPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NIDAQPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E105A21D15E6835A007F9F38 /* NIDAQPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NIDAQPlugin-Info.plist"; sourceTree = "<group>"; };
 		E105A21F15E6835A007F9F38 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -214,6 +212,8 @@
 		E1C51BCB16F25F3C00893111 /* NIDAQDigitalOutputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQDigitalOutputChannel.h; sourceTree = "<group>"; };
 		E1CA0DDB15EBCA7200EB6B60 /* libnidaqapi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnidaqapi.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1E07EAE1C04F4D1008DD97E /* MWComponents.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWComponents.yaml; sourceTree = "<group>"; };
+		E1F7696A22BD4FCA00024441 /* macOS_Plugin.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = macOS_Plugin.xcconfig; sourceTree = "<group>"; };
+		E1F7696B22BD4FCA00024441 /* macOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = macOS.xcconfig; sourceTree = "<group>"; };
 		E1FD946C19C36462001E27A7 /* NIDAQAnalogOutputVoltageChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQAnalogOutputVoltageChannel.cpp; sourceTree = "<group>"; };
 		E1FD946D19C36462001E27A7 /* NIDAQAnalogOutputVoltageChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQAnalogOutputVoltageChannel.h; sourceTree = "<group>"; };
 		E1FDD3A81889CC46009FFC8A /* NIDAQCounterInputCountEdgesChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQCounterInputCountEdgesChannel.cpp; sourceTree = "<group>"; };
@@ -292,8 +292,8 @@
 		E105A21115E67F73007F9F38 /* External Config */ = {
 			isa = PBXGroup;
 			children = (
-				E105A21215E67FEB007F9F38 /* Development.xcconfig */,
-				E105A21315E67FEB007F9F38 /* WARNING.txt */,
+				E1F7696B22BD4FCA00024441 /* macOS.xcconfig */,
+				E1F7696A22BD4FCA00024441 /* macOS_Plugin.xcconfig */,
 			);
 			name = "External Config";
 			path = "/Library/Application Support/MWorks/Developer/Xcode";
@@ -714,6 +714,7 @@
 /* Begin XCBuildConfiguration section */
 		E105A22315E6835A007F9F38 /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1F7696A22BD4FCA00024441 /* macOS_Plugin.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NIDAQPlugin/NIDAQPlugin-Prefix.pch";
@@ -726,12 +727,12 @@
 				PLUGIN_HELPERS_DIR = "$(PLUGINS_DIR)/$(PRODUCT_NAME).$(WRAPPER_EXTENSION)/Contents/Helpers";
 				PLUGIN_HELPER_EXECUTABLE = MWNIDAQPluginHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = bundle;
 			};
 			name = Development;
 		};
 		E1690E7915E689CF007DFCEF /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1F7696B22BD4FCA00024441 /* macOS.xcconfig */;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -739,6 +740,7 @@
 		};
 		E1690E8515E69665007DFCEF /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1F7696B22BD4FCA00024441 /* macOS.xcconfig */;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -746,6 +748,7 @@
 		};
 		E179EE5E15E7D71400CC1BED /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1F7696B22BD4FCA00024441 /* macOS.xcconfig */;
 			buildSettings = {
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -757,13 +760,13 @@
 		};
 		E196C53415E2AD3200059BF2 /* Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E105A21215E67FEB007F9F38 /* Development.xcconfig */;
 			buildSettings = {
 			};
 			name = Development;
 		};
 		E196C53715E2AD3200059BF2 /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1F7696B22BD4FCA00024441 /* macOS.xcconfig */;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -771,6 +774,7 @@
 		};
 		E1CA0DDD15EBCA7200EB6B60 /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1F7696B22BD4FCA00024441 /* macOS.xcconfig */;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
