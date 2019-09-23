@@ -726,6 +726,7 @@
 				INFOPLIST_FILE = "NIDAQPlugin/NIDAQPlugin-Info.plist";
 				PLUGIN_HELPERS_DIR = "$(PLUGINS_DIR)/$(PRODUCT_NAME).$(WRAPPER_EXTENSION)/Contents/Helpers";
 				PLUGIN_HELPER_EXECUTABLE = MWNIDAQPluginHelper;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.dicarlolab.NIDAQPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Development;
