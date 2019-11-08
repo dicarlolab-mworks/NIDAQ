@@ -608,8 +608,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "nidaqmxbase_path=/Library/Frameworks/nidaqmxbase.framework/nidaqmxbase\nnidaqmxbaselv_path=/Library/Frameworks/nidaqmxbaselv.framework/nidaqmxbaselv\n\n/usr/bin/xcrun install_name_tool \\\n  -change \\\n  \"$(/usr/bin/xcrun otool -D $nidaqmxbase_path | /usr/bin/tail -n 1)\" \\\n  \"$nidaqmxbase_path\" \\\n  -change \\\n  \"$(/usr/bin/xcrun otool -D $nidaqmxbaselv_path | /usr/bin/tail -n 1)\" \\\n  \"$nidaqmxbaselv_path\" \\\n  \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"";
+			shellPath = /bin/zsh;
+			shellScript = "nidaqmxbase_path=/Library/Frameworks/nidaqmxbase.framework/nidaqmxbase\nnidaqmxbaselv_path=/Library/Frameworks/nidaqmxbaselv.framework/nidaqmxbaselv\n\n/usr/bin/xcrun install_name_tool \\\n  -change \\\n  \"$(/usr/bin/xcrun otool -D $nidaqmxbase_path | /usr/bin/tail -n 1)\" \\\n  \"$nidaqmxbase_path\" \\\n  -change \\\n  \"$(/usr/bin/xcrun otool -D $nidaqmxbaselv_path | /usr/bin/tail -n 1)\" \\\n  \"$nidaqmxbaselv_path\" \\\n  \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
