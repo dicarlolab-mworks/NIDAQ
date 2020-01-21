@@ -194,6 +194,7 @@
 		E196C54415E2BF7000059BF2 /* Device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
 		E196C54715E2C13200059BF2 /* Error.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Error.cpp; sourceTree = "<group>"; };
 		E196C54815E2C13200059BF2 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
+		E19A426523D250BD00BE44AF /* MWNIDAQPluginHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MWNIDAQPluginHelper.entitlements; sourceTree = "<group>"; };
 		E1A081EB15FF84DA005D8094 /* MachTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachTimer.h; sourceTree = "<group>"; };
 		E1A7226915EE4BD6006671AD /* HelperControlMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelperControlMessage.h; sourceTree = "<group>"; };
 		E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQPluginHelper.cpp; sourceTree = "<group>"; };
@@ -344,6 +345,7 @@
 				E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */,
 				E12AAFA82162B31B002A3077 /* NSApplication+NextEventMatchingMaskFix.m */,
 				E179EE5A15E7D71400CC1BED /* main.cpp */,
+				E19A426523D250BD00BE44AF /* MWNIDAQPluginHelper.entitlements */,
 			);
 			path = nidaqpluginhelper;
 			sourceTree = "<group>";
@@ -751,6 +753,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E1F7696B22BD4FCA00024441 /* macOS.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = nidaqpluginhelper/MWNIDAQPluginHelper.entitlements;
+				ENABLE_HARDENED_RUNTIME = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-headerpad_max_install_names",
