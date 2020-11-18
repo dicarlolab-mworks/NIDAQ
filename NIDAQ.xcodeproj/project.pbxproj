@@ -38,6 +38,7 @@
 		E100C59F16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E100C59D16F0EEFF00B463A4 /* NIDAQDigitalInputChannel.cpp */; };
 		E105A22015E6835A007F9F38 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E105A21E15E6835A007F9F38 /* InfoPlist.strings */; };
 		E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E105A22415E68597007F9F38 /* MWorksCore.framework */; };
+		E11E751725655D9E00AEC443 /* MWNIDAQPluginHelper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E11E751625655D5800AEC443 /* MWNIDAQPluginHelper */; };
 		E13DEB6515F7DCA600AC7480 /* NIDAQAnalogChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E13DEB6315F7DCA600AC7480 /* NIDAQAnalogChannel.cpp */; };
 		E157464015F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E157463E15F4F6D20014089E /* NIDAQAnalogInputVoltageChannel.cpp */; };
 		E15E883315FE32DD0077757B /* MachError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E15E883115FE32DD0077757B /* MachError.cpp */; };
@@ -51,7 +52,6 @@
 		E179EE5B15E7D71400CC1BED /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E179EE5A15E7D71400CC1BED /* main.cpp */; };
 		E179EE6715E7D8CC00CC1BED /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E179EE6815E7D8CE00CC1BED /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
-		E179EE7815E7DAFA00CC1BED /* MWNIDAQPluginHelper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E179EE5715E7D71400CC1BED /* MWNIDAQPluginHelper */; };
 		E18BF7E9160110E400B23BCA /* DigitalInputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E18BF7E7160110E400B23BCA /* DigitalInputTask.cpp */; };
 		E18BF7ED1601133500B23BCA /* DigitalOutputTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E18BF7EB1601133400B23BCA /* DigitalOutputTask.cpp */; };
 		E196C06718EDD21A0017E463 /* NIDAQ in CopyFiles */ = {isa = PBXBuildFile; fileRef = E196C06518EDD1DD0017E463 /* NIDAQ */; };
@@ -106,13 +106,6 @@
 			remoteGlobalIDString = E1690E8315E69665007DFCEF;
 			remoteInfo = "Install NIDAQPlugin";
 		};
-		E179EE7915E7DB6100CC1BED /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E196C52315E2AD3200059BF2 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E179EE5615E7D71400CC1BED;
-			remoteInfo = nidaqpluginhelper;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -132,7 +125,7 @@
 			dstPath = Contents/Helpers;
 			dstSubfolderSpec = 1;
 			files = (
-				E179EE7815E7DAFA00CC1BED /* MWNIDAQPluginHelper in CopyFiles */,
+				E11E751725655D9E00AEC443 /* MWNIDAQPluginHelper in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,6 +150,7 @@
 		E105A21D15E6835A007F9F38 /* NIDAQPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NIDAQPlugin-Info.plist"; sourceTree = "<group>"; };
 		E105A21F15E6835A007F9F38 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E105A22415E68597007F9F38 /* MWorksCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MWorksCore.framework; path = /Library/Frameworks/MWorksCore.framework; sourceTree = "<absolute>"; };
+		E11E751625655D5800AEC443 /* MWNIDAQPluginHelper */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = MWNIDAQPluginHelper; sourceTree = "<group>"; };
 		E12AAFA82162B31B002A3077 /* NSApplication+NextEventMatchingMaskFix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSApplication+NextEventMatchingMaskFix.m"; sourceTree = "<group>"; };
 		E12AAFAF2162B6E2002A3077 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		E13DEB6215F7BB2100AC7480 /* HelperSharedMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelperSharedMemory.h; sourceTree = "<group>"; };
@@ -346,6 +340,7 @@
 				E12AAFA82162B31B002A3077 /* NSApplication+NextEventMatchingMaskFix.m */,
 				E179EE5A15E7D71400CC1BED /* main.cpp */,
 				E19A426523D250BD00BE44AF /* MWNIDAQPluginHelper.entitlements */,
+				E11E751625655D5800AEC443 /* MWNIDAQPluginHelper */,
 			);
 			path = nidaqpluginhelper;
 			sourceTree = "<group>";
@@ -476,7 +471,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E179EE7A15E7DB6100CC1BED /* PBXTargetDependency */,
 			);
 			name = NIDAQPlugin;
 			productName = NIDAQPlugin;
@@ -694,11 +688,6 @@
 			isa = PBXTargetDependency;
 			target = E1690E8315E69665007DFCEF /* Install NIDAQPlugin */;
 			targetProxy = E1690E8A15E69691007DFCEF /* PBXContainerItemProxy */;
-		};
-		E179EE7A15E7DB6100CC1BED /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E179EE5615E7D71400CC1BED /* nidaqpluginhelper */;
-			targetProxy = E179EE7915E7DB6100CC1BED /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
