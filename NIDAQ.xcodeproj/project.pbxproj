@@ -59,7 +59,6 @@
 		E196C53C15E2B21B00059BF2 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53915E2B19200059BF2 /* nidaqmxbase.framework */; };
 		E196C53E15E2B59800059BF2 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */; };
 		E1A7227515EEA72C006671AD /* NIDAQPluginHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */; };
-		E1ADE3B51BDEAB420055642F /* libboost_random.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ADE3B41BDEAB420055642F /* libboost_random.a */; };
 		E1B886531889A8EB0063AC98 /* CounterInputCountEdgesTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B886511889A8EB0063AC98 /* CounterInputCountEdgesTask.cpp */; };
 		E1B886581889C9BE0063AC98 /* NIDAQCounterChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1B886561889C9BE0063AC98 /* NIDAQCounterChannel.cpp */; };
 		E1C51BCC16F25F3C00893111 /* NIDAQDigitalOutputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1C51BCA16F25F3C00893111 /* NIDAQDigitalOutputChannel.cpp */; };
@@ -193,7 +192,6 @@
 		E1A7226915EE4BD6006671AD /* HelperControlMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelperControlMessage.h; sourceTree = "<group>"; };
 		E1A7227315EEA72C006671AD /* NIDAQPluginHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NIDAQPluginHelper.cpp; sourceTree = "<group>"; };
 		E1A7227415EEA72C006671AD /* NIDAQPluginHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIDAQPluginHelper.h; sourceTree = "<group>"; };
-		E1ADE3B41BDEAB420055642F /* libboost_random.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_random.a; path = "/Library/Application Support/MWorks/Developer/lib/libboost_random.a"; sourceTree = "<absolute>"; };
 		E1B3C55F15E3DFFA000B0F8E /* Task.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Task.cpp; sourceTree = "<group>"; };
 		E1B3C56015E3DFFA000B0F8E /* Task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Task.h; sourceTree = "<group>"; };
 		E1B3C56315E40FED000B0F8E /* NIDAQmxBaseAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NIDAQmxBaseAPI.h; sourceTree = "<group>"; };
@@ -221,7 +219,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E105A22515E685AA007F9F38 /* MWorksCore.framework in Frameworks */,
-				E1ADE3B51BDEAB420055642F /* libboost_random.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,7 +391,7 @@
 				E196C52F15E2AD3200059BF2 /* nidaqtest */,
 				E179EE5915E7D71400CC1BED /* nidaqpluginhelper */,
 				E105A21B15E6835A007F9F38 /* NIDAQPlugin */,
-				E196C53B15E2B1FE00059BF2 /* Frameworks & Libraries */,
+				E196C53B15E2B1FE00059BF2 /* Frameworks */,
 				E196C52D15E2AD3200059BF2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -423,16 +420,15 @@
 			path = nidaqtest;
 			sourceTree = "<group>";
 		};
-		E196C53B15E2B1FE00059BF2 /* Frameworks & Libraries */ = {
+		E196C53B15E2B1FE00059BF2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				E105A22415E68597007F9F38 /* MWorksCore.framework */,
 				E12AAFAF2162B6E2002A3077 /* AppKit.framework */,
 				E196C53915E2B19200059BF2 /* nidaqmxbase.framework */,
 				E196C53D15E2B59800059BF2 /* nidaqmxbaselv.framework */,
-				E1ADE3B41BDEAB420055642F /* libboost_random.a */,
 			);
-			name = "Frameworks & Libraries";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E1B886551889C9840063AC98 /* Counter */ = {
@@ -715,6 +711,10 @@
 					"PLUGIN_HELPER_EXECUTABLE=\\\"$(PLUGIN_HELPER_EXECUTABLE)\\\"",
 				);
 				INFOPLIST_FILE = "NIDAQPlugin/NIDAQPlugin-Info.plist";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lboost_random",
+				);
 				PLUGIN_HELPERS_DIR = "$(PLUGINS_DIR)/$(PRODUCT_NAME).$(WRAPPER_EXTENSION)/Contents/Helpers";
 				PLUGIN_HELPER_EXECUTABLE = MWNIDAQPluginHelper;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.dicarlolab.NIDAQPlugin;
